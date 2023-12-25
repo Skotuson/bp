@@ -1,0 +1,9 @@
+S -> Clause
+S -> Clause S
+
+Clause -> Fact
+Clause -> Rule
+
+Fact -> identifier FactArg .
+
+Clause -> identifier : - ClauseArg .
