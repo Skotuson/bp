@@ -26,7 +26,7 @@ $(TEST_OUTPUT): $(TEST_OBJS)
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
 clean:
-	rm -f *.o */*.o $(OUTPUT)
+	rm -f $(wildcard $(shell find . -name '*.o')) $(OUTPUT)
  
 run: $(OUTPUT)
 	./$(OUTPUT)
