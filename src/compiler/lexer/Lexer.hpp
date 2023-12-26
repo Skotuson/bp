@@ -5,6 +5,7 @@
 #include <istream>
 
 enum Token {
+    TOK_ERROR,
     TOK_EOF,
     TOK_ATOM_LOWER, //e.g. elephant, b, aBC...
     TOK_ATOM_VAR,   //X, Y, XYZ, Variable...
@@ -38,6 +39,11 @@ class Lexer {
          * Function used for lexing lowercase atoms and variables.
          */
         Token lexIdentifier ( void );
+
+        /**
+         * Function used to lex punctuation, mathematical symbols etc.
+         */
+        Token lexSymbol ( void );
 
         std::istream & m_Source;
 
