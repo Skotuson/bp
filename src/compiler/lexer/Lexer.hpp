@@ -6,8 +6,8 @@
 
 enum Token {
     TOK_EOF,
-    TOK_ATOM_LOWER, //e.g. elephant, b, aBC
-    TOK_ATOM_VAR,
+    TOK_ATOM_LOWER, //e.g. elephant, b, aBC...
+    TOK_ATOM_VAR,   //X, Y, XYZ, Variable...
     TOK_NUMBER,
     TOK_COMMA,      // ,
     TOK_PERIOD,     // .
@@ -25,8 +25,7 @@ enum Token {
 class Lexer {
     public:
         Lexer( std::istream & is );
-       ~Lexer() = default;
-
+    
         const std::string & identifier();
 
         int numericValue ( void );
