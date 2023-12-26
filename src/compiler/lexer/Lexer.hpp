@@ -5,9 +5,21 @@
 #include <istream>
 
 enum Token {
-    TOK_EOF = -1,
-    TOK_IDENTIFIER = -2,
-    TOK_NUMBER = -3,
+    TOK_EOF,
+    TOK_ATOM_LOWER, //e.g. elephant, b, aBC
+    TOK_ATOM_VAR,
+    TOK_NUMBER,
+    TOK_COMMA,      // ,
+    TOK_PERIOD,     // .
+    TOK_SEMICOLON,  // ;
+    TOK_LPAR,       // (
+    TOK_RPAR,       // )
+    TOK_LSPAR,      // [
+    TOK_RSPAR,      // ]
+    TOK_UNDERSCORE, // _
+    TOK_EQUAL,      // =
+    TOK_CUT,        // !
+    TOK_IF          // :-
 };
 
 class Lexer {
@@ -22,6 +34,12 @@ class Lexer {
         Token getToken ( void );
 
     private:
+
+        /**
+         * Function used for lexing lowercase atoms and variables.
+         */
+        Token lexIdentifier ( void );
+
         std::istream & m_Source;
 
         std::string m_Identifier;
