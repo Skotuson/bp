@@ -16,18 +16,20 @@ int Lexer::numericValue ( void ) {
 }
 
 Token Lexer::lexIdentifier( void ) {
-    for ( char c = std::cin . get ( ); isalnum ( c ) || c == '_'; c = std::cin . get ( ) )
-    while ( isalnum ( c ) || c == '_' )
+    for ( char c = m_Source . get ( ); isalnum ( c ) || c == '_'; c = m_Source . get ( ) ) {
         m_Identifier += c;
+    }
+        
     if ( islower(m_Identifier[0]) ) return TOK_ATOM_LOWER;
     return TOK_ATOM_VAR;
 }
 
 Token Lexer::getToken ( void ) {
     char c = m_Source . peek( );
-
-    while ( isspace ( c ) ) 
-        c = std::cin . get ( );
+    while ( isspace ( c ) ) {
+        m_Source . get ( );
+        c = m_Source . peek ( );
+    }
 
     if ( isalpha( c ) ) {
         m_Identifier = "";
