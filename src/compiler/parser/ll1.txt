@@ -1,3 +1,4 @@
+Start -> Predicate
 Start -> lower ( Pred S2
 
 S2 -> 
@@ -5,16 +6,20 @@ S2 -> Start
 
 Pred -> Terms ) Predicate
 
+# Facts and rules
 Predicate -> .
-Predicate -> :- Body
+Predicate -> :- Body .
 
+# Body of an rule
 Body -> lower ( Terms ) BodyTerm BodyCont
 Body -> const = Term BodyCont
 Body -> var = Term BodyCont
 
+# Allows chaining of goals in a rule
 BodyCont -> 
 BodyCont -> , Body
 
+# Allows unifying two compounds or using one compound as a goal
 BodyTerm ->
 BodyTerm -> = Term 
 
