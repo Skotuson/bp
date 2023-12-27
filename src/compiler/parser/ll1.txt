@@ -1,10 +1,12 @@
 Start -> lower ( Pred S2
 
 S2 -> 
-S2 -> S
+S2 -> Start
 
-Pred -> Terms ) .
-Pred -> Terms ) :- Body
+Pred -> Terms ) Predicate
+
+Predicate -> .
+Predicate -> :- Body
 
 Body -> lower ( Terms ) BodyTerm BodyCont
 Body -> const = Term BodyCont
@@ -20,10 +22,7 @@ Term -> lower TermLower
 Term -> const
 Term -> var
 
-Terms -> lower TermLower TermsCont
-
-Terms -> const TermsCont
-Terms -> var TermsCont
+Terms -> Term TermsCont
 
 TermsCont ->
 TermsCont -> , Terms
