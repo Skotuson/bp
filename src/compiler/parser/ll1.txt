@@ -1,0 +1,33 @@
+Start -> lower ( Pred S2
+
+S2 -> 
+S2 -> S
+
+Pred -> Terms ) .
+Pred -> Terms ) :- Body
+
+Body -> lower ( Terms ) BodyTerm BodyCont
+Body -> const = Term BodyCont
+Body -> var = Term BodyCont
+
+BodyCont -> 
+BodyCont -> , Body
+
+BodyTerm ->
+BodyTerm -> = Term 
+
+Term -> lower TermLower
+Term -> const
+Term -> var
+
+Terms -> lower TermLower TermsCont
+
+Terms -> const TermsCont
+Terms -> var TermsCont
+
+TermsCont ->
+TermsCont -> , Terms
+
+TermLower -> 
+TermLower -> ( Terms )
+
