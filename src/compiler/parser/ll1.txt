@@ -1,8 +1,10 @@
-Start -> Predicate
-Start -> lower ( Pred S2
+Start -> lower Predicates S2
 
 S2 -> 
 S2 -> Start
+
+Predicates -> Predicate
+Predicates -> ( Pred
 
 Pred -> Terms ) Predicate
 
