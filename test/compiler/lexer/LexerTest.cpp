@@ -117,6 +117,39 @@ void LexerTest::test ( void ) {
     }
 
     {
+        std::istringstream iss ("a(b, c, [H,T])");
+        Lexer lex ( iss );
+        assert ( lex.getToken() == TOK_ATOM_LOWER );
+        assert ( lex.identifier() == "a" );
+
+        assert ( lex.getToken() == TOK_LPAR );
+
+        assert ( lex.getToken() == TOK_ATOM_LOWER );
+        assert ( lex.identifier() == "b" );
+
+        assert ( lex.getToken() == TOK_COMMA );
+
+        assert ( lex.getToken() == TOK_ATOM_LOWER );
+        assert ( lex.identifier() == "c" );
+
+        assert ( lex.getToken() == TOK_COMMA );
+
+        assert ( lex.getToken() == TOK_LSPAR );
+
+        assert ( lex.getToken() == TOK_ATOM_VAR );
+        assert ( lex.identifier() == "H" );
+
+        assert ( lex.getToken() == TOK_COMMA );
+
+        assert ( lex.getToken() == TOK_ATOM_VAR );
+        assert ( lex.identifier() == "T" );
+
+        assert ( lex.getToken() == TOK_RSPAR );
+        
+        assert ( lex.getToken() == TOK_RPAR );
+    }
+
+    {
         std::istringstream iss ("  \t    \n\r\t            \n");
         Lexer lex ( iss );
         assert ( lex.getToken() == TOK_EOF );
