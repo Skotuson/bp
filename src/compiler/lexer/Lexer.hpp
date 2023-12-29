@@ -2,7 +2,7 @@
 #define LEXER_H
 
 #include <string>
-#include <istream>
+#include <iostream>
 
 enum Token {
     TOK_ERROR,
@@ -56,5 +56,7 @@ class Lexer {
         std::string m_Identifier;
         int         m_NumericValue;
 };
+
+std::ostream & operator << ( std::ostream & os, const Token & tok );
 
 #endif //LEXER_H

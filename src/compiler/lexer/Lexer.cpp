@@ -1,7 +1,6 @@
 #include "Lexer.hpp"
 
 #include <cctype>
-#include <iostream>
 
 Lexer::Lexer ( std::istream & is )
 : m_Source ( is )
@@ -36,7 +35,7 @@ Token Lexer::lexSymbol ( void ) {
         case ')' : return TOK_RPAR;
         case '[' : return TOK_LSPAR;
         case ']' : return TOK_RSPAR;
-        case '_' : return TOK_UNDERSCORE;
+        case '_' : return TOK_VAR;
         case '=' : return TOK_EQUAL;
         case ':' : 
             c = m_Source . get ( );
@@ -50,8 +49,10 @@ Token Lexer::lexSymbol ( void ) {
 }
 
 void Lexer::match ( Token tok ) {
-    if ( lastToken != tok )
-        throw std::runtime_error("Matching error");
+    if ( lastToken != tok ) {
+        std::cout << (Token) lastToken << " =\\= " << (Token) tok << std::endl;
+        throw std::runtime_error ( "Matching error" );
+    }
     get ( );
 }
 
@@ -75,4 +76,42 @@ Token Lexer::get ( void ) {
 
 Token Lexer::peek ( void ) {
     return lastToken;
+}
+
+std::ostream & operator << ( std::ostream & os, const Token & tok ) {
+    switch ( tok ) {
+        case TOK_ERROR:
+            return os << "ERROR";
+        case TOK_EOF:
+            return os << "EOF";
+        case TOK_ATOM_LOWER:
+            return os << "LOWER";
+        case TOK_VAR:
+            return os << "VAR";
+        case TOK_CONST:
+            return os << "CONST";
+        case TOK_COMMA:
+            return os << "COMMA";
+        case TOK_PERIOD:
+            return os << "PERIOD";
+        case TOK_SEMICOLON:
+            return os << "SEMICOLON";
+        case TOK_LPAR:
+            return os << "LPAR";
+        case TOK_RPAR:
+            return os << "RPAR";
+        case TOK_LSPAR:
+            return os << "LSPAR";
+        case TOK_RSPAR:
+            return os << "RSPAR";
+        case TOK_UNDERSCORE:
+            return os << "UNDERSCORE";
+        case TOK_EQUAL:
+            return os << "EQUAL";
+        case TOK_CUT:
+            return os << "CUT";
+        case TOK_IF:
+            return os << "IF";
+     }
+    return os << "UNKNOWN TOKEN";
 }
