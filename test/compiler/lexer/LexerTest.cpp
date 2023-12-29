@@ -24,7 +24,7 @@ void LexerTest::test ( void ) {
         assert ( lex.get() == TOK_ATOM_LOWER );
         assert ( lex.identifier() == "a" );
 
-        assert ( lex.get() == TOK_ATOM_VAR );
+        assert ( lex.get() == TOK_VAR );
         assert ( lex.identifier() == "Xab" );
 
         assert ( lex.get() == TOK_ATOM_LOWER );
@@ -36,7 +36,7 @@ void LexerTest::test ( void ) {
         assert ( lex.get() == TOK_ATOM_LOWER );
         assert ( lex.identifier() == "aX" );
 
-        assert ( lex.get() == TOK_ATOM_VAR );
+        assert ( lex.get() == TOK_VAR );
         assert ( lex.identifier() == "XyZ" );
     }
 
@@ -69,12 +69,12 @@ void LexerTest::test ( void ) {
 
         assert ( lex.get() == TOK_LPAR );
 
-        assert ( lex.get() == TOK_ATOM_VAR );
+        assert ( lex.get() == TOK_VAR );
         assert ( lex.identifier() == "X" );
 
         assert ( lex.get() == TOK_COMMA );
 
-        assert ( lex.get() == TOK_ATOM_VAR );
+        assert ( lex.get() == TOK_VAR );
         assert ( lex.identifier() == "Y" );
 
         assert ( lex.get() == TOK_RPAR );
@@ -86,12 +86,12 @@ void LexerTest::test ( void ) {
 
         assert ( lex.get() == TOK_LPAR );
 
-        assert ( lex.get() == TOK_ATOM_VAR );
+        assert ( lex.get() == TOK_VAR );
         assert ( lex.identifier() == "X" );
 
         assert ( lex.get() == TOK_COMMA );
 
-        assert ( lex.get() == TOK_ATOM_VAR );
+        assert ( lex.get() == TOK_VAR );
         assert ( lex.identifier() == "Z" );
 
         assert ( lex.get() == TOK_RPAR );
@@ -103,12 +103,12 @@ void LexerTest::test ( void ) {
 
         assert ( lex.get() == TOK_LPAR );
 
-        assert ( lex.get() == TOK_ATOM_VAR );
+        assert ( lex.get() == TOK_VAR );
         assert ( lex.identifier() == "Z" );
 
         assert ( lex.get() == TOK_COMMA );
 
-        assert ( lex.get() == TOK_ATOM_VAR );
+        assert ( lex.get() == TOK_VAR );
         assert ( lex.identifier() == "Y" );
 
         assert ( lex.get() == TOK_RPAR );
@@ -136,12 +136,12 @@ void LexerTest::test ( void ) {
 
         assert ( lex.get() == TOK_LSPAR );
 
-        assert ( lex.get() == TOK_ATOM_VAR );
+        assert ( lex.get() == TOK_VAR );
         assert ( lex.identifier() == "H" );
 
         assert ( lex.get() == TOK_COMMA );
 
-        assert ( lex.get() == TOK_ATOM_VAR );
+        assert ( lex.get() == TOK_VAR );
         assert ( lex.identifier() == "T" );
 
         assert ( lex.get() == TOK_RSPAR );

@@ -23,7 +23,7 @@ Token Lexer::lexIdentifier( void ) {
     m_Source . unget();
 
     if ( islower(m_Identifier[0]) ) return TOK_ATOM_LOWER;
-    return TOK_ATOM_VAR;
+    return TOK_VAR;
 }
 
 Token Lexer::lexSymbol ( void ) {
@@ -49,8 +49,8 @@ Token Lexer::lexSymbol ( void ) {
     }
 }
 
-void match ( Token tok ) {
-    if ( lastToken != ref )
+void Lexer::match ( Token tok ) {
+    if ( lastToken != tok )
         throw std::runtime_error("Matching error");
     get ( );
 }
