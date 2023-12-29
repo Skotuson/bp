@@ -164,7 +164,6 @@ void Parser::Terms ( void ) {
         case TOK_ATOM_LOWER:
         case TOK_CONST:
         case TOK_VAR:
-            m_Lex . match ( TOK_ATOM_LOWER );
             Term();
             TermsCont();
             break;
