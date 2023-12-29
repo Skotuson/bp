@@ -9,7 +9,7 @@ enum Token {
     TOK_EOF,
     TOK_ATOM_LOWER, //e.g. elephant, b, aBC...
     TOK_ATOM_VAR,   //X, Y, XYZ, Variable...
-    TOK_NUMBER,
+    TOK_CONST,
     TOK_COMMA,      // ,
     TOK_PERIOD,     // .
     TOK_SEMICOLON,  // ;
@@ -31,7 +31,11 @@ class Lexer {
 
         int numericValue ( void );
 
-        Token getToken ( void );
+        Token get ( void );
+
+        Token peek ( void );
+
+        void match ( Token tok );
 
     private:
 
@@ -44,6 +48,8 @@ class Lexer {
          * Function used to lex punctuation, mathematical symbols etc.
          */
         Token lexSymbol ( void );
+
+        Token lastToken = TOK_ERROR;
 
         std::istream & m_Source;
 

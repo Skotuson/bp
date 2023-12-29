@@ -49,7 +49,13 @@ Token Lexer::lexSymbol ( void ) {
     }
 }
 
-Token Lexer::getToken ( void ) {
+void match ( Token tok ) {
+    if ( lastToken != ref )
+        throw std::runtime_error("Matching error");
+    get ( );
+}
+
+Token Lexer::get ( void ) {
     char c = m_Source . peek( );
     while ( isspace ( c ) ) {
         m_Source . get ( );
@@ -58,11 +64,15 @@ Token Lexer::getToken ( void ) {
 
     if ( isalpha( c ) ) {
         m_Identifier = "";
-        return lexIdentifier ( );
+        return lastToken = lexIdentifier ( );
     }
 
     if ( c != EOF )
-        return lexSymbol ( );
+        return lastToken = lexSymbol ( );
 
-    return TOK_EOF;
+    return lastToken = TOK_EOF;
+}
+
+Token Lexer::peek ( void ) {
+    return lastToken;
 }
