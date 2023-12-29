@@ -1,7 +1,7 @@
-Start -> lower Predicates S2
+Start -> lower Predicates Next
 
-S2 -> 
-S2 -> Start
+Next -> 
+Next -> Start
 
 Predicates -> Predicate
 Predicates -> ( Pred
@@ -13,9 +13,13 @@ Predicate -> .
 Predicate -> :- Body .
 
 # Body of an rule
-Body -> lower ( Terms ) BodyTerm BodyCont
+Body -> lower BodyLower BodyTerm BodyCont
 Body -> const = Term BodyCont
 Body -> var = Term BodyCont
+
+# Allows using predicate with or without arguments in body
+BodyLower -> 
+BodyLower -> ( Terms )
 
 # Allows chaining of goals in a rule
 BodyCont -> 
