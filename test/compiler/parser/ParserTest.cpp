@@ -30,7 +30,7 @@ void ParserTest::test ( void ) {
           "is_smaller(X, Y) :- is_bigger(Y, X).\n"
           "aunt(Aunt, Child) :-\n"
           "\tsister(Aunt, Parent),"
-          "\t parent(Parent, Child).");
+          "\tparent(Parent, Child).");
         Lexer lex ( iss );
         Parser parser ( lex );
         assert ( parser.parse() );
@@ -39,6 +39,34 @@ void ParserTest::test ( void ) {
     {
         std::istringstream iss 
         ( "vodorovna(usecka(bod(a,b), bod(b, c))).\n");
+        Lexer lex ( iss );
+        Parser parser ( lex );
+        assert ( parser.parse() );
+    }
+
+    {
+        std::istringstream iss 
+        ( "bt_identical(empty, empty).\n"
+          "bt_identical(t(_, A, AA), t(_, B, BB)) :-\n"
+          "\tbt_identical(A, B),\n"
+          "\tbt_identical(AA, BB).\n\r"
+        );
+        Lexer lex ( iss );
+        Parser parser ( lex );
+        assert ( parser.parse() );
+    }
+
+    {
+        std::istringstream iss 
+        ( "vezmi(Item) :-\n"
+          "\tplayer(X),\n"
+          "\titem(X, Item),\n"
+          "\tnot(enemy(_, X, _)),\n"
+          "\tnot(inventory(Item)),\n"
+          "\tassert(inventory(Item)),\n"
+          "\tretract(item(X, Item)),\n"
+          "\trefresh, nl.\n"
+        );
         Lexer lex ( iss );
         Parser parser ( lex );
         assert ( parser.parse() );
