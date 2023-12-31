@@ -6,6 +6,10 @@ bool Parser::parse ( void ) {
     return true;
 }
 
+const SymbolTable & Parser::getTable ( void ) {
+    return m_STable;
+}
+
 void Parser::Start ( void ) {
     switch ( m_Lex . peek ( ) ) {
         case TOK_ATOM_LOWER:

@@ -2,6 +2,8 @@
 #define PARSER_H
 
 #include "../lexer/Lexer.hpp"
+#include "../SymbolTable.hpp"
+
 
 class Parser {
     public:
@@ -10,6 +12,8 @@ class Parser {
         {}
 
         bool parse ( void );
+
+        const SymbolTable & getTable ( void );
     private:
         //--------RECURSIVE DESCENT METHODS--------//
         void Start      ( void );
@@ -27,7 +31,7 @@ class Parser {
         void TermLower  ( void );
         //-------------CLASS VARIABLES-------------//
         Lexer m_Lex;
-
+        SymbolTable m_STable;
 };
 
 #endif
