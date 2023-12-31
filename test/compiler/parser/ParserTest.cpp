@@ -72,5 +72,14 @@ void ParserTest::test ( void ) {
         assert ( parser.parse() );
     }
 
+      {
+        std::istringstream iss 
+        ( "a( b( c( d( e( f, g ( h ) ) ) ) ) )."
+        );
+        Lexer lex ( iss );
+        Parser parser ( lex );
+        assert ( parser.parse() );
+    }
+
     std::cout << "Parser Test suite completed :)" << std::endl;
 }
