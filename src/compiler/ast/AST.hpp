@@ -9,12 +9,34 @@ struct Node {
     virtual std::string codegen ( void );
 };
 
+struct GoalNode : public Node {
+
+};
+
+//-------TERM NODES-------//
+struct TermNode : public GoalNode {
+
+};
+
+struct StructNode : public TermNode {
+
+};
+
+struct VarNode : public TermNode {
+
+};
+
+struct ConstNode : public TermNode {
+
+};
+//------------------------//
+
 struct ClauseNode : public Node {
     virtual std::string codegen ( void );
 
     std::string m_Head;
-    // std::vector<> m_Args;
-    // std::vector<> m_Body;
+    std::vector<TermNode *> m_Args;
+    std::vector<GoalNode *> m_Body;
 };
 
 struct ProgramNode : public Node {
