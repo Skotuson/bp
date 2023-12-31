@@ -3,6 +3,7 @@
 
 #include "../lexer/Lexer.hpp"
 #include "../SymbolTable.hpp"
+#include "../ast/AST.hpp"
 
 
 class Parser {
@@ -30,8 +31,9 @@ class Parser {
         void TermsCont  ( void );
         void TermLower  ( void );
         //-------------CLASS VARIABLES-------------//
-        Lexer m_Lex;
-        SymbolTable m_STable;
+        Lexer         m_Lex;
+        SymbolTable   m_STable;
+        Node        * m_ASTRoot;
 };
 
 #endif

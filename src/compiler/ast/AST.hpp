@@ -33,7 +33,6 @@ struct ConstNode : public TermNode {
 
 struct ClauseNode : public Node {
     virtual std::string codegen ( void );
-
     std::string m_Head;
     std::vector<TermNode *> m_Args;
     std::vector<GoalNode *> m_Body;
@@ -41,7 +40,6 @@ struct ClauseNode : public Node {
 
 struct ProgramNode : public Node {
     virtual std::string codegen ( void );
-
     std::vector<ClauseNode *> m_Clauses;
 };
 

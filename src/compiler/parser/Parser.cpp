@@ -2,6 +2,7 @@
 
 bool Parser::parse ( void ) {
     m_Lex . get ( );
+    m_ASTRoot = new ProgramNode();
     Start ( );
     return true;
 }
