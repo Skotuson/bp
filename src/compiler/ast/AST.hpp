@@ -20,15 +20,21 @@ struct TermNode : public GoalNode {
 };
 
 struct StructNode : public TermNode {
-    StructNode ( std::vector<TermNode*> args = std::vector<TermNode *> () );
+    StructNode ( const std::string      & name, 
+                 std::vector<TermNode*>   args = std::vector<TermNode *> () );
     std::string codegen ( void ) override;
-    std::vector<TermNode *> m_Args;
     void print ( const std::string & indent = "" ) override;
+
+    std::string             m_Name;
+    std::vector<TermNode *> m_Args;
 };
 
 struct VarNode : public TermNode {
+    VarNode ( const std::string & name );
     std::string codegen ( void ) override;
     void print ( const std::string & indent = "" ) override;
+
+    std::string m_Name;
 };
 
 struct ConstNode : public TermNode {
@@ -39,7 +45,10 @@ struct ConstNode : public TermNode {
 //------------------------//
 
 struct ClauseNode : public Node {
-    ClauseNode ( std::vector<TermNode *> args, std::vector<GoalNode *> body );
+    ClauseNode ( const std::string       & head, 
+                 std::vector<TermNode *>   args, 
+                 std::vector<GoalNode *>   body );
+
     std::string codegen ( void ) override;
     void print ( const std::string & indent = "" ) override;
     std::string m_Head;
