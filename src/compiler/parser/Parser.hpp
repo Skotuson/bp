@@ -22,14 +22,14 @@ class Parser {
         void Predicates ( void );
         void Pred       ( void );
         void Predicate  ( void );
-        void Body       ( void );
+        std::vector<GoalNode *>   Body      ( void );
         void BodyLower  ( void );
-        void BodyCont   ( void );
-        void BodyTerm   ( void );
-        void Term       ( void );
-        void Terms      ( void );
-        void TermsCont  ( void );
-        void TermLower  ( void );
+        std::vector<GoalNode *> BodyCont    ( void );
+        TermNode                * BodyTerm  ( void );
+        TermNode                * Term      ( void );
+        std::vector<TermNode *>   Terms     ( void );
+        std::vector<TermNode *>   TermsCont ( void );
+        TermNode                * TermLower ( void );
         //-------------CLASS VARIABLES-------------//
         Lexer         m_Lex;
         SymbolTable   m_STable;
