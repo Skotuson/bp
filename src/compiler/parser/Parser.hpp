@@ -19,21 +19,21 @@ class Parser {
         //--------RECURSIVE DESCENT METHODS--------//
         void Start      ( void );
         void Next       ( void );
-        void Predicates ( void );
-        void Pred       ( void );
-        void Predicate  ( void );
-        std::vector<GoalNode *>   Body      ( void );
-        StructNode              * BodyLower ( void );
-        std::vector<GoalNode *>   BodyCont  ( void );
-        TermNode                * BodyTerm  ( void );
-        TermNode                * Term      ( void );
-        std::vector<TermNode *>   Terms     ( void );
-        std::vector<TermNode *>   TermsCont ( void );
-        TermNode                * TermLower ( void );
+        ClauseNode              * Predicates ( void );
+        ClauseNode              * Pred       ( void );
+        std::vector<GoalNode *>   Predicate  ( void );
+        std::vector<GoalNode *>   Body       ( void );
+        StructNode              * BodyLower  ( void );
+        std::vector<GoalNode *>   BodyCont   ( void );
+        TermNode                * BodyTerm   ( void );
+        TermNode                * Term       ( void );
+        std::vector<TermNode *>   Terms      ( void );
+        std::vector<TermNode *>   TermsCont  ( void );
+        TermNode                * TermLower  ( void );
         //-------------CLASS VARIABLES-------------//
         Lexer         m_Lex;
         SymbolTable   m_STable;
-        Node        * m_ASTRoot;
+        ProgramNode * m_ASTRoot;
 };
 
 #endif

@@ -15,8 +15,8 @@ void Parser::Start ( void ) {
     switch ( m_Lex . peek ( ) ) {
         case TOK_ATOM_LOWER:
             m_Lex . match ( TOK_ATOM_LOWER );
-            Predicates();
-            Next();
+            m_ASTRoot -> m_Clauses . push_back ( Predicates ( ) );
+            Next ( );
             break;
         default:
             throw std::runtime_error ( "Start Parsing error" );
@@ -28,52 +28,53 @@ void Parser::Next ( void ) {
         case TOK_EOF:
             break;
         case TOK_ATOM_LOWER:
-            Start();
+            Start ( );
             break;
         default:
             throw std::runtime_error ( "Next Parsing error" );
     }
 } 
 
-void Parser::Predicates ( void ) {
+ClauseNode * Parser::Predicates ( void ) {
     switch ( m_Lex . peek ( ) ) {
         case TOK_PERIOD:
         case TOK_IF:
-            Predicate();
-            break;
+            return new ClauseNode ( std::vector<TermNode*> (), Predicate ( ) );
         case TOK_LPAR:
             m_Lex . match ( TOK_LPAR );
-            Pred();
-            break;
+            return Pred ( );
         default:
             throw std::runtime_error ( "Predicates Parsing error" );
     }
 } 
 
-void Parser::Pred ( void ) {
+ClauseNode * Parser::Pred ( void ) {
+    std::vector<TermNode *> args;
+    std::vector<GoalNode *> body;
     switch ( m_Lex . peek ( ) ) {
         case TOK_ATOM_LOWER:
         case TOK_CONST:
         case TOK_VAR:
-            Terms();
+            args = Terms ( );
             m_Lex . match ( TOK_RPAR );
-            Predicate ( );
-            break;
+            body = Predicate ( );
+            return new ClauseNode ( args, body );
         default:
             throw std::runtime_error ( "Pred Parsing error" );
     }
 } 
 
-void Parser::Predicate ( void ) {
+std::vector<GoalNode *> Parser::Predicate ( void ) {
+    std::vector<GoalNode *> body;
     switch ( m_Lex . peek ( ) ) {
         case TOK_PERIOD:
             m_Lex . match ( TOK_PERIOD );
-            break;
+            return std::vector<GoalNode *> ( );
         case TOK_IF:
             m_Lex . match ( TOK_IF );
-            Body();
+            body = Body();
             m_Lex . match ( TOK_PERIOD );
-            break;
+            return body;
         default:
             throw std::runtime_error ( "Predicate Parsing error" );
     }
