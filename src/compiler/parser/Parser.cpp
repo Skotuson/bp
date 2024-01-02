@@ -11,6 +11,10 @@ const SymbolTable & Parser::getTable ( void ) {
     return m_STable;
 }
 
+void Parser::printAST ( void ) {
+    m_ASTRoot -> print ( );
+}
+
 void Parser::Start ( void ) {
     switch ( m_Lex . peek ( ) ) {
         case TOK_ATOM_LOWER:

@@ -15,6 +15,8 @@ class Parser {
         bool parse ( void );
 
         const SymbolTable & getTable ( void );
+
+        void printAST ( void );
     private:
         //--------RECURSIVE DESCENT METHODS--------//
         void Start      ( void );
