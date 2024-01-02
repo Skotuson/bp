@@ -9,7 +9,7 @@ std::string ProgramNode::codegen( void ) {
 void ProgramNode::print ( const std::string & indent ) {
     std::cout << indent << "=======[Start ProgramNode]======" << std::endl;
     for ( const auto & clause : m_Clauses )
-        clause -> print ( indent + "" );
+        clause -> print ( indent + " " );
     std::cout << indent << "=======[End ProgramNode]======" << std::endl;
 }
 
@@ -24,7 +24,7 @@ std::string StructNode::codegen( void ) {
 void StructNode::print ( const std::string & indent ) {
     std::cout << indent << "=======[Start StructNode]======" << std::endl;
     for ( const auto & arg : m_Args )
-        arg -> print ( indent + "" );
+        arg -> print ( indent + " " );
     std::cout << indent << "=======[End StructNode]======" << std::endl;
 }
 
@@ -60,8 +60,8 @@ std::string ClauseNode::codegen ( void ) {
 void ClauseNode::print ( const std::string & indent ) {
     std::cout << indent << "=======[Start ClauseNode]======" << std::endl;
     for ( const auto & arg : m_Args )
-        arg -> print ( indent + "" );
+        arg -> print ( indent + " " );
     for ( const auto & goal : m_Body )
-        goal -> print ( indent + "" );
+        goal -> print ( indent + " " );
     std::cout << indent << "=======[End ClauseNode]======" << std::endl;
 }
