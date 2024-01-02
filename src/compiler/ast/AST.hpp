@@ -7,6 +7,7 @@
 struct Node {
     virtual ~Node ( void ) = default;
     virtual std::string codegen ( void ) = 0;
+    //virtual void print ( const std::string & indent = "" ) = 0;
 };
 
 struct GoalNode : public Node {
@@ -35,7 +36,8 @@ struct ConstNode : public TermNode {
 //------------------------//
 
 struct ClauseNode : public Node {
-    virtual std::string codegen ( void );
+    ClauseNode ( std::vector<TermNode *> args, std::vector<GoalNode *> body );
+    std::string codegen ( void ) override;
     std::string m_Head;
     std::vector<TermNode *> m_Args;
     std::vector<GoalNode *> m_Body;

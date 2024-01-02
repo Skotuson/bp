@@ -19,3 +19,12 @@ std::string VarNode::codegen( void ) {
 std::string ConstNode::codegen( void ) {
     return "";
 }
+
+ClauseNode::ClauseNode ( std::vector<TermNode *> args, std::vector<GoalNode *> body )
+: m_Args ( args ),
+  m_Body ( body )
+{}
+
+std::string ClauseNode::codegen ( void ) {
+    return "";
+}
