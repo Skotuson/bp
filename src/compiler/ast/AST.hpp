@@ -6,7 +6,7 @@
 
 struct Node {
     virtual ~Node ( void ) = default;
-    virtual std::string codegen ( void );
+    virtual std::string codegen ( void ) = 0;
 };
 
 struct GoalNode : public Node {
@@ -19,15 +19,18 @@ struct TermNode : public GoalNode {
 };
 
 struct StructNode : public TermNode {
-
+    StructNode ( std::vector<TermNode*> args = std::vector<TermNode *> () );
+    std::string codegen ( void ) override;
+    std::vector<TermNode *> m_Args;
 };
 
 struct VarNode : public TermNode {
-
+    std::string codegen ( void ) override;
 };
 
 struct ConstNode : public TermNode {
-
+    std::string codegen ( void ) override;
+    int m_Value;
 };
 //------------------------//
 
