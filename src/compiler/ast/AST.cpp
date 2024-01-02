@@ -1,7 +1,16 @@
 #include "AST.hpp"
 
+#include <iostream>
+
 std::string ProgramNode::codegen( void ) {
     return "";
+}
+
+void ProgramNode::print ( const std::string & indent ) {
+    std::cout << indent << "=======[Start ProgramNode]======" << std::endl;
+    for ( const auto & clause : m_Clauses )
+        clause -> print ( indent + "" );
+    std::cout << indent << "=======[End ProgramNode]======" << std::endl;
 }
 
 StructNode::StructNode ( std::vector<TermNode*> args )
@@ -12,12 +21,31 @@ std::string StructNode::codegen( void ) {
     return "";
 }
 
+void StructNode::print ( const std::string & indent ) {
+    std::cout << indent << "=======[Start StructNode]======" << std::endl;
+    for ( const auto & arg : m_Args )
+        arg -> print ( indent + "" );
+    std::cout << indent << "=======[End StructNode]======" << std::endl;
+}
+
 std::string VarNode::codegen( void ) {
     return "";
 }
 
+void VarNode::print ( const std::string & indent ) {
+    std::cout << indent << "=======[Start VarNode]======" << std::endl;
+
+    std::cout << indent << "=======[End VarNode]======" << std::endl;
+}
+
 std::string ConstNode::codegen( void ) {
     return "";
+}
+
+void ConstNode::print ( const std::string & indent ) {
+    std::cout << indent << "=======[Start ConstNode]======" << std::endl;
+
+    std::cout << indent << "=======[End ConstNode]======" << std::endl;
 }
 
 ClauseNode::ClauseNode ( std::vector<TermNode *> args, std::vector<GoalNode *> body )
@@ -27,4 +55,13 @@ ClauseNode::ClauseNode ( std::vector<TermNode *> args, std::vector<GoalNode *> b
 
 std::string ClauseNode::codegen ( void ) {
     return "";
+}
+
+void ClauseNode::print ( const std::string & indent ) {
+    std::cout << indent << "=======[Start ClauseNode]======" << std::endl;
+    for ( const auto & arg : m_Args )
+        arg -> print ( indent + "" );
+    for ( const auto & goal : m_Body )
+        goal -> print ( indent + "" );
+    std::cout << indent << "=======[End ClauseNode]======" << std::endl;
 }
