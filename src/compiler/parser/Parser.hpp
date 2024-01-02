@@ -23,8 +23,8 @@ class Parser {
         void Pred       ( void );
         void Predicate  ( void );
         std::vector<GoalNode *>   Body      ( void );
-        void BodyLower  ( void );
-        std::vector<GoalNode *> BodyCont    ( void );
+        StructNode              * BodyLower ( void );
+        std::vector<GoalNode *>   BodyCont  ( void );
         TermNode                * BodyTerm  ( void );
         TermNode                * Term      ( void );
         std::vector<TermNode *>   Terms     ( void );

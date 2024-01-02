@@ -80,41 +80,51 @@ void Parser::Predicate ( void ) {
 }
 
 std::vector<GoalNode *> Parser::Body ( void ) {
+    std::vector<GoalNode *> body, bodyCont;
+
+    StructNode * compound;
     switch ( m_Lex . peek ( ) ) {
         case TOK_ATOM_LOWER:
             m_Lex . match ( TOK_ATOM_LOWER );
-            BodyLower();
-            BodyTerm();
-            BodyCont();
-            break;
+            compound = BodyLower();
+            if ( ! BodyTerm() )
+                body . push_back ( compound );
+            bodyCont = BodyCont();
+            body . insert ( body . end ( ), bodyCont . begin ( ), bodyCont . end ( ) );
+            return body;
         case TOK_CONST:
             m_Lex . match ( TOK_CONST );
             m_Lex . match ( TOK_EQUAL );
+            //TODO
             Term();
-            BodyCont();
-            break;
+            bodyCont = BodyCont();
+            body . insert ( body . end ( ), bodyCont . begin ( ), bodyCont . end ( ) );
+            return body;
         case TOK_VAR:
             m_Lex . match ( TOK_VAR );
             m_Lex . match ( TOK_EQUAL );
+            //TODO
             Term();
-            BodyCont();
-            break;
+            bodyCont = BodyCont();
+            body . insert ( body . end ( ), bodyCont . begin ( ), bodyCont . end ( ) );
+            return body;
         default:
             throw std::runtime_error ( "Body Parsing error" );
     }
 } 
 
-void Parser::BodyLower ( void ) {
+StructNode * Parser::BodyLower ( void ) {
+    std::vector<TermNode *> terms;
     switch ( m_Lex . peek ( ) ) {
         case TOK_EQUAL:
         case TOK_COMMA:
         case TOK_PERIOD:
-            break;
+            return new StructNode( );
         case TOK_LPAR:
             m_Lex . match ( TOK_LPAR );
-            Terms();
+            terms = Terms();
             m_Lex . match ( TOK_RPAR );
-            break;
+            return new StructNode( terms );
         default:
             throw std::runtime_error ( "BodyLower Parsing error" );
     }
@@ -162,8 +172,7 @@ TermNode * Parser::Term ( void ) {
 } 
 
 std::vector<TermNode *> Parser::Terms ( void ) {
-    std::vector<TermNode *> terms;
-    std::vector<TermNode *> termsCont;
+    std::vector<TermNode *> terms, termsCont;
     switch ( m_Lex . peek ( ) ) {
         case TOK_ATOM_LOWER:
         case TOK_CONST:
@@ -190,6 +199,7 @@ std::vector<TermNode *> Parser::TermsCont ( void ) {
 } 
 
 TermNode * Parser::TermLower ( void ) {
+    std::vector<TermNode *> terms;
     switch ( m_Lex . peek ( ) ) {
         case TOK_COMMA:
         case TOK_PERIOD:
@@ -197,9 +207,9 @@ TermNode * Parser::TermLower ( void ) {
             return new StructNode();
         case TOK_LPAR:
             m_Lex . match ( TOK_LPAR );
-            Terms( );
+            terms = Terms( );
             m_Lex . match ( TOK_RPAR );
-            break;
+            return new StructNode(terms);
         default:
             throw std::runtime_error ( "Terms Parsing error" );
     }   
