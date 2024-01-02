@@ -22,7 +22,7 @@ class Parser {
         void Start      ( void );
         void Next       ( void );
         ClauseNode              * Predicates ( void );
-        ClauseNode              * Pred       ( void );
+        ClauseNode              * Pred       ( const std::string & head );
         std::vector<GoalNode *>   Predicate  ( void );
         std::vector<GoalNode *>   Body       ( void );
         StructNode              * BodyLower  ( void );
