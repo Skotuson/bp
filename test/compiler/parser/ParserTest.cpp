@@ -12,7 +12,6 @@ void ParserTest::test ( void ) {
         Lexer lex ( iss );
         Parser parser ( lex );
         assert ( parser.parse() );
-        parser.printAST();
     }
 
     {
