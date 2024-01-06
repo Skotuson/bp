@@ -7,8 +7,8 @@ bool Parser::parse ( void ) {
     return true;
 }
 
-const SymbolTable & Parser::getTable ( void ) {
-    return m_STable;
+ProgramNode * Parser::getAST ( void ) {
+    return m_ASTRoot;
 }
 
 void Parser::printAST ( void ) {

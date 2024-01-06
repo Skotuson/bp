@@ -2,7 +2,6 @@
 #define PARSER_H
 
 #include "../lexer/Lexer.hpp"
-#include "../SymbolTable.hpp"
 #include "../ast/AST.hpp"
 
 
@@ -14,7 +13,7 @@ class Parser {
 
         bool parse ( void );
 
-        const SymbolTable & getTable ( void );
+        ProgramNode * getAST ( void );
 
         void printAST ( void );
     private:
@@ -34,7 +33,6 @@ class Parser {
         TermNode                * TermLower  ( void );
         //-------------CLASS VARIABLES-------------//
         Lexer         m_Lex;
-        SymbolTable   m_STable;
         ProgramNode * m_ASTRoot;
 };
 
