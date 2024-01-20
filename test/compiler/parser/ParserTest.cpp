@@ -1,6 +1,7 @@
 #include "ParserTest.hpp"
 #include "../../../src/compiler/lexer/Lexer.hpp"
 #include "../../../src/compiler/parser/Parser.hpp"
+#include "../../../src/compiler/Compiler.hpp"
 
 #include <cassert>
 #include <sstream>
@@ -51,6 +52,7 @@ void ParserTest::test ( void ) {
           "\tbt_identical(A, B),\n"
           "\tbt_identical(AA, BB).\n\r"
         );
+        
         Lexer lex ( iss );
         Parser parser ( lex );
         assert ( parser.parse() );
@@ -72,7 +74,7 @@ void ParserTest::test ( void ) {
         assert ( parser.parse() );
     }
 
-      {
+    {
         std::istringstream iss 
         ( "a( b( c( d( e( f, g ( h ) ) ) ) ) )."
         );
@@ -81,5 +83,34 @@ void ParserTest::test ( void ) {
         assert ( parser.parse() );
     }
 
-    std::cout << "Parser Test suite completed :)" << std::endl;
+    {
+        std::istringstream iss 
+        ( "can_x_defend(H,T) :-\n"
+          "append(_,Y,H,T),"
+          "H=H,"
+          "H=Y,"
+          "s(X,Y)=p(Y,ahoj)."
+        );
+        Lexer lex ( iss );
+        Parser parser ( lex );
+        assert ( parser.parse() );
+    }
+
+    {
+        std::istringstream iss 
+        ( "add(Y,Y).\n"
+          "add(s(X),Y,s(Y))."
+          "add(s(X),Y,s(Z)):- add(X,Y,Z).\n"
+        );
+
+
+        Compiler comp(iss, std::cout);
+        comp.compile();
+        /**/
+        std::cout << std::endl;
+
+        //Lexer lex ( iss );
+        //Parser parser ( lex );
+        //assert ( parser.parse() );
+    }
 }
