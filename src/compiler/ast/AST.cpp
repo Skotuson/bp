@@ -18,6 +18,9 @@ std::string ProgramNode::codegen( SymbolTable & st ) {
         code += clause -> codegen(st);
     }
 
+    //Generate the "quit" label
+    code += "\nquit: backtrack\n";
+
     return code;
 }
 
