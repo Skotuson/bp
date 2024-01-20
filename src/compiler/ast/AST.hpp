@@ -18,7 +18,8 @@ struct GoalNode : public Node {
 
 //-------TERM NODES-------//
 struct TermNode : public GoalNode {
-
+    TermNode ( const std::string & name );
+    std::string m_Name;
 };
 
 struct StructNode : public TermNode {
@@ -27,7 +28,6 @@ struct StructNode : public TermNode {
     std::string codegen ( SymbolTable & st ) override;
     void print ( const std::string & indent = "" ) override;
 
-    std::string             m_Name;
     std::vector<TermNode *> m_Args;
 };
 
@@ -35,8 +35,6 @@ struct VarNode : public TermNode {
     VarNode ( const std::string & name );
     std::string codegen ( SymbolTable & st ) override;
     void print ( const std::string & indent = "" ) override;
-
-    std::string m_Name;
 };
 
 struct ConstNode : public TermNode {
