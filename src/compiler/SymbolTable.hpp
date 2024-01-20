@@ -5,8 +5,12 @@
 #include <unordered_map>
 
 struct TableEntry {
-    
-    bool hasCodeGenerated = false;
+    TableEntry ( const std::string & name )
+    : m_Name ( name )
+    {}
+
+    std::string m_Name;
+    size_t      m_Clauses = 1;
 };
 
 class SymbolTable {
