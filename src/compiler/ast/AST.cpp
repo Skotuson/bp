@@ -2,8 +2,11 @@
 
 #include <iostream>
 
-std::string ProgramNode::codegen( void ) {
-    return "";
+std::string ProgramNode::codegen( SymbolTable & st ) {
+    std::string code = "";
+    for ( const auto & clause : m_Clauses )
+        code += clause -> codegen(st);
+    return code;
 }
 
 void ProgramNode::print ( const std::string & indent ) {
@@ -19,8 +22,8 @@ StructNode::StructNode ( const std::string & name, std::vector<TermNode*> args )
   m_Args ( args )
 {}
 
-std::string StructNode::codegen( void ) {
-    return "";
+std::string StructNode::codegen( SymbolTable & st ) {
+    return "get-structure";
 }
 
 void StructNode::print ( const std::string & indent ) {
@@ -36,8 +39,8 @@ VarNode::VarNode ( const std::string & name )
 : m_Name ( name )
 {}
 
-std::string VarNode::codegen( void ) {
-    return "";
+std::string VarNode::codegen( SymbolTable & st ) {
+    return "get";
 }
 
 void VarNode::print ( const std::string & indent ) {
@@ -46,7 +49,7 @@ void VarNode::print ( const std::string & indent ) {
     std::cout << indent << "=======[End VarNode]======" << std::endl;
 }
 
-std::string ConstNode::codegen( void ) {
+std::string ConstNode::codegen( SymbolTable & st ) {
     return "";
 }
 
@@ -64,8 +67,23 @@ ClauseNode::ClauseNode ( const std::string       & head,
   m_Body ( body )
 {}
 
-std::string ClauseNode::codegen ( void ) {
-    return "";
+std::string ClauseNode::codegen ( SymbolTable & st ) {
+    std::string code = "";
+    TableEntry * entry = st . get ( m_Head );
+    if ( ! entry ) {
+        st . add ( m_Head, new TableEntry ( m_Head ) );
+        // Generate the initial mark instruction for first clause of the predicate name
+        code += m_Head + ":\tmark\n";
+        //TODO: generate the retry-me-else instruction
+    } else {
+        entry -> m_Clauses++;
+        code += m_Head + std::to_string(entry -> m_Clauses) + ":\t\n";
+    }
+    
+    for ( const auto & arg : m_Args )
+        code += "\t" + arg -> codegen(st) + "\n";
+
+    return code + "\n";
 }
 
 void ClauseNode::print ( const std::string & indent ) {
