@@ -10,6 +10,7 @@ struct TableEntry {
     {}
 
     std::string m_Name;
+    size_t      m_Generated = 0;
     size_t      m_Clauses = 1;
 };
 
