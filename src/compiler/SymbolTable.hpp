@@ -11,12 +11,12 @@ struct TableEntry {
 
 class SymbolTable {
     public:
-        void       add ( const std::string & symbol, 
-                         const TableEntry & entry );
-        TableEntry get ( const std::string & symbol );
+        void         add ( const std::string & symbol, 
+                           TableEntry        * entry );
+        TableEntry * get ( const std::string & symbol );
 
     private:
-        std::unordered_map<std::string, TableEntry> m_Table;
+        std::unordered_map<std::string, TableEntry *> m_Table;
 };
 
 #endif
