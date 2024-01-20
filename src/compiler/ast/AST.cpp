@@ -4,8 +4,11 @@
 
 std::string ProgramNode::codegen( SymbolTable & st ) {
     std::string code = "";
-    for ( const auto & clause : m_Clauses )
+    for ( const auto & clause : m_Clauses ) {
+        if ( ! code.empty() )
+            code += "\n";
         code += clause -> codegen(st);
+    }
     return code;
 }
 
@@ -23,7 +26,7 @@ StructNode::StructNode ( const std::string & name, std::vector<TermNode*> args )
 {}
 
 std::string StructNode::codegen( SymbolTable & st ) {
-    return "get-structure";
+    return "get-structure " + m_Name;
 }
 
 void StructNode::print ( const std::string & indent ) {
@@ -40,7 +43,7 @@ VarNode::VarNode ( const std::string & name )
 {}
 
 std::string VarNode::codegen( SymbolTable & st ) {
-    return "get";
+    return "get " + m_Name;
 }
 
 void VarNode::print ( const std::string & indent ) {
@@ -80,10 +83,11 @@ std::string ClauseNode::codegen ( SymbolTable & st ) {
         code += m_Head + std::to_string(entry -> m_Clauses) + ":\t\n";
     }
     
-    for ( const auto & arg : m_Args )
-        code += "\t" + arg -> codegen(st) + "\n";
+    for ( size_t i = 0; i < m_Args . size(); i++ )
+        //Load the arguments into argument reigsters
+        code += "\t" + m_Args[i] -> codegen(st) + " A" + std::to_string(i + 1) + "\n";
 
-    return code + "\n";
+    return code + "\n\treturn";
 }
 
 void ClauseNode::print ( const std::string & indent ) {
