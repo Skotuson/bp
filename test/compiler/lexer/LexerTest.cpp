@@ -154,6 +154,4 @@ void LexerTest::test ( void ) {
         Lexer lex ( iss );
         assert ( lex.get() == TOK_EOF );
     }
-
-    std::cout << "Lexer Test suite completed :)" << std::endl;
 }
