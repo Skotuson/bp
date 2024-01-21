@@ -99,8 +99,10 @@ void ParserTest::test ( void ) {
     {
         std::istringstream iss 
         ( "add(Y,Y).\n"
+          "sub(Y,Y).\n"
           "add(s(X),Y,s(Y))."
           "add(s(X),Y,s(Z)):- add(X,Y,Z).\n"
+          "sub(s(X),Y,s(Z)):- sub(X,Y,Z).\n"
         );
 
 
@@ -113,4 +115,5 @@ void ParserTest::test ( void ) {
         //Parser parser ( lex );
         //assert ( parser.parse() );
     }
+
 }
