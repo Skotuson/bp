@@ -4,6 +4,7 @@
 #include <iostream>
 #include "lexer/Lexer.hpp"
 #include "parser/Parser.hpp"
+#include "SymbolTable.hpp"
 
 class Compiler {
     public:
@@ -12,7 +13,9 @@ class Compiler {
 
         void compile ( void );
     private:
+        SymbolTable m_Table;
         Parser m_Parser = Parser( Lexer ( std::cin ) );
+        std::ostream & m_Out;
 };
 
 #endif
