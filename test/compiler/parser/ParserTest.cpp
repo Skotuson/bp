@@ -119,15 +119,9 @@ void ParserTest::test ( void ) {
         "add(s(X),Y,s(Z)):- add(X,Y,Z).\n"
       );
 
-
-      Compiler comp(iss, std::cout);
-      comp.compile();
-      /**/
-      std::cout << std::endl;
-
-      //Lexer lex ( iss );
-      //Parser parser ( lex );
-      //assert ( parser.parse() );
+      Lexer lex ( iss );
+      Parser parser ( lex );
+      assert ( parser.parse() );
     }
 
 }
