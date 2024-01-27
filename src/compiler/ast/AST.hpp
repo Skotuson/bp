@@ -13,8 +13,10 @@ struct Node {
 };
 
 struct GoalNode : public Node {
-
+    bool m_IsGoal = true;
+    size_t m_AvailableReg = 0;
 };
+
 
 //-------TERM NODES-------//
 struct TermNode : public GoalNode {
@@ -43,6 +45,12 @@ struct ConstNode : public TermNode {
     int m_Value;
 };
 //------------------------//
+
+struct UnificationNode : public GoalNode {
+    UnificationNode ( TermNode * x, TermNode * y );
+    std::string codegen ( SymbolTable & st ) override;
+    TermNode * m_X, * m_Y;
+};
 
 struct ClauseNode : public Node {
     ClauseNode ( const std::string       & head, 
