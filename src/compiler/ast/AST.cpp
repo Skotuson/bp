@@ -32,6 +32,15 @@ void ProgramNode::print ( const std::string & indent ) {
     std::cout << indent << "=======[End ProgramNode]======" << std::endl;
 }
 
+UnificationNode::UnificationNode ( TermNode * x, TermNode * y )
+: m_X ( x ),
+  m_Y ( y )
+{}
+
+std::string UnificationNode::codegen ( SymbolTable & st ) {
+    return "";
+}
+
 TermNode::TermNode ( const std::string & name )
 : m_Name ( name )
 {}
@@ -43,8 +52,19 @@ StructNode::StructNode ( const std::string & name, std::vector<TermNode*> args )
 
 std::string StructNode::codegen( SymbolTable & st ) {
     std::string code = "";
-    code += "get-structure " + m_Name;
 
+    if ( m_IsGoal ) {
+        for ( const auto & arg : m_Args ) {
+            arg -> m_IsGoal = true;
+            arg -> m_AvailableReg = m_AvailableReg;
+            code += arg -> codegen(st) + "\n\t";
+            m_AvailableReg = arg -> m_AvailableReg;
+        }
+        code += "call " + m_Name;
+        return code;
+    }
+
+    code = "get-structure " + m_Name + " A" + std::to_string(m_AvailableReg++);
     for ( const auto & arg : m_Args )
         code += "\n\tunify " + arg -> m_Name;
 
@@ -65,7 +85,8 @@ VarNode::VarNode ( const std::string & name )
 {}
 
 std::string VarNode::codegen( SymbolTable & st ) {
-    return "get " + m_Name;
+    return (m_IsGoal ? "put " : "get " )
+        + m_Name + " A" + std::to_string(m_AvailableReg++);
 }
 
 void VarNode::print ( const std::string & indent ) {
@@ -106,14 +127,25 @@ std::string ClauseNode::codegen ( SymbolTable & st ) {
         m_Generated == entry -> m_Clauses ? "quit" : m_Head + std::to_string(entry -> m_Generated);
     code += "\tretry-me-else " + retryLabel + "\n";
 
-    for ( size_t i = 0; i < m_Args . size(); i++ )
+    size_t currentArgumentRegister = 1;
+    for ( size_t i = 0; i < m_Args . size(); i++ ) {
+        m_Args[i] -> m_IsGoal = false;
+        m_Args[i] -> m_AvailableReg = currentArgumentRegister;
         //Load the arguments into argument reigsters
-        code += "\t" + m_Args[i] -> codegen(st) + " A" + std::to_string(i + 1) + "\n";
+        code += "\t" + m_Args[i] -> codegen(st) + "\n";
+        currentArgumentRegister = m_Args[i] -> m_AvailableReg;
+    }
 
-    for ( size_t i = 0; i < m_Body . size(); i++ )
-        code += "\t";
+    //All get instructions were carried out
+    currentArgumentRegister = 1;
 
-    return code + "\n\treturn";
+    for ( size_t i = 0; i < m_Body . size(); i++ ) {
+        m_Body[i] -> m_AvailableReg = currentArgumentRegister;
+        code += "\t" + m_Body[i] -> codegen(st) + "\n";
+        currentArgumentRegister = m_Body[i] -> m_AvailableReg;
+    }
+
+    return code + "\treturn\n";
 }
 
 void ClauseNode::print ( const std::string & indent ) {
