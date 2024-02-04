@@ -1,11 +1,22 @@
-#include "LexerTest.hpp"
+#include "../../doctest.h"
+
 #include "../../../src/compiler/lexer/Lexer.hpp"
 
 #include <cassert>
 #include <sstream>
 #include <iostream>
 
-void LexerTest::test ( void ) {    
+TEST_CASE( "Simple expression: a b" ) {
+    std::istringstream iss ( "a b" );
+    Lexer lex ( iss );
+    CHECK ( lex.get() == TOK_ATOM_LOWER );
+    CHECK ( lex.identifier() == "a" );
+    CHECK ( lex.get() == TOK_ATOM_LOWER );
+    CHECK ( lex.identifier() == "b" );
+    CHECK ( lex.get() == TOK_EOF ); 
+}
+
+/*void LexerTest::test ( void ) {    
     { 
         std::istringstream iss ( "a b" );
         Lexer lex ( iss );
@@ -154,4 +165,4 @@ void LexerTest::test ( void ) {
         Lexer lex ( iss );
         assert ( lex.get() == TOK_EOF );
     }
-}
+}*/
