@@ -2,7 +2,6 @@
 
 #include "../../../src/compiler/lexer/Lexer.hpp"
 
-#include <cassert>
 #include <sstream>
 #include <iostream>
 
