@@ -60,6 +60,7 @@ ClauseNode * Parser::Pred ( const std::string & head ) {
     switch ( m_Lex . peek ( ) ) {
         case TOK_ATOM_LOWER:
         case TOK_CONST:
+        case TOK_LSPAR:
         case TOK_VAR:
             args = Terms ( );
             m_Lex . match ( TOK_RPAR );
@@ -102,7 +103,7 @@ std::vector<GoalNode *> Parser::Body ( void ) {
         case TOK_CONST:
             m_Lex . match ( TOK_CONST );
             m_Lex . match ( TOK_EQUAL );
-            //TODO
+            //TODO: Unification
             Term();
             bodyCont = BodyCont();
             body . insert ( body . end ( ), bodyCont . begin ( ), bodyCont . end ( ) );
@@ -110,7 +111,7 @@ std::vector<GoalNode *> Parser::Body ( void ) {
         case TOK_VAR:
             m_Lex . match ( TOK_VAR );
             m_Lex . match ( TOK_EQUAL );
-            //TODO
+            //TODO: Unification
             Term();
             bodyCont = BodyCont();
             body . insert ( body . end ( ), bodyCont . begin ( ), bodyCont . end ( ) );
@@ -172,6 +173,11 @@ TermNode * Parser::Term ( void ) {
         //case TOK_CONST:
         //    m_Lex . match ( TOK_CONST );
         //    return new ConstNode( );
+        case TOK_LSPAR:
+            m_Lex . match ( TOK_LSPAR );
+            ListInner ( );
+            m_Lex . match ( TOK_RSPAR );
+            break;
         case TOK_VAR:
             m_Lex . match ( TOK_VAR );
             return new VarNode( name );
@@ -180,11 +186,41 @@ TermNode * Parser::Term ( void ) {
     } 
 } 
 
+void Parser::ListInner ( void ) {
+    switch ( m_Lex . peek ( ) ) {
+        case TOK_RPAR:
+            break;
+        case TOK_ATOM_LOWER:
+        case TOK_CONST:
+        case TOK_LPAR:
+        case TOK_VAR:
+            Terms();
+            ListCons( );
+            break;
+        default:
+            throw std::runtime_error ( "ListInner Parsing error" );
+    }
+}
+
+void Parser::ListCons ( void ) {
+    switch ( m_Lex . peek ( ) ) {
+        case TOK_RSPAR:
+            break;
+        case TOK_PIPE:
+            m_Lex . match ( TOK_PIPE );
+            Term();
+            break;
+        default:
+            throw std::runtime_error ( "ListCons Parsing error" );
+    }
+}
+
 std::vector<TermNode *> Parser::Terms ( void ) {
     std::vector<TermNode *> terms, termsCont;
     switch ( m_Lex . peek ( ) ) {
         case TOK_ATOM_LOWER:
         case TOK_CONST:
+        case TOK_LSPAR:
         case TOK_VAR:
             terms . push_back ( Term() );
             termsCont = TermsCont();
@@ -198,6 +234,8 @@ std::vector<TermNode *> Parser::Terms ( void ) {
 std::vector<TermNode *> Parser::TermsCont ( void ) {
     switch ( m_Lex . peek ( ) ) {
         case TOK_RPAR:
+        case TOK_PIPE:
+        case TOK_RSPAR:
             return std::vector<TermNode *> ( 0 );
         case TOK_COMMA:
             m_Lex . match ( TOK_COMMA );
@@ -213,7 +251,9 @@ TermNode * Parser::TermLower ( void ) {
     switch ( m_Lex . peek ( ) ) {
         case TOK_COMMA:
         case TOK_PERIOD:
+        case TOK_RSPAR:
         case TOK_RPAR:
+        case TOK_PIPE:
             return new StructNode( name );
         case TOK_LPAR:
             m_Lex . match ( TOK_LPAR );
