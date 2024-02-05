@@ -188,7 +188,7 @@ TermNode * Parser::Term ( void ) {
 
 void Parser::ListInner ( void ) {
     switch ( m_Lex . peek ( ) ) {
-        case TOK_RPAR:
+        case TOK_RSPAR:
             break;
         case TOK_ATOM_LOWER:
         case TOK_CONST:
