@@ -130,6 +130,16 @@ TEST_CASE ( "Parse Expression: Empty list" ) {
   CHECK ( parser.parse() );
 }
 
+TEST_CASE ( "Parse Expression: List with three elements" ) {
+  std::istringstream iss
+  (
+    "p([a,b,C]).\n"
+  );
+  Lexer lex ( iss );
+  Parser parser ( lex );
+  CHECK ( parser.parse() );
+}
+
 TEST_CASE ( "Parse Expression: List I" ) {
   std::istringstream iss
   (
