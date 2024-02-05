@@ -119,3 +119,42 @@ TEST_CASE ( "Parse Expression: Multiple clauses III" ) {
   Parser parser ( lex );
   CHECK ( parser.parse() );
 }
+
+TEST_CASE ( "Parse Expression: List I" ) {
+  std::istringstream iss
+  (
+    "writeRoomInfo([X | Xs], [_ | Ys]) :-\n"
+    "\tX = o, writeRoomInfo( Xs, Ys )."
+  );
+  Lexer lex ( iss );
+  Parser parser ( lex );
+  CHECK ( parser.parse() );
+}
+
+TEST_CASE ( "Parse Expression: List II" ) {
+  std::istringstream iss
+  (
+    "can_x_defend([H | T]) :-\n"
+    "\tappend(_, [Y], [H | T]),\n"
+    "\tH = o,\n"
+    "\tY = o\n"
+    "\t."
+  );
+  Lexer lex ( iss );
+  Parser parser ( lex );
+  CHECK ( parser.parse() );
+}
+
+TEST_CASE ( "Parse Expression: Many Lists" ) {
+  std::istringstream iss
+  (
+    "without_second_min([A, B | T], R) :-\n"
+    "\tlistMin([A, B | T], A, X),\n"
+    "\tdel([A, B | T], X, [R1 | T1]),\n"
+    "\tlistMin([R1 | T1], R1, Y),\n"
+    "\tdel([A, B | T ], Y, R).\n"
+  );
+  Lexer lex ( iss );
+  Parser parser ( lex );
+  CHECK ( parser.parse() );
+}
