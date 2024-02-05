@@ -33,6 +33,17 @@ struct StructNode : public TermNode {
     std::vector<TermNode *> m_Args;
 };
 
+struct ListNode : public TermNode {
+    ListNode ( const std::vector<TermNode*> & list, 
+               TermNode * cons );
+
+    std::string codegen ( SymbolTable & st ) override;
+    void print ( const std::string & indent = "" ) override;
+
+    std::vector<TermNode *> m_List;
+    TermNode * m_Cons;
+};
+
 struct VarNode : public TermNode {
     VarNode ( const std::string & name );
     std::string codegen ( SymbolTable & st ) override;

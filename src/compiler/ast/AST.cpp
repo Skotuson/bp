@@ -80,6 +80,28 @@ void StructNode::print ( const std::string & indent ) {
     std::cout << indent << "=======[End StructNode]======" << std::endl;
 }
 
+ListNode::ListNode ( const std::vector<TermNode*> & list, TermNode * cons )
+: TermNode ( "." ),
+  m_List ( list ),
+  m_Cons ( cons )
+{}
+
+std::string ListNode::codegen ( SymbolTable & st ) {
+    return "";
+}
+
+void ListNode::print ( const std::string & indent ) {
+    std::cout << indent << "=======[Start ListNode]======" << std::endl;
+    std::cout << indent << "[m_List] => " << std::endl;
+    for ( const auto & term : m_List )
+        term -> print ( indent + " " );
+    if ( m_Cons ) {
+        std::cout << indent << "[m_Cons] => " << std::endl;
+        m_Cons -> print ( indent + " " );
+    }
+    std::cout << indent << "=======[End ListNode]======" << std::endl;
+}
+
 VarNode::VarNode ( const std::string & name )
 : TermNode ( name )
 {}
