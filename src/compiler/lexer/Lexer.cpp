@@ -35,6 +35,7 @@ Token Lexer::lexSymbol ( void ) {
         case ')' : return TOK_RPAR;
         case '[' : return TOK_LSPAR;
         case ']' : return TOK_RSPAR;
+        //TODO: underscore keeps the identifier from the last variable
         case '_' : return TOK_VAR;
         case '|' : return TOK_PIPE;
         case '=' : return TOK_EQUAL;
