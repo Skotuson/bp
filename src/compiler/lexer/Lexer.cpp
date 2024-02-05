@@ -36,6 +36,7 @@ Token Lexer::lexSymbol ( void ) {
         case '[' : return TOK_LSPAR;
         case ']' : return TOK_RSPAR;
         case '_' : return TOK_VAR;
+        case '|' : return TOK_PIPE;
         case '=' : return TOK_EQUAL;
         case ':' : 
             c = m_Source . get ( );
@@ -106,6 +107,8 @@ std::ostream & operator << ( std::ostream & os, const Token & tok ) {
             return os << "RSPAR";
         case TOK_UNDERSCORE:
             return os << "UNDERSCORE";
+        case TOK_PIPE:
+            return os << "PIPE";
         case TOK_EQUAL:
             return os << "EQUAL";
         case TOK_CUT:

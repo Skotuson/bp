@@ -18,6 +18,7 @@ enum Token {
     TOK_LSPAR,      // [
     TOK_RSPAR,      // ]
     TOK_UNDERSCORE, // _
+    TOK_PIPE,       // |
     TOK_EQUAL,      // =
     TOK_CUT,        // !
     TOK_IF          // :-

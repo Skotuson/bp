@@ -82,8 +82,8 @@ TEST_CASE ( "Lex Expression: is_bigger(X, Y) :- bigger(X, Z), is_bigger(Z, Y)." 
     CHECK ( lex.get() == TOK_PERIOD );
 }
 
-TEST_CASE ( "Lex Expression: a(b, c, [H,T])" ) {
-    std::istringstream iss ("a(b, c, [H,T])");
+TEST_CASE ( "Lex Expression: a(b, c, [H|T])" ) {
+    std::istringstream iss ("a(b, c, [H|T])");
     Lexer lex ( iss );
     CHECK ( lex.get() == TOK_ATOM_LOWER );
     CHECK ( lex.identifier() == "a" );
@@ -97,7 +97,7 @@ TEST_CASE ( "Lex Expression: a(b, c, [H,T])" ) {
     CHECK ( lex.get() == TOK_LSPAR );
     CHECK ( lex.get() == TOK_VAR );
     CHECK ( lex.identifier() == "H" );
-    CHECK ( lex.get() == TOK_COMMA );
+    CHECK ( lex.get() == TOK_PIPE );
     CHECK ( lex.get() == TOK_VAR );
     CHECK ( lex.identifier() == "T" );
     CHECK ( lex.get() == TOK_RSPAR );
