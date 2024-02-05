@@ -120,6 +120,16 @@ TEST_CASE ( "Parse Expression: Multiple clauses III" ) {
   CHECK ( parser.parse() );
 }
 
+TEST_CASE ( "Parse Expression: Empty list" ) {
+  std::istringstream iss
+  (
+    "p([]).\n"
+  );
+  Lexer lex ( iss );
+  Parser parser ( lex );
+  CHECK ( parser.parse() );
+}
+
 TEST_CASE ( "Parse Expression: List I" ) {
   std::istringstream iss
   (
@@ -153,6 +163,22 @@ TEST_CASE ( "Parse Expression: Many Lists" ) {
     "\tdel([A, B | T], X, [R1 | T1]),\n"
     "\tlistMin([R1 | T1], R1, Y),\n"
     "\tdel([A, B | T ], Y, R).\n"
+  );
+  Lexer lex ( iss );
+  Parser parser ( lex );
+  CHECK ( parser.parse() );
+}
+
+TEST_CASE ( "Parse Expression: Quicksort" ) {
+  std::istringstream iss
+  (
+    "qsort([], Right, Right).\n"
+    "qsort([X|Left], Right0, Right):- partition(Left, X, Left1, Left2),\n"
+    "\tqsort(Left1,Right0,[X|Right1]),\n"
+    "\tqsort(Left2,Right1,Right).\n"
+    "partition([],_,[],[]).\n"
+    "partition([X|Left],Pivot,[X|Left1],Left2) :- parititon(Left, Pivot, Left1, Left2).\n"
+    "partition([X|Left],Pivot,Left1,[X|Left2]):- partition(Left, Pivot, Left1, Left2)."
   );
   Lexer lex ( iss );
   Parser parser ( lex );

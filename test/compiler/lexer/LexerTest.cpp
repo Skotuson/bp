@@ -15,6 +15,14 @@ TEST_CASE( "Lex expression: a b" ) {
     CHECK ( lex.get() == TOK_EOF ); 
 }
 
+TEST_CASE( "Lex expression: A13" ) {
+    std::istringstream iss ( "A13" );
+    Lexer lex ( iss );
+    CHECK ( lex.get() == TOK_VAR );
+    CHECK ( lex.identifier() == "A13" );
+    CHECK ( lex.get() == TOK_EOF ); 
+}
+
 TEST_CASE ( "Lex Expression: a Xab ab abcXYZsitrX aX XyZ" ) {
     std::istringstream iss ("a Xab ab\n\t abcXYZsitrX aX XyZ");
     Lexer lex ( iss );
