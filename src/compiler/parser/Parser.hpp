@@ -28,8 +28,8 @@ class Parser {
         std::vector<GoalNode *>   BodyCont   ( void );
         TermNode                * BodyTerm   ( void );
         TermNode                * Term       ( void );
-        void                      ListInner  ( void );
-        void                      ListCons   ( void );
+        ListNode                * ListInner  ( void );
+        TermNode                * ListCons   ( void );
         std::vector<TermNode *>   Terms      ( void );
         std::vector<TermNode *>   TermsCont  ( void );
         TermNode                * TermLower  ( void );

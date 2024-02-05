@@ -89,7 +89,6 @@ std::vector<GoalNode *> Parser::Predicate ( void ) {
 
 std::vector<GoalNode *> Parser::Body ( void ) {
     std::vector<GoalNode *> body, bodyCont;
-
     StructNode * compound;
     switch ( m_Lex . peek ( ) ) {
         case TOK_ATOM_LOWER:
@@ -166,6 +165,8 @@ TermNode * Parser::BodyTerm ( void ) {
 
 TermNode * Parser::Term ( void ) {
     std::string name = m_Lex . identifier ( );
+
+    TermNode * list;
     switch ( m_Lex . peek ( ) ) {
         case TOK_ATOM_LOWER:
             m_Lex . match ( TOK_ATOM_LOWER );
@@ -175,9 +176,9 @@ TermNode * Parser::Term ( void ) {
         //    return new ConstNode( );
         case TOK_LSPAR:
             m_Lex . match ( TOK_LSPAR );
-            ListInner ( );
+            list = ListInner ( );
             m_Lex . match ( TOK_RSPAR );
-            break;
+            return list;
         case TOK_VAR:
             m_Lex . match ( TOK_VAR );
             return new VarNode( name );
@@ -186,30 +187,32 @@ TermNode * Parser::Term ( void ) {
     } 
 } 
 
-void Parser::ListInner ( void ) {
+ListNode * Parser::ListInner ( void ) {
+    std::vector<TermNode*> list;
+    TermNode * cons = nullptr;
     switch ( m_Lex . peek ( ) ) {
         case TOK_RSPAR:
-            break;
+            return new ListNode ( list, cons );
         case TOK_ATOM_LOWER:
         case TOK_CONST:
         case TOK_LPAR:
         case TOK_VAR:
-            Terms();
-            ListCons( );
-            break;
+            list = Terms();
+            //Cons is nullptr if the list is not being decomposed into [H|T]
+            cons = ListCons();
+            return new ListNode ( list, cons );
         default:
             throw std::runtime_error ( "ListInner Parsing error" );
     }
 }
 
-void Parser::ListCons ( void ) {
+TermNode * Parser::ListCons ( void ) {
     switch ( m_Lex . peek ( ) ) {
         case TOK_RSPAR:
-            break;
+            return nullptr;
         case TOK_PIPE:
             m_Lex . match ( TOK_PIPE );
-            Term();
-            break;
+            return Term();
         default:
             throw std::runtime_error ( "ListCons Parsing error" );
     }
