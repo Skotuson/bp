@@ -217,7 +217,7 @@ ListNode *Parser::ListInner(void)
     switch (m_Lex.peek())
     {
     case TOK_RSPAR:
-        return new ListNode(list, cons);
+        return new ListNode(list);
     case TOK_ATOM_LOWER:
     case TOK_CONST:
     case TOK_LPAR:
