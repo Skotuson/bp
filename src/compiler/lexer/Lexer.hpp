@@ -4,11 +4,12 @@
 #include <string>
 #include <iostream>
 
-enum Token {
+enum Token
+{
     TOK_ERROR,
     TOK_EOF,
-    TOK_ATOM_LOWER, //e.g. elephant, b, aBC...
-    TOK_VAR,   //X, Y, XYZ, Variable...
+    TOK_ATOM_LOWER, // e.g. elephant, b, aBC...
+    TOK_VAR,        // X, Y, XYZ, Variable...
     TOK_CONST,
     TOK_COMMA,      // ,
     TOK_PERIOD,     // .
@@ -24,40 +25,40 @@ enum Token {
     TOK_IF          // :-
 };
 
-class Lexer {
-    public:
-        Lexer( std::istream & is );
-    
-        const std::string & identifier();
+class Lexer
+{
+public:
+    Lexer(std::istream &is);
 
-        int numericValue ( void );
+    const std::string &identifier();
 
-        Token get ( void );
+    int numericValue(void);
 
-        Token peek ( void );
+    Token get(void);
 
-        void match ( Token tok );
+    Token peek(void);
 
-    private:
+    void match(Token tok);
 
-        /**
-         * Function used for lexing lowercase atoms and variables.
-         */
-        Token lexIdentifier ( void );
+private:
+    /**
+     * Function used for lexing lowercase atoms and variables.
+     */
+    Token lexIdentifier(void);
 
-        /**
-         * Function used to lex punctuation, mathematical symbols etc.
-         */
-        Token lexSymbol ( void );
+    /**
+     * Function used to lex punctuation, mathematical symbols etc.
+     */
+    Token lexSymbol(void);
 
-        Token lastToken = TOK_ERROR;
+    Token lastToken = TOK_ERROR;
 
-        std::istream & m_Source;
+    std::istream &m_Source;
 
-        std::string m_Identifier;
-        int         m_NumericValue;
+    std::string m_Identifier;
+    int m_NumericValue;
 };
 
-std::ostream & operator << ( std::ostream & os, const Token & tok );
+std::ostream &operator<<(std::ostream &os, const Token &tok);
 
-#endif //LEXER_H
+#endif // LEXER_H

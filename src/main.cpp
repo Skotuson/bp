@@ -7,7 +7,8 @@
 
 #include "compiler/Compiler.hpp"
 
-int main ( int argc, const char ** argv ) {
+int main(int argc, const char **argv)
+{
 
     doctest::Context context;
 
@@ -19,26 +20,27 @@ int main ( int argc, const char ** argv ) {
     context.applyCommandLine(argc, argv);
 
     // overrides
-    context.setOption("no-breaks", true);             // don't break in the debugger when assertions fail
+    context.setOption("no-breaks", true); // don't break in the debugger when assertions fail
 
     int res = context.run(); // run
 
-    if(context.shouldExit()) // important - query flags (and --exit) rely on the user doing this
-        return res;          // propagate the result of the tests
+    if (context.shouldExit()) // important - query flags (and --exit) rely on the user doing this
+        return res;           // propagate the result of the tests
 
-    std::ostream & os = std::cout;    
+    std::ostream &os = std::cout;
 
-    //TODO: hardcoded
-    std::ifstream ifs ( "./examples/add.pl" );
+    // TODO: hardcoded
+    std::ifstream ifs("./examples/qsort.pl");
 
-    if ( ! ifs ) {
+    if (!ifs)
+    {
         std::cout << "File couldn't be opened" << std::endl;
         return 0;
-    } 
+    }
 
     Compiler comp(ifs, os);
     comp.compile();
     os << std::endl;
-    
+
     return res;
 }
