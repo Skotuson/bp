@@ -89,40 +89,57 @@ void StructNode::print(const std::string &indent)
 {
     std::cout << indent << "=======[Start StructNode]======" << std::endl;
     std::cout << indent << "[m_Name] => " << m_Name << std::endl;
-    std::cout << indent << "[m_Args] => " << std::endl;
-    for (const auto &arg : m_Args)
-        arg->print(indent + " ");
+    if (!m_Args.empty())
+    {
+        std::cout << indent << "[m_Args] => " << std::endl;
+        for (const auto &arg : m_Args)
+            arg->print(indent + " ");
+    }
     std::cout << indent << "=======[End StructNode]======" << std::endl;
 }
 
-ListNode::ListNode(const std::vector<TermNode *> &list, TermNode *cons)
-    : TermNode("."),
-      m_List(list),
-      m_Cons(cons)
+ListNode::ListNode(const std::vector<TermNode *> &list, TermNode *tail)
+    : TermNode(".")
 {
+    if (tail)
+    {
+        m_Head = list;
+        m_Tail = tail;
+    }
+    else if (!list.empty())
+    {
+        {
+            m_Head = {list.front()};
+            m_Tail = new ListNode({list.begin() + 1, list.end()});
+        }
+    }
 }
 
 std::string ListNode::codegen(SymbolTable &st)
 {
     std::string code = "";
     // TODO: decide how to represent empty list
-    if (m_List.empty())
+    if (m_Head.empty())
         return "get empty-list";
 
     code += "get-list A" + std::to_string(m_AvailableReg++);
+
     return code;
 }
 
 void ListNode::print(const std::string &indent)
 {
     std::cout << indent << "=======[Start ListNode]======" << std::endl;
-    std::cout << indent << "[m_List] => " << std::endl;
-    for (const auto &term : m_List)
-        term->print(indent + " ");
-    if (m_Cons)
+    if (!m_Head.empty())
     {
-        std::cout << indent << "[m_Cons] => " << std::endl;
-        m_Cons->print(indent + " ");
+        std::cout << indent << "[m_Head] => " << std::endl;
+        for (const auto &term : m_Head)
+            term->print(indent + " ");
+    }
+    if (m_Tail)
+    {
+        std::cout << indent << "[m_Tail] => " << std::endl;
+        m_Tail->print(indent + " ");
     }
     std::cout << indent << "=======[End ListNode]======" << std::endl;
 }
