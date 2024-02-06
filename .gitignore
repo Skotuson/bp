@@ -2,3 +2,4 @@
 *.o
 wam
 wam_test
+.vscode/settings.json

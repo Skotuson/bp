@@ -31,7 +31,15 @@ BodyTerm -> = Term
 
 Term -> lower TermLower
 Term -> const
+Term -> [ ListInner ]
 Term -> var
+
+ListInner -> 
+ListInner -> Terms ListCons
+
+# Allows for splitting array, e.g. [Head | Tail], [H1, H2 | Tail] etc.
+ListCons ->
+ListCons -> | Term
 
 Terms -> Term TermsCont
 
@@ -40,4 +48,3 @@ TermsCont -> , Terms
 
 TermLower -> 
 TermLower -> ( Terms )
-
