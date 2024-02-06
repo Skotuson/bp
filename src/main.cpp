@@ -4,6 +4,7 @@
 #include <cassert>
 #include <iostream>
 #include <fstream>
+#include <cstring>
 
 #include "compiler/Compiler.hpp"
 
@@ -29,8 +30,20 @@ int main(int argc, const char **argv)
 
     std::ostream &os = std::cout;
 
-    // TODO: hardcoded
-    std::ifstream ifs("./examples/qsort.pl");
+    int i = 0;
+    for (; i < argc; i++)
+    {
+        if (!strcmp(argv[i], "--filename"))
+            break;
+    }
+
+    if (i >= argc - 1)
+    {
+        std::cout << "Missing mandatory --filename parameter" << std::endl;
+        return 1;
+    }
+
+    std::ifstream ifs(argv[i + 1]);
 
     if (!ifs)
     {
