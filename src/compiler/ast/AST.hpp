@@ -32,7 +32,7 @@ struct StructNode : public TermNode
         std::vector<TermNode *> args = std::vector<TermNode *>());
     std::string codegen(SymbolTable &st) override;
     void print(const std::string &indent = "") override;
-
+    //TODO: check when no args
     std::vector<TermNode *> m_Args;
 };
 
