@@ -3,12 +3,11 @@ LD       = g++
 CXXFLAGS = -std=c++17 -Wall -pedantic
 
 OUTPUT      = wam
-TEST_OUTPUT = wam_test
 
 SOURCES = $(wildcard $(shell find . -name '*.cpp'))
 OBJS    = $(SOURCES:.cpp=.o)
 
-all: $(OUTPUT) $(TEST_OUTPUT)
+all: $(OUTPUT)
 
 compile: $(OUTPUT)
 
@@ -19,7 +18,7 @@ $(OUTPUT): $(OBJS)
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
 clean:
-	rm -f $(wildcard $(shell find . -name '*.o')) $(OUTPUT) $(TEST_OUTPUT)
+	rm -f $(wildcard $(shell find . -name '*.o')) $(OUTPUT)
  
 run: $(OUTPUT)
 	./$(OUTPUT) --no-run
