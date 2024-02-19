@@ -1,21 +1,25 @@
 #ifndef INTERPRETER_H
 #define INTERPRETER_H
 
+#include "instructions/Instruction.hpp"
+
 #include <iostream>
+#include <sstream>
 #include <vector>
 #include <string>
+#include <map>
 
-//TODO: Will make a class later
-using Instruction = std::string;
+using Label = std::string;
 
 class Interpreter
 {
 public:
     Interpreter(std::istream & is);
     Instruction fetch(void);
-    void decode(void);
-    void execute(void);
+    Instruction decode(const std::string & str);
+    void execute(const Instruction & instr);
 private:
+    std::map<Label,size_t> labels;
     std::vector<Instruction> program;
     size_t programCounter = 0;
 };
