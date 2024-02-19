@@ -9,15 +9,15 @@
 class Compiler
 {
 public:
-    Compiler(std::istream &is,
-             std::ostream &os);
+    Compiler(std::istream &is);
 
     void compile(void);
+    void dump(std::ostream &os);
 
 private:
     SymbolTable m_Table;
     Parser m_Parser = Parser(Lexer(std::cin));
-    std::ostream &m_Out;
+    std::string m_Code = "";
 };
 
 #endif
