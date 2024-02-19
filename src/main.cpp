@@ -4,9 +4,11 @@
 #include <cassert>
 #include <iostream>
 #include <fstream>
+#include <sstream>
 #include <cstring>
 
 #include "compiler/Compiler.hpp"
+#include "interpreter/Interpreter.hpp"
 
 int main(int argc, const char **argv)
 {
@@ -27,8 +29,6 @@ int main(int argc, const char **argv)
 
     if (context.shouldExit()) // important - query flags (and --exit) rely on the user doing this
         return res;           // propagate the result of the tests
-
-    std::ostream &os = std::cout;
 
     int i = 0;
     for (; i < argc; i++)
@@ -51,9 +51,13 @@ int main(int argc, const char **argv)
         return 0;
     }
 
-    Compiler comp(ifs, os);
+    Compiler comp(ifs);
     comp.compile();
-    os << std::endl;
+    std::ostringstream oss;
+    comp.dump(oss);
+
+    std::istringstream iss(oss.str());
+    Interpreter intp(iss);
 
     return res;
 }
