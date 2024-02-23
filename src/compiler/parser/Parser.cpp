@@ -194,9 +194,9 @@ TermNode *Parser::Term(void)
     case TOK_ATOM_LOWER:
         m_Lex.match(TOK_ATOM_LOWER);
         return TermLower();
-    // case TOK_CONST:
-    //     m_Lex . match ( TOK_CONST );
-    //     return new ConstNode( );
+    case TOK_CONST:
+        m_Lex . match ( TOK_CONST );
+        return new ConstNode( m_Lex.numericValue() );
     case TOK_LSPAR:
         m_Lex.match(TOK_LSPAR);
         list = ListInner();
