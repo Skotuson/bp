@@ -1,7 +1,8 @@
 #ifndef INTERPRETER_H
 #define INTERPRETER_H
 
-#include "instructions/Instruction.hpp"
+#include "../wam_code/WAMCode.hpp"
+#include "../wam_code/Instruction.hpp"
 
 #include <iostream>
 #include <sstream>
@@ -19,8 +20,7 @@ public:
     Instruction decode(const std::string & str);
     void execute(const Instruction & instr);
 private:
-    std::map<Label,size_t> labels;
-    std::vector<Instruction> program;
+    WAMCode program;
     size_t programCounter = 0;
 };
 

@@ -12,12 +12,12 @@ Interpreter::Interpreter(std::istream &is)
         std::string tok;
         while (iss >> tok)
         {
-            //std::cout << tok << std::endl;
-            // Token is label
+            // std::cout << tok << std::endl;
+            //  Token is label
             if (tok.back() == ':')
             {
                 tok.pop_back();
-                labels.insert({tok, lineNumber});
+                program.labels.insert({tok, lineNumber});
             }
         }
         lineNumber++;
@@ -26,7 +26,7 @@ Interpreter::Interpreter(std::istream &is)
 
 Instruction Interpreter::fetch(void)
 {
-    return program[programCounter];
+    return program.program[programCounter];
 }
 
 // Instruction Interpreter::decode(const std::string & str) {
