@@ -58,6 +58,7 @@ struct VarNode : public TermNode
 
 struct ConstNode : public TermNode
 {
+    ConstNode(size_t value);
     std::string codegen(SymbolTable &st) override;
     void print(const std::string &indent = "") override;
     int m_Value;

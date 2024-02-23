@@ -162,6 +162,12 @@ void VarNode::print(const std::string &indent)
     std::cout << indent << "=======[End VarNode]======" << std::endl;
 }
 
+ConstNode::ConstNode(size_t value)
+    : TermNode(""),
+      m_Value(value)
+{
+}
+
 std::string ConstNode::codegen(SymbolTable &st)
 {
     return "";
