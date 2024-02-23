@@ -2,6 +2,7 @@
 #define AST_H
 
 #include "../SymbolTable.hpp"
+#include "../../wam_code/Instruction.hpp"
 
 #include <string>
 #include <vector>

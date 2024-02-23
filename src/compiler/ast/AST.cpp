@@ -4,6 +4,7 @@
 
 std::string ProgramNode::codegen(SymbolTable &st)
 {
+    std::vector<Instruction> wamCode;
     std::string code = "";
     // Initialize the symbol table
     for (const auto &clause : m_Clauses)
