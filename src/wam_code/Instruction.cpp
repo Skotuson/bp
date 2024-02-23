@@ -42,7 +42,7 @@ GetConstantInstruction::GetConstantInstruction(const std::string &name, size_t a
 
 void GetConstantInstruction::print(std::ostream &os)
 {
-    os << "get-constant " << m_Name;
+    os << "get-constant " << m_Name << " A" << m_ArgumentRegister;
 }
 
 GetVariableInstruction::GetVariableInstruction(const std::string &name, size_t argumentRegister)
@@ -52,7 +52,7 @@ GetVariableInstruction::GetVariableInstruction(const std::string &name, size_t a
 
 void GetVariableInstruction::print(std::ostream &os)
 {
-    os << "getv" << m_Name;
+    os << "getv" << m_Name << " A" << m_ArgumentRegister;
 }
 
 // Put Instructions
@@ -70,7 +70,7 @@ PutConstantInstruction::PutConstantInstruction(const std::string &name, size_t a
 
 void PutConstantInstruction::print(std::ostream &os)
 {
-    os << "put-constant " << m_Name;
+    os << "put-constant " << m_Name << " A" << m_ArgumentRegister;
 }
 
 PutVariableInstruction::PutVariableInstruction(const std::string &name, size_t argumentRegister)
@@ -80,5 +80,32 @@ PutVariableInstruction::PutVariableInstruction(const std::string &name, size_t a
 
 void PutVariableInstruction::print(std::ostream &os)
 {
-    os << "putv" << m_Name;
+    os << "putv" << m_Name << " A" << m_ArgumentRegister;
+}
+
+// Unify Instructions
+
+UnifyInstruction::UnifyInstruction(const std::string &name)
+    : m_Name(name)
+{
+}
+
+UnifyConstantInstruction::UnifyConstantInstruction(const std::string &name)
+    : UnifyInstruction(name)
+{
+}
+
+void UnifyConstantInstruction::print(std::ostream &os)
+{
+    os << "unify-constant " << m_Name;
+}
+
+UnifyVariableInstruction::UnifyVariableInstruction(const std::string &name)
+    : UnifyInstruction(name)
+{
+}
+
+void UnifyVariableInstruction::print(std::ostream &os)
+{
+    os << "unifyv" << m_Name;
 }

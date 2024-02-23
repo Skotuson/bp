@@ -93,12 +93,23 @@ struct PutStructureInstruction : public PutInstruction
 
 // Unify Instructions
 
-struct UnifyConstantInstruction : public Instruction
+struct UnifyInstruction : public Instruction
 {
+protected:
+    UnifyInstruction(const std::string &name);
+    std::string m_Name;
 };
 
-struct UnifyVariableInstruction : public Instruction
+struct UnifyConstantInstruction : public UnifyInstruction
 {
+    UnifyConstantInstruction(const std::string &name);
+    void print(std::ostream &os) override;
+};
+
+struct UnifyVariableInstruction : public UnifyInstruction
+{
+    UnifyVariableInstruction(const std::string &name);
+    void print(std::ostream &os) override;
 };
 
 #endif // INSTRUCTION_H
