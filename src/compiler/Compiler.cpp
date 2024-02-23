@@ -10,7 +10,7 @@ Compiler::Compiler(std::istream &is)
 void Compiler::compile(void)
 {
     m_Parser.parse();
-    m_Code = m_Parser.getAST()->codegen(m_Table);
+    m_Code = m_Parser.getAST()->codegen(m_CCtx);
 }
 
 void Compiler::dump(std::ostream &os)

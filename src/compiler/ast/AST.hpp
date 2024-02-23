@@ -1,8 +1,8 @@
 #ifndef AST_H
 #define AST_H
 
-#include "../SymbolTable.hpp"
-#include "../../wam_code/Instruction.hpp"
+#include "../CompilationContext.hpp"
+#include "../../wam_code/WAMCode.hpp"
 
 #include <string>
 #include <vector>
@@ -10,7 +10,7 @@
 struct Node
 {
     virtual ~Node(void) = default;
-    virtual std::string codegen(SymbolTable &st) = 0;
+    virtual std::string codegen(CompilationContext &cctx) = 0;
     virtual void print(const std::string &indent = "") = 0;
 };
 
@@ -31,7 +31,7 @@ struct StructNode : public TermNode
 {
     StructNode(const std::string &name, 
         std::vector<TermNode *> args = std::vector<TermNode *>());
-    std::string codegen(SymbolTable &st) override;
+    std::string codegen(CompilationContext &cctx) override;
     void print(const std::string &indent = "") override;
     //TODO: check when no args
     std::vector<TermNode *> m_Args;
@@ -42,7 +42,7 @@ struct ListNode : public TermNode
     ListNode(const std::vector<TermNode *> &head,
              TermNode *tail = nullptr);
 
-    std::string codegen(SymbolTable &st) override;
+    std::string codegen(CompilationContext &cctx) override;
     void print(const std::string &indent = "") override;
 
     std::vector<TermNode *> m_Head;
@@ -52,14 +52,14 @@ struct ListNode : public TermNode
 struct VarNode : public TermNode
 {
     VarNode(const std::string &name);
-    std::string codegen(SymbolTable &st) override;
+    std::string codegen(CompilationContext &cctx) override;
     void print(const std::string &indent = "") override;
 };
 
 struct ConstNode : public TermNode
 {
     ConstNode(size_t value);
-    std::string codegen(SymbolTable &st) override;
+    std::string codegen(CompilationContext &cctx) override;
     void print(const std::string &indent = "") override;
     int m_Value;
 };
@@ -68,7 +68,7 @@ struct ConstNode : public TermNode
 struct UnificationNode : public GoalNode
 {
     UnificationNode(TermNode *x, TermNode *y);
-    std::string codegen(SymbolTable &st) override;
+    std::string codegen(CompilationContext &cctx) override;
     TermNode *m_X, *m_Y;
 };
 
@@ -78,7 +78,7 @@ struct ClauseNode : public Node
                std::vector<TermNode *> args,
                std::vector<GoalNode *> body);
 
-    std::string codegen(SymbolTable &st) override;
+    std::string codegen(CompilationContext &cctx) override;
     void print(const std::string &indent = "") override;
     std::string m_Head;
     std::vector<TermNode *> m_Args;
@@ -87,7 +87,7 @@ struct ClauseNode : public Node
 
 struct ProgramNode : public Node
 {
-    virtual std::string codegen(SymbolTable &st);
+    virtual std::string codegen(CompilationContext &cctx);
     void print(const std::string &indent = "") override;
     std::vector<ClauseNode *> m_Clauses;
 };

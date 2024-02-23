@@ -2,16 +2,16 @@
 
 #include <iostream>
 
-std::string ProgramNode::codegen(SymbolTable &st)
+std::string ProgramNode::codegen(CompilationContext &cctx)
 {
-    std::vector<Instruction> wamCode;
+    WAMCode wamCode;
     std::string code = "";
     // Initialize the symbol table
     for (const auto &clause : m_Clauses)
     {
-        auto entry = st.get(clause->m_Head);
+        auto entry = cctx.get(clause->m_Head);
         if (!entry)
-            st.add(clause->m_Head, new TableEntry(clause->m_Head));
+            cctx.add(clause->m_Head, new TableEntry(clause->m_Head));
         else
             entry->m_Clauses++;
     }
@@ -20,7 +20,7 @@ std::string ProgramNode::codegen(SymbolTable &st)
     {
         if (!code.empty())
             code += "\n";
-        code += clause->codegen(st);
+        code += clause->codegen(cctx);
     }
 
     // Generate the "quit" label
@@ -44,7 +44,7 @@ UnificationNode::UnificationNode(TermNode *x, TermNode *y)
 {
 }
 
-std::string UnificationNode::codegen(SymbolTable &st)
+std::string UnificationNode::codegen(CompilationContext &cctx)
 {
     return "";
 }
@@ -60,7 +60,7 @@ StructNode::StructNode(const std::string &name, std::vector<TermNode *> args)
 {
 }
 
-std::string StructNode::codegen(SymbolTable &st)
+std::string StructNode::codegen(CompilationContext &cctx)
 {
     std::string code = "";
 
@@ -70,7 +70,7 @@ std::string StructNode::codegen(SymbolTable &st)
         {
             arg->m_IsGoal = true;
             arg->m_AvailableReg = m_AvailableReg;
-            code += arg->codegen(st) + "\n\t";
+            code += arg->codegen(cctx) + "\n\t";
             m_AvailableReg = arg->m_AvailableReg;
         }
         code += "call " + m_Name;
@@ -116,7 +116,7 @@ ListNode::ListNode(const std::vector<TermNode *> &list, TermNode *tail)
     }
 }
 
-std::string ListNode::codegen(SymbolTable &st)
+std::string ListNode::codegen(CompilationContext &cctx)
 {
     std::string code = "";
     // TODO: decide how to represent empty list
@@ -150,7 +150,7 @@ VarNode::VarNode(const std::string &name)
 {
 }
 
-std::string VarNode::codegen(SymbolTable &st)
+std::string VarNode::codegen(CompilationContext &cctx)
 {
     return (m_IsGoal ? "put " : "get ") + m_Name + " A" + std::to_string(m_AvailableReg++);
 }
@@ -168,7 +168,7 @@ ConstNode::ConstNode(size_t value)
 {
 }
 
-std::string ConstNode::codegen(SymbolTable &st)
+std::string ConstNode::codegen(CompilationContext &cctx)
 {
     return (m_IsGoal ? "put" : "get") + std::string("-constant ") + m_Name + " A" + std::to_string(m_AvailableReg++);
 }
@@ -189,10 +189,10 @@ ClauseNode::ClauseNode(const std::string &head,
 {
 }
 
-std::string ClauseNode::codegen(SymbolTable &st)
+std::string ClauseNode::codegen(CompilationContext &cctx)
 {
     std::string code = "";
-    TableEntry *entry = st.get(m_Head);
+    TableEntry *entry = cctx.get(m_Head);
     // Generate the initial mark instruction for first clause of the predicate name
     if (!entry->m_Generated)
         code += m_Head + ":\tmark\n";
@@ -209,7 +209,7 @@ std::string ClauseNode::codegen(SymbolTable &st)
         m_Args[i]->m_IsGoal = false;
         m_Args[i]->m_AvailableReg = currentArgumentRegister;
         // Load the arguments into argument reigsters
-        code += "\t" + m_Args[i]->codegen(st) + "\n";
+        code += "\t" + m_Args[i]->codegen(cctx) + "\n";
         currentArgumentRegister = m_Args[i]->m_AvailableReg;
     }
 
@@ -219,7 +219,7 @@ std::string ClauseNode::codegen(SymbolTable &st)
     for (size_t i = 0; i < m_Body.size(); i++)
     {
         m_Body[i]->m_AvailableReg = currentArgumentRegister;
-        code += "\t" + m_Body[i]->codegen(st) + "\n";
+        code += "\t" + m_Body[i]->codegen(cctx) + "\n";
         currentArgumentRegister = m_Body[i]->m_AvailableReg;
     }
 
