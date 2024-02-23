@@ -163,14 +163,14 @@ void VarNode::print(const std::string &indent)
 }
 
 ConstNode::ConstNode(size_t value)
-    : TermNode(""),
+    : TermNode(std::to_string(value)),
       m_Value(value)
 {
 }
 
 std::string ConstNode::codegen(SymbolTable &st)
 {
-    return "";
+    return (m_IsGoal ? "put" : "get") + std::string("-constant ") + m_Name + " A" + std::to_string(m_AvailableReg++);
 }
 
 void ConstNode::print(const std::string &indent)
