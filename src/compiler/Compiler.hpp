@@ -2,9 +2,12 @@
 #define COMPILER_H
 
 #include <iostream>
+#include <string>
+
 #include "lexer/Lexer.hpp"
 #include "parser/Parser.hpp"
 #include "SymbolTable.hpp"
+#include "../wam_code/WAMCode.hpp"
 
 class Compiler
 {
