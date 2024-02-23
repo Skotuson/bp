@@ -41,6 +41,10 @@ struct GetListInstruction : public Instruction
 struct GetStructureInstruction : public Instruction
 {
 };
+
+struct GetVariableInstruction : public Instruction
+{
+};
 // Put Instructions
 // Unify Instructions
 
