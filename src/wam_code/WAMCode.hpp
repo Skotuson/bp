@@ -11,6 +11,8 @@ using Label = std::string;
 
 struct WAMCode
 {
+    void addInstructions(std::vector<Instruction> & instructions);
+
     std::map<Label, size_t> labels;
     std::vector<Instruction> program;
 };
