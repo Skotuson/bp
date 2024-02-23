@@ -15,5 +15,5 @@ void Compiler::compile(void)
 
 void Compiler::dump(std::ostream &os)
 {
-    os << m_Parser.getAST()->codegen(m_Table);
+    os << m_Code;
 }
