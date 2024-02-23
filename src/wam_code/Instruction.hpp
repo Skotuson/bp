@@ -29,8 +29,19 @@ struct ReturnInstruction : public Instruction
 {
 };
 
-//Get Instructions
-//Put Instructions
-//Unify Instructions
+// Get Instructions
+struct GetConstantInstruction : public Instruction
+{
+};
+
+struct GetListInstruction : public Instruction
+{
+};
+
+struct GetStructureInstruction : public Instruction
+{
+};
+// Put Instructions
+// Unify Instructions
 
 #endif // INSTRUCTION_H
