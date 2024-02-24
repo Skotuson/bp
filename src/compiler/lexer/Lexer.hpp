@@ -51,6 +51,8 @@ private:
      */
     Token lexSymbol(void);
 
+    Token lexNumber(void);
+
     Token lastToken = TOK_ERROR;
 
     std::istream &m_Source;

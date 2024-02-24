@@ -6,7 +6,7 @@
 
 #include "lexer/Lexer.hpp"
 #include "parser/Parser.hpp"
-#include "SymbolTable.hpp"
+#include "CompilationContext.hpp"
 #include "../wam_code/WAMCode.hpp"
 
 class Compiler
@@ -18,9 +18,10 @@ public:
     void dump(std::ostream &os);
 
 private:
-    SymbolTable m_Table;
+    CompilationContext m_CCtx;
     Parser m_Parser = Parser(Lexer(std::cin));
     std::string m_Code = "";
+    WAMCode m_WAMCode;
 };
 
 #endif

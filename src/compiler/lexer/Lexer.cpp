@@ -73,6 +73,20 @@ Token Lexer::lexSymbol(void)
     }
 }
 
+Token Lexer::lexNumber(void)
+{
+    m_NumericValue = 0;
+    char c = m_Source.peek();
+    while (isdigit(c))
+    {
+        m_Source.get();
+        m_NumericValue *= 10;
+        m_NumericValue += c - '0';
+        c = m_Source.peek();
+    }
+    return TOK_CONST;
+}
+
 void Lexer::match(Token tok)
 {
     if (lastToken != tok)
@@ -90,6 +104,11 @@ Token Lexer::get(void)
     {
         m_Source.get();
         c = m_Source.peek();
+    }
+
+    if (isdigit(c))
+    {
+        return lastToken = lexNumber();
     }
 
     if (isalpha(c))

@@ -7,7 +7,7 @@ Interpreter::Interpreter(std::istream &is)
     std::string line;
     while (std::getline(is, line))
     {
-        std::cout << line << std::endl;
+        //std::cout << line << std::endl;
         std::istringstream iss(line);
         std::string tok;
         while (iss >> tok)
@@ -17,17 +17,16 @@ Interpreter::Interpreter(std::istream &is)
             if (tok.back() == ':')
             {
                 tok.pop_back();
-                program.labels.insert({tok, lineNumber});
             }
         }
         lineNumber++;
     }
 }
 
-Instruction Interpreter::fetch(void)
-{
-    return program.program[programCounter];
-}
+//Instruction Interpreter::fetch(void)
+//{
+//    return program.program[programCounter];
+//}
 
 // Instruction Interpreter::decode(const std::string & str) {
 //     return Instruction();

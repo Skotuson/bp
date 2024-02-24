@@ -2,16 +2,15 @@
 
 #include <iostream>
 
-std::string ProgramNode::codegen(SymbolTable &st)
+std::string ProgramNode::codegen(CompilationContext &cctx)
 {
-    std::vector<Instruction> wamCode;
     std::string code = "";
     // Initialize the symbol table
     for (const auto &clause : m_Clauses)
     {
-        auto entry = st.get(clause->m_Head);
+        auto entry = cctx.get(clause->m_Head);
         if (!entry)
-            st.add(clause->m_Head, new TableEntry(clause->m_Head));
+            cctx.add(clause->m_Head, new TableEntry(clause->m_Head));
         else
             entry->m_Clauses++;
     }
@@ -20,11 +19,13 @@ std::string ProgramNode::codegen(SymbolTable &st)
     {
         if (!code.empty())
             code += "\n";
-        code += clause->codegen(st);
+        code += clause->codegen(cctx);
     }
 
     // Generate the "quit" label
     code += "\nquit: backtrack\n";
+    cctx.addLabel("quit");
+    cctx.addInstructions({new BacktrackInstruction()});
 
     return code;
 }
@@ -44,7 +45,7 @@ UnificationNode::UnificationNode(TermNode *x, TermNode *y)
 {
 }
 
-std::string UnificationNode::codegen(SymbolTable &st)
+std::string UnificationNode::codegen(CompilationContext &cctx)
 {
     return "";
 }
@@ -54,36 +55,61 @@ TermNode::TermNode(const std::string &name)
 {
 }
 
+std::string TermNode::name()
+{
+    return m_Name;
+}
+
 StructNode::StructNode(const std::string &name, std::vector<TermNode *> args)
     : TermNode(name),
       m_Args(args)
 {
 }
 
-std::string StructNode::codegen(SymbolTable &st)
+std::string StructNode::codegen(CompilationContext &cctx)
 {
     std::string code = "";
-
     if (m_IsGoal)
     {
         for (const auto &arg : m_Args)
         {
             arg->m_IsGoal = true;
             arg->m_AvailableReg = m_AvailableReg;
-            code += arg->codegen(st) + "\n\t";
+            code += arg->codegen(cctx) + "\n\t";
             m_AvailableReg = arg->m_AvailableReg;
         }
         code += "call " + m_Name;
+        cctx.addInstructions({new CallInstruction(m_Name)});
         // Reset available registers after call
         m_AvailableReg = 1;
         return code;
     }
 
+    cctx.addInstructions({new GetStructureInstruction(m_Name, m_AvailableReg)});
     code = "get-structure " + m_Name + " A" + std::to_string(m_AvailableReg++);
     for (const auto &arg : m_Args)
-        code += "\n\tunify " + arg->m_Name;
+    {
+        TermNode::TermType type = arg->type();
+        switch (type)
+        {
+        case TermNode::CONST:
+            cctx.addInstructions({new UnifyConstantInstruction(arg->name())});
+            break;
+        case TermNode::VAR:
+            cctx.addInstructions({new UnifyVariableInstruction(arg->name())});
+            break;
+        case TermNode::STRUCT:
+            break;
+        }
+        code += "\n\tunify " + arg->name();
+    }
 
     return code;
+}
+
+TermNode::TermType StructNode::type()
+{
+    return TermNode::STRUCT;
 }
 
 void StructNode::print(const std::string &indent)
@@ -116,7 +142,7 @@ ListNode::ListNode(const std::vector<TermNode *> &list, TermNode *tail)
     }
 }
 
-std::string ListNode::codegen(SymbolTable &st)
+std::string ListNode::codegen(CompilationContext &cctx)
 {
     std::string code = "";
     // TODO: decide how to represent empty list
@@ -126,6 +152,11 @@ std::string ListNode::codegen(SymbolTable &st)
     code += "get-list A" + std::to_string(m_AvailableReg++);
 
     return code;
+}
+
+TermNode::TermType ListNode::type()
+{
+    return TermNode::STRUCT;
 }
 
 void ListNode::print(const std::string &indent)
@@ -150,9 +181,18 @@ VarNode::VarNode(const std::string &name)
 {
 }
 
-std::string VarNode::codegen(SymbolTable &st)
+std::string VarNode::codegen(CompilationContext &cctx)
 {
+    if (!m_IsGoal)
+        cctx.addInstructions({new GetVariableInstruction(m_Name, m_AvailableReg)});
+    else
+        cctx.addInstructions({new PutVariableInstruction(m_Name, m_AvailableReg)});
     return (m_IsGoal ? "put " : "get ") + m_Name + " A" + std::to_string(m_AvailableReg++);
+}
+
+TermNode::TermType VarNode::type()
+{
+    return TermNode::VAR;
 }
 
 void VarNode::print(const std::string &indent)
@@ -162,9 +202,24 @@ void VarNode::print(const std::string &indent)
     std::cout << indent << "=======[End VarNode]======" << std::endl;
 }
 
-std::string ConstNode::codegen(SymbolTable &st)
+ConstNode::ConstNode(size_t value)
+    : TermNode(std::to_string(value)),
+      m_Value(value)
 {
-    return "";
+}
+
+std::string ConstNode::codegen(CompilationContext &cctx)
+{
+    if (!m_IsGoal)
+        cctx.addInstructions({new GetConstantInstruction(m_Name, m_AvailableReg)});
+    else
+        cctx.addInstructions({new PutConstantInstruction(m_Name, m_AvailableReg)});
+    return (m_IsGoal ? "put" : "get") + std::string("-constant ") + m_Name + " A" + std::to_string(m_AvailableReg++);
+}
+
+TermNode::TermType ConstNode::type()
+{
+    return TermNode::CONST;
 }
 
 void ConstNode::print(const std::string &indent)
@@ -183,19 +238,28 @@ ClauseNode::ClauseNode(const std::string &head,
 {
 }
 
-std::string ClauseNode::codegen(SymbolTable &st)
+std::string ClauseNode::codegen(CompilationContext &cctx)
 {
     std::string code = "";
-    TableEntry *entry = st.get(m_Head);
+    TableEntry *entry = cctx.get(m_Head);
     // Generate the initial mark instruction for first clause of the predicate name
     if (!entry->m_Generated)
+    {
+        cctx.addLabel(m_Head);
+        cctx.addInstructions({new MarkInstruction()});
         code += m_Head + ":\tmark\n";
+    }
     else
-        code += m_Head + std::to_string(entry->m_Generated) + ":";
+    {
+        std::string label = m_Head + std::to_string(entry->m_Generated);
+        code += label + ":";
+        cctx.addLabel(label);
+    }
 
     ++entry->m_Generated;
     std::string retryLabel = entry->m_Generated == entry->m_Clauses ? "quit" : m_Head + std::to_string(entry->m_Generated);
     code += "\tretry-me-else " + retryLabel + "\n";
+    cctx.addInstructions({new RetryMeElseInstruction(retryLabel)});
 
     size_t currentArgumentRegister = 1;
     for (size_t i = 0; i < m_Args.size(); i++)
@@ -203,7 +267,7 @@ std::string ClauseNode::codegen(SymbolTable &st)
         m_Args[i]->m_IsGoal = false;
         m_Args[i]->m_AvailableReg = currentArgumentRegister;
         // Load the arguments into argument reigsters
-        code += "\t" + m_Args[i]->codegen(st) + "\n";
+        code += "\t" + m_Args[i]->codegen(cctx) + "\n";
         currentArgumentRegister = m_Args[i]->m_AvailableReg;
     }
 
@@ -213,10 +277,11 @@ std::string ClauseNode::codegen(SymbolTable &st)
     for (size_t i = 0; i < m_Body.size(); i++)
     {
         m_Body[i]->m_AvailableReg = currentArgumentRegister;
-        code += "\t" + m_Body[i]->codegen(st) + "\n";
+        code += "\t" + m_Body[i]->codegen(cctx) + "\n";
         currentArgumentRegister = m_Body[i]->m_AvailableReg;
     }
 
+    cctx.addInstructions({new ReturnInstruction()});
     return code + "\treturn\n";
 }
 

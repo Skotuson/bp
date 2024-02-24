@@ -6,13 +6,18 @@
 #include <map>
 #include <vector>
 #include <string>
+#include <ostream>
 
 using Label = std::string;
 
 struct WAMCode
 {
-    std::map<Label, size_t> labels;
-    std::vector<Instruction> program;
+    void addInstructions(const std::vector<Instruction *> &instructions);
+    void dump(std::ostream &os);
+    void addLabel(const Label & label);
+
+    std::map<size_t, Label> m_Labels;
+    std::vector<Instruction *> m_Program;
 };
 
 #endif // WAMCODE_H

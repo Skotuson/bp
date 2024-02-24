@@ -1,8 +1,13 @@
 #ifndef SYMBOLTABLE_H
 #define SYMBOLTABLE_H
 
+#include <map>
 #include <string>
 #include <unordered_map>
+
+#include "../wam_code/WAMCode.hpp"
+
+using Label = std::string;
 
 struct TableEntry
 {
@@ -16,15 +21,20 @@ struct TableEntry
     size_t m_Clauses = 1;
 };
 
-class SymbolTable
+class CompilationContext
 {
 public:
     void add(const std::string &symbol,
              TableEntry *entry);
     TableEntry *get(const std::string &symbol);
+    void addInstructions(const std::vector<Instruction*> & instructions);
+    void addLabel(const Label & label);
+
+    WAMCode code();
 
 private:
-    std::unordered_map<std::string, TableEntry *> m_Table;
+    std::unordered_map<std::string, TableEntry *> m_SymbolTable;
+    WAMCode m_GeneratedCode;
 };
 
 #endif
