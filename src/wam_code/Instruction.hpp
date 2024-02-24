@@ -32,7 +32,10 @@ struct BacktrackInstruction : public Instruction
 // Procedural Instructions
 struct CallInstruction : public Instruction
 {
+    CallInstruction(const std::string &label);
     void print(std::ostream &os) override;
+
+    std::string m_Label;
 };
 
 struct ReturnInstruction : public Instruction

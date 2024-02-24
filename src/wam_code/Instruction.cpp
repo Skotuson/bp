@@ -16,14 +16,20 @@ void RetryMeElseInstruction::print(std::ostream &os)
     os << "retry-me-else " << m_Label;
 }
 
-void BacktrackInstruction::print(std::ostream &os) {
+void BacktrackInstruction::print(std::ostream &os)
+{
     os << "backtrack";
 }
 
 // Procedural Instructions
+CallInstruction::CallInstruction(const std::string &label)
+    : m_Label(label)
+{
+}
+
 void CallInstruction::print(std::ostream &os)
 {
-    os << "call ";
+    os << "call " + m_Label;
 }
 
 void ReturnInstruction::print(std::ostream &os)

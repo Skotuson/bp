@@ -79,7 +79,7 @@ std::string StructNode::codegen(CompilationContext &cctx)
             m_AvailableReg = arg->m_AvailableReg;
         }
         code += "call " + m_Name;
-        cctx.addInstructions({new CallInstruction()});
+        cctx.addInstructions({new CallInstruction(m_Name)});
         // Reset available registers after call
         m_AvailableReg = 1;
         return code;
@@ -245,9 +245,9 @@ std::string ClauseNode::codegen(CompilationContext &cctx)
     // Generate the initial mark instruction for first clause of the predicate name
     if (!entry->m_Generated)
     {
+        cctx.addLabel(m_Head);
         cctx.addInstructions({new MarkInstruction()});
         code += m_Head + ":\tmark\n";
-        cctx.addLabel(m_Head);
     }
     else
     {
