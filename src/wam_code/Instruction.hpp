@@ -26,6 +26,7 @@ struct RetryMeElseInstruction : public Instruction
 
 struct BacktrackInstruction : public Instruction
 {
+    void print(std::ostream &os) override;
 };
 
 // Procedural Instructions

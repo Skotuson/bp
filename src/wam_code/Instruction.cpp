@@ -13,13 +13,17 @@ RetryMeElseInstruction::RetryMeElseInstruction(const std::string &label)
 
 void RetryMeElseInstruction::print(std::ostream &os)
 {
-    os << "retry-me-else" << m_Label;
+    os << "retry-me-else " << m_Label;
+}
+
+void BacktrackInstruction::print(std::ostream &os) {
+    os << "backtrack";
 }
 
 // Procedural Instructions
 void CallInstruction::print(std::ostream &os)
 {
-    os << "call";
+    os << "call ";
 }
 
 void ReturnInstruction::print(std::ostream &os)
@@ -90,7 +94,7 @@ PutVariableInstruction::PutVariableInstruction(const std::string &name, size_t a
 
 void PutVariableInstruction::print(std::ostream &os)
 {
-    os << "putv" << m_Name << " A" << m_ArgumentRegister;
+    os << "putv " << m_Name << " A" << m_ArgumentRegister;
 }
 
 // Unify Instructions
@@ -117,5 +121,5 @@ UnifyVariableInstruction::UnifyVariableInstruction(const std::string &name)
 
 void UnifyVariableInstruction::print(std::ostream &os)
 {
-    os << "unifyv" << m_Name;
+    os << "unifyv " << m_Name;
 }
