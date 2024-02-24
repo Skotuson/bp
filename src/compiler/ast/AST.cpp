@@ -25,6 +25,7 @@ std::string ProgramNode::codegen(CompilationContext &cctx)
 
     // Generate the "quit" label
     code += "\nquit: backtrack\n";
+    cctx.addLabel("quit");
 
     return code;
 }
@@ -54,6 +55,11 @@ TermNode::TermNode(const std::string &name)
 {
 }
 
+std::string TermNode::name()
+{
+    return m_Name;
+}
+
 StructNode::StructNode(const std::string &name, std::vector<TermNode *> args)
     : TermNode(name),
       m_Args(args)
@@ -63,7 +69,7 @@ StructNode::StructNode(const std::string &name, std::vector<TermNode *> args)
 std::string StructNode::codegen(CompilationContext &cctx)
 {
     std::string code = "";
-
+    std::vector<Instruction *> wamCode;
     if (m_IsGoal)
     {
         for (const auto &arg : m_Args)
@@ -74,16 +80,38 @@ std::string StructNode::codegen(CompilationContext &cctx)
             m_AvailableReg = arg->m_AvailableReg;
         }
         code += "call " + m_Name;
+        wamCode.push_back(new CallInstruction());
         // Reset available registers after call
         m_AvailableReg = 1;
         return code;
     }
 
+    wamCode.push_back(new GetStructureInstruction(m_Name, m_AvailableReg));
     code = "get-structure " + m_Name + " A" + std::to_string(m_AvailableReg++);
     for (const auto &arg : m_Args)
-        code += "\n\tunify " + arg->m_Name;
+    {
+        TermNode::TermType type = arg->type();
+        Instruction *instr;
+        switch (type)
+        {
+        case TermNode::CONST:
+            instr = new UnifyConstantInstruction(arg->name());
+            break;
+        case TermNode::VAR:
+            instr = new UnifyVariableInstruction(arg->name());
+            break;
+        case TermNode::STRUCT:
+            break;
+        }
+        code += "\n\tunify " + arg->name();
+    }
 
     return code;
+}
+
+TermNode::TermType StructNode::type()
+{
+    return TermNode::STRUCT;
 }
 
 void StructNode::print(const std::string &indent)
@@ -128,6 +156,11 @@ std::string ListNode::codegen(CompilationContext &cctx)
     return code;
 }
 
+TermNode::TermType ListNode::type()
+{
+    return TermNode::STRUCT;
+}
+
 void ListNode::print(const std::string &indent)
 {
     std::cout << indent << "=======[Start ListNode]======" << std::endl;
@@ -152,7 +185,17 @@ VarNode::VarNode(const std::string &name)
 
 std::string VarNode::codegen(CompilationContext &cctx)
 {
+    Instruction *instr;
+    if (!m_IsGoal)
+        instr = new GetVariableInstruction(m_Name, m_AvailableReg);
+    else
+        instr = new PutVariableInstruction(m_Name, m_AvailableReg);
     return (m_IsGoal ? "put " : "get ") + m_Name + " A" + std::to_string(m_AvailableReg++);
+}
+
+TermNode::TermType VarNode::type()
+{
+    return TermNode::VAR;
 }
 
 void VarNode::print(const std::string &indent)
@@ -170,7 +213,17 @@ ConstNode::ConstNode(size_t value)
 
 std::string ConstNode::codegen(CompilationContext &cctx)
 {
+    Instruction *instr;
+    if (!m_IsGoal)
+        instr = new GetConstantInstruction(m_Name, m_AvailableReg);
+    else
+        instr = new PutConstantInstruction(m_Name, m_AvailableReg);
     return (m_IsGoal ? "put" : "get") + std::string("-constant ") + m_Name + " A" + std::to_string(m_AvailableReg++);
+}
+
+TermNode::TermType ConstNode::type()
+{
+    return TermNode::CONST;
 }
 
 void ConstNode::print(const std::string &indent)
@@ -193,15 +246,25 @@ std::string ClauseNode::codegen(CompilationContext &cctx)
 {
     std::string code = "";
     TableEntry *entry = cctx.get(m_Head);
+    std::vector<Instruction *> wamCode;
     // Generate the initial mark instruction for first clause of the predicate name
     if (!entry->m_Generated)
+    {
+        wamCode.push_back(new MarkInstruction());
         code += m_Head + ":\tmark\n";
+        cctx.addLabel(m_Head);
+    }
     else
-        code += m_Head + std::to_string(entry->m_Generated) + ":";
+    {
+        std::string label = m_Head + std::to_string(entry->m_Generated);
+        code += label + ":";
+        cctx.addLabel(label);
+    }
 
     ++entry->m_Generated;
     std::string retryLabel = entry->m_Generated == entry->m_Clauses ? "quit" : m_Head + std::to_string(entry->m_Generated);
     code += "\tretry-me-else " + retryLabel + "\n";
+    wamCode.push_back(new RetryMeElseInstruction(retryLabel));
 
     size_t currentArgumentRegister = 1;
     for (size_t i = 0; i < m_Args.size(); i++)
