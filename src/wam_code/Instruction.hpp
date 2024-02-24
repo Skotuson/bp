@@ -60,6 +60,8 @@ struct GetListInstruction : public GetInstruction
 
 struct GetStructureInstruction : public GetInstruction
 {
+    GetStructureInstruction(const std::string &name, size_t argumentRegister);
+    void print(std::ostream &os) override;
 };
 
 struct GetVariableInstruction : public GetInstruction

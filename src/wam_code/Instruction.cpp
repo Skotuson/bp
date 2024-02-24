@@ -45,6 +45,16 @@ void GetConstantInstruction::print(std::ostream &os)
     os << "get-constant " << m_Name << " A" << m_ArgumentRegister;
 }
 
+GetStructureInstruction::GetStructureInstruction(const std::string &name, size_t argumentRegister)
+    : GetInstruction(name, argumentRegister)
+{
+}
+
+void GetStructureInstruction::print(std::ostream &os)
+{
+    os << "get-structure " << m_Name << " A" << m_ArgumentRegister;
+}
+
 GetVariableInstruction::GetVariableInstruction(const std::string &name, size_t argumentRegister)
     : GetInstruction(name, argumentRegister)
 {
@@ -52,7 +62,7 @@ GetVariableInstruction::GetVariableInstruction(const std::string &name, size_t a
 
 void GetVariableInstruction::print(std::ostream &os)
 {
-    os << "getv" << m_Name << " A" << m_ArgumentRegister;
+    os << "getv " << m_Name << " A" << m_ArgumentRegister;
 }
 
 // Put Instructions
