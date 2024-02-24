@@ -23,17 +23,29 @@ struct GoalNode : public Node
 //-------TERM NODES-------//
 struct TermNode : public GoalNode
 {
+protected:
     TermNode(const std::string &name);
     std::string m_Name;
+
+public:
+    enum TermType
+    {
+        CONST,
+        VAR,
+        STRUCT
+    };
+    std::string name();
+    virtual TermType type() = 0;
 };
 
 struct StructNode : public TermNode
 {
-    StructNode(const std::string &name, 
-        std::vector<TermNode *> args = std::vector<TermNode *>());
+    StructNode(const std::string &name,
+               std::vector<TermNode *> args = std::vector<TermNode *>());
     std::string codegen(CompilationContext &cctx) override;
+    TermType type() override;
     void print(const std::string &indent = "") override;
-    //TODO: check when no args
+    // TODO: check when no args
     std::vector<TermNode *> m_Args;
 };
 
@@ -43,6 +55,7 @@ struct ListNode : public TermNode
              TermNode *tail = nullptr);
 
     std::string codegen(CompilationContext &cctx) override;
+    TermType type() override;
     void print(const std::string &indent = "") override;
 
     std::vector<TermNode *> m_Head;
@@ -53,6 +66,7 @@ struct VarNode : public TermNode
 {
     VarNode(const std::string &name);
     std::string codegen(CompilationContext &cctx) override;
+    TermType type() override;
     void print(const std::string &indent = "") override;
 };
 
@@ -60,6 +74,7 @@ struct ConstNode : public TermNode
 {
     ConstNode(size_t value);
     std::string codegen(CompilationContext &cctx) override;
+    TermType type() override;
     void print(const std::string &indent = "") override;
     int m_Value;
 };
