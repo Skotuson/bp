@@ -11,9 +11,10 @@ void Compiler::compile(void)
 {
     m_Parser.parse();
     m_Code = m_Parser.getAST()->codegen(m_CCtx);
+    m_WAMCode = m_CCtx.code();
 }
 
 void Compiler::dump(std::ostream &os)
 {
-    os << m_Code;
+    m_WAMCode.dump(os);
 }
