@@ -16,7 +16,7 @@ struct WAMCode
     void dump(std::ostream &os);
     void addLabel(const Label & label);
 
-    std::map<Label, size_t> m_Labels;
+    std::map<size_t, Label> m_Labels;
     std::vector<Instruction *> m_Program;
 };
 
