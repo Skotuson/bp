@@ -4,7 +4,6 @@
 
 std::string ProgramNode::codegen(CompilationContext &cctx)
 {
-    WAMCode wamCode;
     std::string code = "";
     // Initialize the symbol table
     for (const auto &clause : m_Clauses)
@@ -26,6 +25,7 @@ std::string ProgramNode::codegen(CompilationContext &cctx)
     // Generate the "quit" label
     code += "\nquit: backtrack\n";
     cctx.addLabel("quit");
+    cctx.addInstructions({new BacktrackInstruction()});
 
     return code;
 }
@@ -69,7 +69,6 @@ StructNode::StructNode(const std::string &name, std::vector<TermNode *> args)
 std::string StructNode::codegen(CompilationContext &cctx)
 {
     std::string code = "";
-    std::vector<Instruction *> wamCode;
     if (m_IsGoal)
     {
         for (const auto &arg : m_Args)
@@ -80,25 +79,24 @@ std::string StructNode::codegen(CompilationContext &cctx)
             m_AvailableReg = arg->m_AvailableReg;
         }
         code += "call " + m_Name;
-        wamCode.push_back(new CallInstruction());
+        cctx.addInstructions({new CallInstruction()});
         // Reset available registers after call
         m_AvailableReg = 1;
         return code;
     }
 
-    wamCode.push_back(new GetStructureInstruction(m_Name, m_AvailableReg));
+    cctx.addInstructions({new GetStructureInstruction(m_Name, m_AvailableReg)});
     code = "get-structure " + m_Name + " A" + std::to_string(m_AvailableReg++);
     for (const auto &arg : m_Args)
     {
         TermNode::TermType type = arg->type();
-        Instruction *instr;
         switch (type)
         {
         case TermNode::CONST:
-            instr = new UnifyConstantInstruction(arg->name());
+            cctx.addInstructions({new UnifyConstantInstruction(arg->name())});
             break;
         case TermNode::VAR:
-            instr = new UnifyVariableInstruction(arg->name());
+            cctx.addInstructions({new UnifyVariableInstruction(arg->name())});
             break;
         case TermNode::STRUCT:
             break;
@@ -185,11 +183,10 @@ VarNode::VarNode(const std::string &name)
 
 std::string VarNode::codegen(CompilationContext &cctx)
 {
-    Instruction *instr;
     if (!m_IsGoal)
-        instr = new GetVariableInstruction(m_Name, m_AvailableReg);
+        cctx.addInstructions({new GetVariableInstruction(m_Name, m_AvailableReg)});
     else
-        instr = new PutVariableInstruction(m_Name, m_AvailableReg);
+        cctx.addInstructions({new PutVariableInstruction(m_Name, m_AvailableReg)});
     return (m_IsGoal ? "put " : "get ") + m_Name + " A" + std::to_string(m_AvailableReg++);
 }
 
@@ -213,11 +210,10 @@ ConstNode::ConstNode(size_t value)
 
 std::string ConstNode::codegen(CompilationContext &cctx)
 {
-    Instruction *instr;
     if (!m_IsGoal)
-        instr = new GetConstantInstruction(m_Name, m_AvailableReg);
+        cctx.addInstructions({new GetConstantInstruction(m_Name, m_AvailableReg)});
     else
-        instr = new PutConstantInstruction(m_Name, m_AvailableReg);
+        cctx.addInstructions({new PutConstantInstruction(m_Name, m_AvailableReg)});
     return (m_IsGoal ? "put" : "get") + std::string("-constant ") + m_Name + " A" + std::to_string(m_AvailableReg++);
 }
 
@@ -246,11 +242,10 @@ std::string ClauseNode::codegen(CompilationContext &cctx)
 {
     std::string code = "";
     TableEntry *entry = cctx.get(m_Head);
-    std::vector<Instruction *> wamCode;
     // Generate the initial mark instruction for first clause of the predicate name
     if (!entry->m_Generated)
     {
-        wamCode.push_back(new MarkInstruction());
+        cctx.addInstructions({new MarkInstruction()});
         code += m_Head + ":\tmark\n";
         cctx.addLabel(m_Head);
     }
@@ -264,7 +259,7 @@ std::string ClauseNode::codegen(CompilationContext &cctx)
     ++entry->m_Generated;
     std::string retryLabel = entry->m_Generated == entry->m_Clauses ? "quit" : m_Head + std::to_string(entry->m_Generated);
     code += "\tretry-me-else " + retryLabel + "\n";
-    wamCode.push_back(new RetryMeElseInstruction(retryLabel));
+    cctx.addInstructions({new RetryMeElseInstruction(retryLabel)});
 
     size_t currentArgumentRegister = 1;
     for (size_t i = 0; i < m_Args.size(); i++)
@@ -286,6 +281,7 @@ std::string ClauseNode::codegen(CompilationContext &cctx)
         currentArgumentRegister = m_Body[i]->m_AvailableReg;
     }
 
+    cctx.addInstructions({new ReturnInstruction()});
     return code + "\treturn\n";
 }
 
