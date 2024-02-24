@@ -1,6 +1,6 @@
 #include "WAMCode.hpp"
 
-void WAMCode::addInstructions(std::vector<Instruction*> &instructions)
+void WAMCode::addInstructions(const std::vector<Instruction*> &instructions)
 {
     m_Program.insert(m_Program.end(), instructions.begin(), instructions.end());
 }

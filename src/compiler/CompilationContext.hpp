@@ -27,13 +27,14 @@ public:
     void add(const std::string &symbol,
              TableEntry *entry);
     TableEntry *get(const std::string &symbol);
-    void addInstructions(std::vector<Instruction*> & instructions);
+    void addInstructions(const std::vector<Instruction*> & instructions);
     void addLabel(const Label & label);
+
+    WAMCode code();
 
 private:
     std::unordered_map<std::string, TableEntry *> m_SymbolTable;
-    WAMCode generatedCode;
-    size_t m_Line = 0;
+    WAMCode m_GeneratedCode;
 };
 
 #endif

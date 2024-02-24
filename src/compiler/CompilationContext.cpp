@@ -14,11 +14,16 @@ TableEntry *CompilationContext::get(const std::string &symbol)
     return nullptr;
 }
 
-void CompilationContext::addInstructions(std::vector<Instruction*> & instructions) {
-    generatedCode.addInstructions(instructions);
+void CompilationContext::addInstructions(const std::vector<Instruction*> & instructions) {
+    m_GeneratedCode.addInstructions(instructions);
 }
 
 void CompilationContext::addLabel(const Label & label)
 {
-    generatedCode.addLabel(label);
+    m_GeneratedCode.addLabel(label);
+}
+
+WAMCode CompilationContext::code()
+{
+    return m_GeneratedCode;
 }
