@@ -12,10 +12,12 @@ using Label = std::string;
 
 struct WAMCode
 {
-    void addInstructions(std::vector<Instruction*> & instructions);
-    void dump(std::ostream & os);
-    std::map<Label, size_t> labels;
-    std::vector<Instruction*> program;
+    void addInstructions(std::vector<Instruction *> &instructions);
+    void dump(std::ostream &os);
+    void addLabel(const Label & label);
+
+    std::map<Label, size_t> m_Labels;
+    std::vector<Instruction *> m_Program;
 };
 
 #endif // WAMCODE_H

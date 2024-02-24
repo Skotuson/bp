@@ -2,14 +2,18 @@
 
 void WAMCode::addInstructions(std::vector<Instruction*> &instructions)
 {
-    program.insert(program.end(), instructions.begin(), instructions.end());
+    m_Program.insert(m_Program.end(), instructions.begin(), instructions.end());
 }
 
 void WAMCode::dump(std::ostream &os)
 {
-    for (const auto &instruction : program)
+    for (const auto &instruction : m_Program)
     {
         instruction->print(os);
         os << std::endl;
     }
+}
+
+void WAMCode::addLabel(const Label & label) {
+    m_Labels.insert({label, m_Program.size()});
 }
