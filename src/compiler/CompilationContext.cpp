@@ -13,3 +13,7 @@ TableEntry *CompilationContext::get(const std::string &symbol)
         return it->second;
     return nullptr;
 }
+
+void CompilationContext::addLabel(Label label) {
+    m_Labels.insert({label, m_Line});
+}

@@ -25,11 +25,12 @@ public:
     void add(const std::string &symbol,
              TableEntry *entry);
     TableEntry *get(const std::string &symbol);
+    void addLabel(Label label);
 
 private:
     std::unordered_map<std::string, TableEntry *> m_SymbolTable;
     size_t m_Line = 0;
-    std::map<Label, size_t> labels;
+    std::map<Label, size_t> m_Labels;
 };
 
 #endif
