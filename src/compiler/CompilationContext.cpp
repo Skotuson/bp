@@ -14,6 +14,11 @@ TableEntry *CompilationContext::get(const std::string &symbol)
     return nullptr;
 }
 
-void CompilationContext::addLabel(Label label) {
-    m_Labels.insert({label, m_Line});
+void CompilationContext::addInstructions(std::vector<Instruction*> & instructions) {
+    generatedCode.addInstructions(instructions);
+}
+
+void CompilationContext::addLabel(const Label & label)
+{
+    generatedCode.addLabel(label);
 }

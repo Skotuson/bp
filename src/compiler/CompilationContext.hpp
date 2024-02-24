@@ -5,6 +5,8 @@
 #include <string>
 #include <unordered_map>
 
+#include "../wam_code/WAMCode.hpp"
+
 using Label = std::string;
 
 struct TableEntry
@@ -25,12 +27,13 @@ public:
     void add(const std::string &symbol,
              TableEntry *entry);
     TableEntry *get(const std::string &symbol);
-    void addLabel(Label label);
+    void addInstructions(std::vector<Instruction*> & instructions);
+    void addLabel(const Label & label);
 
 private:
     std::unordered_map<std::string, TableEntry *> m_SymbolTable;
+    WAMCode generatedCode;
     size_t m_Line = 0;
-    std::map<Label, size_t> m_Labels;
 };
 
 #endif
