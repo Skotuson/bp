@@ -45,7 +45,6 @@ struct StructNode : public TermNode
     std::string codegen(CompilationContext &cctx) override;
     TermType type() override;
     void print(const std::string &indent = "") override;
-    // TODO: check when no args
     std::vector<TermNode *> m_Args;
 };
 
