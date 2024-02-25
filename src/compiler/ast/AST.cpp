@@ -85,6 +85,13 @@ std::string StructNode::codegen(CompilationContext &cctx)
         return code;
     }
 
+    // Treat struct as a constant if it has no "arguments"
+    if (m_Args.empty())
+    {
+        code += "get-constant " + m_Name + " A" + std::to_string(m_AvailableReg);
+        cctx.addInstructions({new GetConstantInstruction(m_Name, m_AvailableReg++)});
+        return code;
+    }
     cctx.addInstructions({new GetStructureInstruction(m_Name, m_AvailableReg)});
     code = "get-structure " + m_Name + " A" + std::to_string(m_AvailableReg++);
     for (const auto &arg : m_Args)
