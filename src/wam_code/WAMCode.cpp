@@ -5,6 +5,13 @@ void WAMCode::addInstructions(const std::vector<Instruction *> &instructions)
     m_Program.insert(m_Program.end(), instructions.begin(), instructions.end());
 }
 
+Instruction * WAMCode::getInstruction(size_t pc) 
+{
+    if (pc >= m_Program.size()) 
+        return nullptr;
+    return m_Program[pc];
+}
+
 void WAMCode::dump(std::ostream &os)
 {
     size_t line = 0;

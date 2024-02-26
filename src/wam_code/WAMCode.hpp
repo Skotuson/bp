@@ -13,6 +13,7 @@ using Label = std::string;
 struct WAMCode
 {
     void addInstructions(const std::vector<Instruction *> &instructions);
+    Instruction * getInstruction(size_t pc);
     void dump(std::ostream &os);
     void addLabel(const Label & label);
 
