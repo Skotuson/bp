@@ -56,7 +56,8 @@ int main(int argc, const char **argv)
     comp.dump(std::cout);
 
     Interpreter intp(comp.dump());
-    intp.run();
+    
+    while(intp.run());
 
     return res;
 }
