@@ -28,11 +28,21 @@ Interpreter::Interpreter(const WAMCode &wamCode)
 {
 }
 
-void Interpreter::run(void)
+bool Interpreter::run(void)
 {
+    std::cout << "?> ";
+    std::string query;
+    std::getline(std::cin >> std::ws, query);
+
+    // TODO: will add as an instruction
+    if (query == "halt.")
+        return false;
+
     Instruction *instr;
     while ((instr = fetch()))
         execute(instr);
+
+    return true;
 }
 
 Instruction *Interpreter::fetch(void)
