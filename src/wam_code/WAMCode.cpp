@@ -15,6 +15,7 @@ void WAMCode::dump(std::ostream &os)
         {
             os << it->second << ": ";
         }
+        //TODO: adjust for the label length
         os << "\t";
         instruction->print(os);
         os << std::endl;
