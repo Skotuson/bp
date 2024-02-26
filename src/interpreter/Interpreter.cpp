@@ -2,12 +2,12 @@
 
 Interpreter::Interpreter(std::istream &is)
 {
-
+    // TODO: case when only the bytecode is provided in text form
     size_t lineNumber = 0;
     std::string line;
     while (std::getline(is, line))
     {
-        //std::cout << line << std::endl;
+        // std::cout << line << std::endl;
         std::istringstream iss(line);
         std::string tok;
         while (iss >> tok)
@@ -23,15 +23,25 @@ Interpreter::Interpreter(std::istream &is)
     }
 }
 
-//Instruction Interpreter::fetch(void)
-//{
-//    return program.program[programCounter];
-//}
-
-// Instruction Interpreter::decode(const std::string & str) {
-//     return Instruction();
-// }
-
-void Interpreter::execute(const Instruction &instr)
+Interpreter::Interpreter(const WAMCode &wamCode)
+    : m_Program(wamCode)
 {
+}
+
+void Interpreter::run(void)
+{
+    Instruction *instr;
+    while ((instr = fetch()))
+        execute(instr);
+}
+
+Instruction *Interpreter::fetch(void)
+{
+    return m_Program.getInstruction(m_State.m_ProgramCounter++);
+}
+
+void Interpreter::execute(Instruction *instr)
+{
+    instr->print(std::cout);
+    std::cout << std::endl;
 }

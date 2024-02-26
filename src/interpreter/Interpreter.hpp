@@ -16,11 +16,15 @@ using Label = std::string;
 class Interpreter
 {
 public:
-    Interpreter(std::istream & is);
-    Instruction fetch(void);
-    Instruction decode(const std::string & str);
-    void execute(const Instruction & instr);
+    Interpreter(std::istream &is);
+    Interpreter(const WAMCode &wamCode);
+
+    void run(void);
+
 private:
+    Instruction * fetch(void);
+    void execute(Instruction *instr);
+
     WAMState m_State;
     WAMCode m_Program;
 };
