@@ -18,3 +18,9 @@ void Compiler::dump(std::ostream &os)
 {
     m_WAMCode.dump(os);
 }
+
+WAMCode Compiler::dump(void)
+{
+    // TODO: shallow copy for now
+    return m_WAMCode;
+}

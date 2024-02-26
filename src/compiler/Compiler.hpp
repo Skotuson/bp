@@ -15,6 +15,7 @@ public:
     Compiler(std::istream &is);
 
     void compile(void);
+    WAMCode dump(void);
     void dump(std::ostream &os);
 
 private:
