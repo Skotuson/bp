@@ -3,6 +3,7 @@
 
 #include "data_structures/Word.hpp"
 #include "data_structures/ChoicePoint.hpp"
+#include "data_structures/ArgumentRegisters.hpp"
 
 #include <stack>
 #include <vector>
@@ -13,7 +14,7 @@ struct WAMState
     void fillRegister(Word *word, size_t reg);
 
     std::stack<ChoicePoint> m_Stack;
-    std::vector<Word *> m_ArgumentRegisters;
+    ArgumentRegisters m_ArgumentRegisters;
     size_t m_ProgramCounter = 0;
 };
 
