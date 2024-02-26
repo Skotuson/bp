@@ -1,24 +1,28 @@
 #ifndef INSTRUCTION_H
 #define INSTRUCTION_H
 
+#include "../interpreter/WAMState.hpp"
+
 #include <ostream>
 #include <string>
 
 struct Instruction
 {
-    // virtual void execute(void) = 0;
+    virtual void execute(WAMState & state) = 0;
     virtual void print(std::ostream &os) = 0;
 };
 
 // Indexing instructions
 struct MarkInstruction : public Instruction
 {
+    void execute(WAMState & state) override;
     void print(std::ostream &os) override;
 };
 
 struct RetryMeElseInstruction : public Instruction
 {
     RetryMeElseInstruction(const std::string &label);
+    void execute(WAMState & state) override;
     void print(std::ostream &os) override;
 
     std::string m_Label;
@@ -26,6 +30,7 @@ struct RetryMeElseInstruction : public Instruction
 
 struct BacktrackInstruction : public Instruction
 {
+    void execute(WAMState & state) override;
     void print(std::ostream &os) override;
 };
 
@@ -33,6 +38,7 @@ struct BacktrackInstruction : public Instruction
 struct CallInstruction : public Instruction
 {
     CallInstruction(const std::string &label);
+    void execute(WAMState & state) override;
     void print(std::ostream &os) override;
 
     std::string m_Label;
@@ -40,6 +46,7 @@ struct CallInstruction : public Instruction
 
 struct ReturnInstruction : public Instruction
 {
+    void execute(WAMState & state) override;
     void print(std::ostream &os) override;
 };
 
@@ -55,6 +62,7 @@ protected:
 struct GetConstantInstruction : public GetInstruction
 {
     GetConstantInstruction(const std::string &name, size_t argumentRegister);
+    void execute(WAMState & state) override;
     void print(std::ostream &os) override;
 };
 
@@ -65,12 +73,14 @@ struct GetListInstruction : public GetInstruction
 struct GetStructureInstruction : public GetInstruction
 {
     GetStructureInstruction(const std::string &name, size_t argumentRegister);
+    void execute(WAMState & state) override;
     void print(std::ostream &os) override;
 };
 
 struct GetVariableInstruction : public GetInstruction
 {
     GetVariableInstruction(const std::string &name, size_t argumentRegister);
+    void execute(WAMState & state) override;
     void print(std::ostream &os) override;
 };
 // Put Instructions
@@ -84,12 +94,14 @@ protected:
 struct PutConstantInstruction : public PutInstruction
 {
     PutConstantInstruction(const std::string &name, size_t argumentRegister);
+    void execute(WAMState & state) override;
     void print(std::ostream &os) override;
 };
 
 struct PutVariableInstruction : public PutInstruction
 {
     PutVariableInstruction(const std::string &name, size_t argumentRegister);
+    void execute(WAMState & state) override;
     void print(std::ostream &os) override;
 };
 
@@ -109,12 +121,14 @@ protected:
 struct UnifyConstantInstruction : public UnifyInstruction
 {
     UnifyConstantInstruction(const std::string &name);
+    void execute(WAMState & state) override;
     void print(std::ostream &os) override;
 };
 
 struct UnifyVariableInstruction : public UnifyInstruction
 {
     UnifyVariableInstruction(const std::string &name);
+    void execute(WAMState & state) override;
     void print(std::ostream &os) override;
 };
 

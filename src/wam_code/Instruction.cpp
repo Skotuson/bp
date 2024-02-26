@@ -1,6 +1,11 @@
 #include "Instruction.hpp"
 
 // Indexing Instructions
+
+void MarkInstruction::execute(WAMState &state)
+{
+}
+
 void MarkInstruction::print(std::ostream &os)
 {
     os << "mark";
@@ -11,9 +16,17 @@ RetryMeElseInstruction::RetryMeElseInstruction(const std::string &label)
 {
 }
 
+void RetryMeElseInstruction::execute(WAMState &state)
+{
+}
+
 void RetryMeElseInstruction::print(std::ostream &os)
 {
     os << "retry-me-else " << m_Label;
+}
+
+void BacktrackInstruction::execute(WAMState &state)
+{
 }
 
 void BacktrackInstruction::print(std::ostream &os)
@@ -27,9 +40,17 @@ CallInstruction::CallInstruction(const std::string &label)
 {
 }
 
+void CallInstruction::execute(WAMState &state)
+{
+}
+
 void CallInstruction::print(std::ostream &os)
 {
     os << "call " + m_Label;
+}
+
+void ReturnInstruction::execute(WAMState &state)
+{
 }
 
 void ReturnInstruction::print(std::ostream &os)
@@ -50,6 +71,10 @@ GetConstantInstruction::GetConstantInstruction(const std::string &name, size_t a
 {
 }
 
+void GetConstantInstruction::execute(WAMState &state)
+{
+}
+
 void GetConstantInstruction::print(std::ostream &os)
 {
     os << "get-constant " << m_Name << " A" << m_ArgumentRegister;
@@ -60,6 +85,10 @@ GetStructureInstruction::GetStructureInstruction(const std::string &name, size_t
 {
 }
 
+void GetStructureInstruction::execute(WAMState &state)
+{
+}
+
 void GetStructureInstruction::print(std::ostream &os)
 {
     os << "get-structure " << m_Name << " A" << m_ArgumentRegister;
@@ -67,6 +96,10 @@ void GetStructureInstruction::print(std::ostream &os)
 
 GetVariableInstruction::GetVariableInstruction(const std::string &name, size_t argumentRegister)
     : GetInstruction(name, argumentRegister)
+{
+}
+
+void GetVariableInstruction::execute(WAMState &state)
 {
 }
 
@@ -88,6 +121,10 @@ PutConstantInstruction::PutConstantInstruction(const std::string &name, size_t a
 {
 }
 
+void PutConstantInstruction::execute(WAMState &state)
+{
+}
+
 void PutConstantInstruction::print(std::ostream &os)
 {
     os << "put-constant " << m_Name << " A" << m_ArgumentRegister;
@@ -95,6 +132,10 @@ void PutConstantInstruction::print(std::ostream &os)
 
 PutVariableInstruction::PutVariableInstruction(const std::string &name, size_t argumentRegister)
     : PutInstruction(name, argumentRegister)
+{
+}
+
+void PutVariableInstruction::execute(WAMState &state)
 {
 }
 
@@ -115,6 +156,10 @@ UnifyConstantInstruction::UnifyConstantInstruction(const std::string &name)
 {
 }
 
+void UnifyConstantInstruction::execute(WAMState &state)
+{
+}
+
 void UnifyConstantInstruction::print(std::ostream &os)
 {
     os << "unify-constant " << m_Name;
@@ -122,6 +167,10 @@ void UnifyConstantInstruction::print(std::ostream &os)
 
 UnifyVariableInstruction::UnifyVariableInstruction(const std::string &name)
     : UnifyInstruction(name)
+{
+}
+
+void UnifyVariableInstruction::execute(WAMState &state)
 {
 }
 
