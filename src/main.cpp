@@ -53,11 +53,10 @@ int main(int argc, const char **argv)
 
     Compiler comp(ifs);
     comp.compile();
-    std::ostringstream oss;
     comp.dump(std::cout);
 
-    std::istringstream iss(oss.str());
-    Interpreter intp(iss);
+    Interpreter intp(comp.dump());
+    intp.run();
 
     return res;
 }
