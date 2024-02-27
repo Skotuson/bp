@@ -41,7 +41,7 @@ bool Interpreter::run(void)
     Instruction *instr;
     while ((instr = fetch()))
         execute(instr);
-
+    
     return true;
 }
 
