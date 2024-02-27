@@ -13,6 +13,9 @@ struct WAMState
 {
     void fillRegister(Word *word, size_t reg);
 
+    size_t SReg(void);
+    size_t TRReg(void);
+
     size_t m_ProgramCounter = 0;
     size_t m_ContinuationPointer = 0;
 
