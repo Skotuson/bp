@@ -2,6 +2,11 @@
 
 // Indexing Instructions
 
+Instruction *MarkInstruction::clone(void)
+{
+    return new MarkInstruction();
+}
+
 void MarkInstruction::execute(WAMState &state)
 {
 }
@@ -16,6 +21,11 @@ RetryMeElseInstruction::RetryMeElseInstruction(const std::string &label)
 {
 }
 
+Instruction *RetryMeElseInstruction::clone(void)
+{
+    return new RetryMeElseInstruction(m_Label);
+}
+
 void RetryMeElseInstruction::execute(WAMState &state)
 {
 }
@@ -23,6 +33,11 @@ void RetryMeElseInstruction::execute(WAMState &state)
 void RetryMeElseInstruction::print(std::ostream &os)
 {
     os << "retry-me-else " << m_Label;
+}
+
+Instruction *BacktrackInstruction::clone(void)
+{
+    return new BacktrackInstruction();
 }
 
 void BacktrackInstruction::execute(WAMState &state)
@@ -40,6 +55,12 @@ CallInstruction::CallInstruction(const std::string &label)
 {
 }
 
+Instruction *CallInstruction::clone(void)
+{
+    return new CallInstruction(m_Label);
+}
+
+
 void CallInstruction::execute(WAMState &state)
 {
 }
@@ -47,6 +68,11 @@ void CallInstruction::execute(WAMState &state)
 void CallInstruction::print(std::ostream &os)
 {
     os << "call " + m_Label;
+}
+
+Instruction *ReturnInstruction::clone(void)
+{
+    return new ReturnInstruction();
 }
 
 void ReturnInstruction::execute(WAMState &state)
@@ -71,6 +97,11 @@ GetConstantInstruction::GetConstantInstruction(const std::string &name, size_t a
 {
 }
 
+Instruction *GetConstantInstruction::clone(void)
+{
+    return new GetConstantInstruction(m_Name, m_ArgumentRegister);
+}
+
 void GetConstantInstruction::execute(WAMState &state)
 {
 }
@@ -85,6 +116,11 @@ GetStructureInstruction::GetStructureInstruction(const std::string &name, size_t
 {
 }
 
+Instruction *GetStructureInstruction::clone(void)
+{
+    return new GetStructureInstruction(m_Name, m_ArgumentRegister);
+}
+
 void GetStructureInstruction::execute(WAMState &state)
 {
 }
@@ -97,6 +133,11 @@ void GetStructureInstruction::print(std::ostream &os)
 GetVariableInstruction::GetVariableInstruction(const std::string &name, size_t argumentRegister)
     : GetInstruction(name, argumentRegister)
 {
+}
+
+Instruction *GetVariableInstruction::clone(void)
+{
+    return new GetVariableInstruction(m_Name, m_ArgumentRegister);
 }
 
 void GetVariableInstruction::execute(WAMState &state)
@@ -121,6 +162,11 @@ PutConstantInstruction::PutConstantInstruction(const std::string &name, size_t a
 {
 }
 
+Instruction *PutConstantInstruction::clone(void)
+{
+    return new PutConstantInstruction(m_Name, m_ArgumentRegister);
+}
+
 void PutConstantInstruction::execute(WAMState &state)
 {
 }
@@ -133,6 +179,11 @@ void PutConstantInstruction::print(std::ostream &os)
 PutVariableInstruction::PutVariableInstruction(const std::string &name, size_t argumentRegister)
     : PutInstruction(name, argumentRegister)
 {
+}
+
+Instruction *PutVariableInstruction::clone(void)
+{
+    return new PutVariableInstruction(m_Name, m_ArgumentRegister);
 }
 
 void PutVariableInstruction::execute(WAMState &state)
@@ -156,6 +207,11 @@ UnifyConstantInstruction::UnifyConstantInstruction(const std::string &name)
 {
 }
 
+Instruction *UnifyConstantInstruction::clone(void)
+{
+    return new UnifyConstantInstruction(m_Name);
+}
+
 void UnifyConstantInstruction::execute(WAMState &state)
 {
 }
@@ -168,6 +224,11 @@ void UnifyConstantInstruction::print(std::ostream &os)
 UnifyVariableInstruction::UnifyVariableInstruction(const std::string &name)
     : UnifyInstruction(name)
 {
+}
+
+Instruction *UnifyVariableInstruction::clone(void)
+{
+    return new UnifyVariableInstruction(m_Name);
 }
 
 void UnifyVariableInstruction::execute(WAMState &state)
