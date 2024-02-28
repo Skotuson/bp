@@ -5,6 +5,8 @@
 
 struct ChoicePoint
 {
+    ChoicePoint(const ArgumentRegisters &argReg, size_t bcp, size_t bce, size_t bb, size_t fa);
+
     ArgumentRegisters m_ArgumentRegisters;
     size_t m_BCP; // Backtrack Continuation Pointer
     size_t m_BCE; // Backtrack Continuation Environment
