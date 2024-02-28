@@ -15,11 +15,11 @@ enum TAG
 
 class Word
 {
-protected:
-    Word(TAG tag);
-
+public:
     virtual Word *clone(void) = 0;
 
+protected:
+    Word(TAG tag);
     TAG m_Tag;
 };
 
@@ -28,7 +28,7 @@ class ConstantWord : public Word
     ConstantWord(const std::string &value);
 
     Word *clone(void) override;
-    
+
     std::string m_Value;
 };
 
