@@ -16,11 +16,15 @@ struct WAMState
     size_t SReg(void);
     size_t TRReg(void);
 
+    void stackPush(ChoicePoint *cp);
+    void stackPop(void);
+    ChoicePoint * stackTop(void);
+
     size_t m_ProgramCounter = 0;
     size_t m_ContinuationPointer = 0;
 
     std::vector<Word *> m_Trail;
-    std::vector<ChoicePoint> m_Stack; // Represented as a vector because I need to have a random access available
+    std::vector<ChoicePoint *> m_Stack; // Represented as a vector because I need to have a random access available
     ArgumentRegisters m_ArgumentRegisters;
 
     bool m_ModeFlag = false;
