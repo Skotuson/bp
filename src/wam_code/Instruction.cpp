@@ -72,6 +72,9 @@ Instruction *CallInstruction::clone(void)
 
 void CallInstruction::execute(WAMState &state)
 {
+    state.m_ContinuationPointer = state.m_ProgramCounter + 1;
+    //TODO: add actual label address
+    //state.m_ProgramCounter = 
 }
 
 void CallInstruction::print(std::ostream &os)
@@ -178,6 +181,8 @@ Instruction *PutConstantInstruction::clone(void)
 
 void PutConstantInstruction::execute(WAMState &state)
 {
+    ChoicePoint * cp = state.stackTop();
+    cp->m_ArgumentRegisters.fillRegister(new ConstantWord(m_Name), m_ArgumentRegister - 1);
 }
 
 void PutConstantInstruction::print(std::ostream &os)
