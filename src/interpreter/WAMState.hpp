@@ -18,7 +18,9 @@ struct WAMState
 
     void stackPush(ChoicePoint *cp);
     void stackPop(void);
-    ChoicePoint * stackTop(void);
+    ChoicePoint *stackTop(void);
+
+    friend std::ostream &operator<<(std::ostream &os, const WAMState &state);
 
     size_t m_ProgramCounter = 0;
     size_t m_ContinuationPointer = 0;

@@ -34,3 +34,12 @@ ChoicePoint *WAMState::stackTop(void)
 
     return nullptr;
 }
+
+std::ostream &operator<<(std::ostream &os, const WAMState &state)
+{
+    os << "STACK-BOT" << std::endl;
+    for(const auto & cp : state.m_Stack)
+        os << *cp << std::endl;
+    os << "STACK-TOP";
+    return os;
+}
