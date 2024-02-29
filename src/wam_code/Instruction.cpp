@@ -1,5 +1,7 @@
 #include "Instruction.hpp"
 
+#include <iostream>
+
 // Indexing Instructions
 
 Instruction *MarkInstruction::clone(void)
@@ -9,6 +11,8 @@ Instruction *MarkInstruction::clone(void)
 
 void MarkInstruction::execute(WAMState &state)
 {
+    ChoicePoint *cp = new ChoicePoint(state.m_ArgumentRegisters, 0, 0, 0, 0);
+    state.stackPush(cp);
 }
 
 void MarkInstruction::print(std::ostream &os)
@@ -16,18 +20,24 @@ void MarkInstruction::print(std::ostream &os)
     os << "mark";
 }
 
-RetryMeElseInstruction::RetryMeElseInstruction(const std::string &label)
-    : m_Label(label)
+RetryMeElseInstruction::RetryMeElseInstruction(const std::string &label, size_t address)
+    : m_Label(label),
+      m_Address(address)
 {
 }
 
 Instruction *RetryMeElseInstruction::clone(void)
 {
-    return new RetryMeElseInstruction(m_Label);
+    return new RetryMeElseInstruction(m_Label, m_Address);
 }
 
 void RetryMeElseInstruction::execute(WAMState &state)
 {
+    ChoicePoint *cp = state.stackTop();
+    if (cp)
+    {
+        cp->m_FA = m_Address;
+    }
 }
 
 void RetryMeElseInstruction::print(std::ostream &os)
@@ -59,7 +69,6 @@ Instruction *CallInstruction::clone(void)
 {
     return new CallInstruction(m_Label);
 }
-
 
 void CallInstruction::execute(WAMState &state)
 {
