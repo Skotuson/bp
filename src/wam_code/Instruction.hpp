@@ -23,12 +23,13 @@ struct MarkInstruction : public Instruction
 
 struct RetryMeElseInstruction : public Instruction
 {
-    RetryMeElseInstruction(const std::string &label);
+    RetryMeElseInstruction(const std::string &label, size_t address);
     Instruction *clone(void) override;
     void execute(WAMState &state) override;
     void print(std::ostream &os) override;
 
     std::string m_Label;
+    size_t m_Address;
 };
 
 struct BacktrackInstruction : public Instruction
