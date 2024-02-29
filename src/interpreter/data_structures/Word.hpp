@@ -2,6 +2,7 @@
 #define WORD_H
 
 #include <string>
+#include <iostream>
 
 enum TAG
 {
@@ -16,6 +17,7 @@ enum TAG
 class Word
 {
 public:
+    virtual void print(std::ostream & os) = 0;
     virtual Word *clone(void) = 0;
 
 protected:
@@ -27,6 +29,7 @@ class ConstantWord : public Word
 {
 public:
     ConstantWord(const std::string &value);
+    void print(std::ostream & os) override;
     Word *clone(void) override;
 
 private:
