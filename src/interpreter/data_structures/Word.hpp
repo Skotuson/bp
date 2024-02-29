@@ -25,10 +25,11 @@ protected:
 
 class ConstantWord : public Word
 {
+public:
     ConstantWord(const std::string &value);
-
     Word *clone(void) override;
 
+private:
     std::string m_Value;
 };
 
