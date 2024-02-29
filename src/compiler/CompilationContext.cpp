@@ -23,6 +23,11 @@ void CompilationContext::addLabel(const Label & label)
     m_GeneratedCode.addLabel(label);
 }
 
+size_t CompilationContext::getLabelAddress(const Label & label)
+{
+    return m_GeneratedCode.m_LabelToAddress[label];
+}
+
 WAMCode CompilationContext::code()
 {
     return m_GeneratedCode;

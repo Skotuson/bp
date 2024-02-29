@@ -29,6 +29,7 @@ public:
     TableEntry *get(const std::string &symbol);
     void addInstructions(const std::vector<Instruction*> & instructions);
     void addLabel(const Label & label);
+    size_t getLabelAddress(const Label & label);
 
     WAMCode code();
 
