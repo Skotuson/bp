@@ -1,5 +1,9 @@
 #include "Interpreter.hpp"
 
+#include <sstream>
+
+#include "../compiler/Compiler.hpp"
+
 Interpreter::Interpreter(std::istream &is)
 {
     // TODO: case when only the bytecode is provided in text form
@@ -38,10 +42,18 @@ bool Interpreter::run(void)
     if (query == "halt.")
         return false;
 
+    //Compile query
+    std::istringstream iss("query:-" + query);
+    Compiler queryCompiler(iss);
+    queryCompiler.compile();
+    queryCompiler.dump(std::cout);
+
     Instruction *instr;
     while ((instr = fetch()))
         execute(instr);
     
+    std::cout << m_State << std::endl;
+
     return true;
 }
 
@@ -52,6 +64,7 @@ Instruction *Interpreter::fetch(void)
 
 void Interpreter::execute(Instruction *instr)
 {
-    instr->print(std::cout);
-    std::cout << std::endl;
+    //instr->print(std::cout);
+    //std::cout << std::endl;
+    instr->execute(m_State);
 }
