@@ -17,9 +17,20 @@ void ArgumentRegisters::fillRegister(Word *word, size_t reg)
     m_ArgumentRegisters[reg - 1] = word;
 }
 
-Word *ArgumentRegisters::dereferenceRegister(size_t reg)
+Word *ArgumentRegisters::dereferenceRegister(size_t reg) const
 {
     if (reg > m_ArgumentRegisters.size())
         return nullptr;
     return m_ArgumentRegisters[reg - 1];
+}
+
+std::ostream &operator<<(std::ostream &os, const ArgumentRegisters &argReg)
+{
+    for (size_t i = 1; i <= argReg.m_ArgumentRegisters.size(); i++)
+    {
+        os << "A" << i << ": ";
+        argReg.dereferenceRegister(i + 1)->print(os);
+        os << std::endl;
+    }
+    return os;
 }
