@@ -104,6 +104,7 @@ void ReturnInstruction::execute(WAMState &state)
     {
         state.m_ProgramCounter = cp->m_BCP;
         state.stackPop();
+        delete cp;
     }
     std::cout << state << std::endl;
 }
