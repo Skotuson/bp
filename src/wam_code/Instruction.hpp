@@ -40,6 +40,13 @@ struct BacktrackInstruction : public Instruction
     void print(std::ostream &os) override;
 };
 
+struct FailInstruction : public Instruction
+{
+    Instruction *clone(void) override;
+    void execute(WAMState &state) override;
+    void print(std::ostream &os) override;
+};
+
 // Procedural Instructions
 struct CallInstruction : public Instruction
 {
