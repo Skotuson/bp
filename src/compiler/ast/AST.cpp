@@ -83,7 +83,7 @@ std::string StructNode::codegen(CompilationContext &cctx)
         if (!m_IsArg)
         {
             code += "call " + m_Name;
-            cctx.addInstructions({new CallInstruction(m_Name)});
+            cctx.addInstructions({new CallInstruction(m_Name, cctx.getLabelAddress(m_Name))});
         }
         // Treat structs without arguments as constants (if they are an argument)
         else if (!m_Args.size() && m_IsArg)
