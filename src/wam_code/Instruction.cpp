@@ -102,8 +102,9 @@ void ReturnInstruction::execute(WAMState &state)
     ChoicePoint *cp = state.stackTop();
     if (cp)
     {
-        state.m_ProgramCounter = cp->m_BCP;
         state.stackPop();
+        if (!state.stackEmpty())
+            state.m_ProgramCounter = cp->m_BCP;
         delete cp;
     }
     std::cout << state << std::endl;
