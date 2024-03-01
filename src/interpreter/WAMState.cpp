@@ -34,7 +34,7 @@ ChoicePoint *WAMState::stackTop(void)
 {
     if (m_Stack.size())
     {
-        return m_Stack[m_Stack.size() - 1];
+        return m_Stack.back();
     }
 
     return nullptr;
@@ -43,8 +43,12 @@ ChoicePoint *WAMState::stackTop(void)
 std::ostream &operator<<(std::ostream &os, const WAMState &state)
 {
     os << "STACK-BOT" << std::endl;
-    for(const auto & cp : state.m_Stack)
+    size_t n = 1;
+    for(const auto & cp : state.m_Stack) 
+    {
+        std::cout << "Stack pos: " << n++ << std::endl;
         os << *cp << std::endl;
+    }
     os << "STACK-TOP";
     return os;
 }
