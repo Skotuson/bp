@@ -15,7 +15,7 @@ void MarkInstruction::execute(WAMState &state)
     ChoicePoint *ncp;
     if (cp)
     {
-        ncp = new ChoicePoint(state.m_ArgumentRegisters, cp->m_BCP, 0, 0, 0);
+        ncp = new ChoicePoint(cp->m_ArgumentRegisters, cp->m_BCP, 0, 0, 0);
     }
     else
         ncp = new ChoicePoint(state.m_ArgumentRegisters, 0, 0, 0, 0);
@@ -65,6 +65,20 @@ void BacktrackInstruction::execute(WAMState &state)
 void BacktrackInstruction::print(std::ostream &os)
 {
     os << "backtrack";
+}
+
+Instruction *FailInstruction::clone(void)
+{
+    return new FailInstruction();
+}
+
+void FailInstruction::execute(WAMState &state)
+{
+}
+
+void FailInstruction::print(std::ostream &os)
+{
+    os << "__fail__";
 }
 
 // Procedural Instructions
@@ -135,7 +149,17 @@ Instruction *GetConstantInstruction::clone(void)
 
 void GetConstantInstruction::execute(WAMState &state)
 {
-       
+    ChoicePoint *cp = state.stackTop();
+    Word *reg = cp->m_ArgumentRegisters.dereferenceRegister(m_ArgumentRegister);
+    ConstantWord *cword = new ConstantWord(m_Name);
+    if (!reg || !reg->compareToConst(cword))
+    {
+        // TODO: Make a singleton object maybe?
+        Instruction *fail = new FailInstruction();
+        fail->execute(state);
+        delete fail;
+    }
+    delete cword;
 }
 
 void GetConstantInstruction::print(std::ostream &os)
