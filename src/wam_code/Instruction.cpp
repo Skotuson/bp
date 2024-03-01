@@ -135,6 +135,7 @@ Instruction *GetConstantInstruction::clone(void)
 
 void GetConstantInstruction::execute(WAMState &state)
 {
+       
 }
 
 void GetConstantInstruction::print(std::ostream &os)
@@ -201,7 +202,7 @@ Instruction *PutConstantInstruction::clone(void)
 void PutConstantInstruction::execute(WAMState &state)
 {
     ChoicePoint *cp = state.stackTop();
-    cp->m_ArgumentRegisters.fillRegister(new ConstantWord(m_Name), m_ArgumentRegister - 1);
+    cp->m_ArgumentRegisters.fillRegister(new ConstantWord(m_Name), m_ArgumentRegister);
 }
 
 void PutConstantInstruction::print(std::ostream &os)
