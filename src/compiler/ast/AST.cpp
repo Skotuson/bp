@@ -30,6 +30,12 @@ std::string ProgramNode::codegen(CompilationContext &cctx)
     return code;
 }
 
+ProgramNode::~ProgramNode(void)
+{
+    for (ClauseNode *clause : m_Clauses)
+        delete clause;
+}
+
 void ProgramNode::print(const std::string &indent)
 {
     std::cout << indent << "=======[Start ProgramNode]======" << std::endl;
@@ -64,6 +70,12 @@ StructNode::StructNode(const std::string &name, std::vector<TermNode *> args)
     : TermNode(name),
       m_Args(args)
 {
+}
+
+StructNode::~StructNode(void)
+{
+    for (TermNode *arg : m_Args)
+        delete arg;
 }
 
 std::string StructNode::codegen(CompilationContext &cctx)
@@ -155,6 +167,13 @@ ListNode::ListNode(const std::vector<TermNode *> &list, TermNode *tail)
             m_Tail = new ListNode({list.begin() + 1, list.end()});
         }
     }
+}
+
+ListNode::~ListNode(void)
+{
+    for (TermNode *el : m_Head)
+        delete el;
+    delete m_Tail;
 }
 
 std::string ListNode::codegen(CompilationContext &cctx)
@@ -251,6 +270,14 @@ ClauseNode::ClauseNode(const std::string &head,
       m_Args(args),
       m_Body(body)
 {
+}
+
+ClauseNode::~ClauseNode(void)
+{
+    for (TermNode *arg : m_Args)
+        delete arg;
+    for (GoalNode *goal : m_Body)
+        delete goal;
 }
 
 std::string ClauseNode::codegen(CompilationContext &cctx)

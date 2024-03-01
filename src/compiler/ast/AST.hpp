@@ -43,6 +43,7 @@ struct StructNode : public TermNode
 {
     StructNode(const std::string &name,
                std::vector<TermNode *> args = std::vector<TermNode *>());
+    ~StructNode(void) override;
     std::string codegen(CompilationContext &cctx) override;
     TermType type() override;
     void print(const std::string &indent = "") override;
@@ -53,7 +54,7 @@ struct ListNode : public TermNode
 {
     ListNode(const std::vector<TermNode *> &head,
              TermNode *tail = nullptr);
-
+    ~ListNode(void) override;
     std::string codegen(CompilationContext &cctx) override;
     TermType type() override;
     void print(const std::string &indent = "") override;
@@ -93,6 +94,8 @@ struct ClauseNode : public Node
                std::vector<TermNode *> args,
                std::vector<GoalNode *> body);
 
+    ~ClauseNode(void) override;
+
     std::string codegen(CompilationContext &cctx) override;
     void print(const std::string &indent = "") override;
     std::string m_Head;
@@ -102,6 +105,7 @@ struct ClauseNode : public Node
 
 struct ProgramNode : public Node
 {
+    ~ProgramNode(void) override;
     virtual std::string codegen(CompilationContext &cctx);
     void print(const std::string &indent = "") override;
     std::vector<ClauseNode *> m_Clauses;
