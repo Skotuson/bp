@@ -24,6 +24,8 @@ struct TableEntry
 class CompilationContext
 {
 public:
+    ~CompilationContext(void);
+
     void add(const std::string &symbol,
              TableEntry *entry);
     TableEntry *get(const std::string &symbol);
