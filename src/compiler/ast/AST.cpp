@@ -74,12 +74,20 @@ std::string StructNode::codegen(CompilationContext &cctx)
         for (const auto &arg : m_Args)
         {
             arg->m_IsGoal = true;
+            arg->m_IsArg = true;
             arg->m_AvailableReg = m_AvailableReg;
             code += arg->codegen(cctx) + "\n\t";
             m_AvailableReg = arg->m_AvailableReg;
         }
-        code += "call " + m_Name;
-        cctx.addInstructions({new CallInstruction(m_Name)});
+        // Call if the struct has arguments or it exists in the symbol table
+        if (!m_IsArg)
+        {
+            code += "call " + m_Name;
+            cctx.addInstructions({new CallInstruction(m_Name)});
+        }
+        // Treat structs without arguments as constants (if they are an argument)
+        else if (!m_Args.size() && m_IsArg)
+            cctx.addInstructions({new PutConstantInstruction(m_Name, m_AvailableReg)});
         // Reset available registers after call
         m_AvailableReg = 1;
         return code;
