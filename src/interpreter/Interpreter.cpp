@@ -42,17 +42,33 @@ bool Interpreter::run(void)
     if (query == "halt.")
         return false;
 
-    //Compile query
-    std::istringstream iss("query:-" + query);
+    std::string queryLabel = "query";
+
+    // Compile query
+    std::istringstream iss(queryLabel + ":-" + query);
     Compiler queryCompiler(iss);
     queryCompiler.compile();
-    queryCompiler.dump(std::cout);
+    WAMCode queryCode = queryCompiler.dump();
+
+    // Pop the backtrack instruction
+    queryCode.popInstructions(1);
+
+    // Add the query instructions to the other code
+    m_Program.addLabel(queryLabel);
+    m_Program.addInstructions(queryCode.m_Program);
+
+    m_Program.dump(std::cout);
+
+    m_State.m_ProgramCounter = m_Program.getLabelAddress(queryLabel);
 
     Instruction *instr;
     while ((instr = fetch()))
         execute(instr);
     
-    std::cout << m_State << std::endl;
+    //std::cout << m_State << std::endl;
+
+    // Remove the query code
+    m_Program.popInstructions(queryCode.m_Program.size());
 
     return true;
 }
@@ -64,7 +80,7 @@ Instruction *Interpreter::fetch(void)
 
 void Interpreter::execute(Instruction *instr)
 {
-    //instr->print(std::cout);
-    //std::cout << std::endl;
+    instr->print(std::cout);
+    std::cout << std::endl;
     instr->execute(m_State);
 }
