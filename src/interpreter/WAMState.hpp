@@ -18,6 +18,7 @@ struct WAMState
 
     void stackPush(ChoicePoint *cp);
     void stackPop(void);
+    bool stackEmpty(void);
     ChoicePoint *stackTop(void);
 
     friend std::ostream &operator<<(std::ostream &os, const WAMState &state);

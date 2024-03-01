@@ -25,6 +25,11 @@ void WAMState::stackPop(void)
     m_Stack.pop_back();
 }
 
+bool WAMState::stackEmpty(void)
+{
+    return m_Stack.empty();
+}
+
 ChoicePoint *WAMState::stackTop(void)
 {
     if (m_Stack.size())
