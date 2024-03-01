@@ -12,6 +12,8 @@ public:
     {
     }
 
+    ~Parser(void);
+
     bool parse(void);
 
     ProgramNode *getAST(void);

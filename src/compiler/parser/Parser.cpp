@@ -8,6 +8,11 @@ bool Parser::parse(void)
     return true;
 }
 
+Parser::~Parser(void)
+{
+    delete m_ASTRoot;
+}
+
 ProgramNode *Parser::getAST(void)
 {
     return m_ASTRoot;
