@@ -9,6 +9,7 @@ class ArgumentRegisters
 {
 public:
     ArgumentRegisters(void) = default;
+    ~ArgumentRegisters(void);
     ArgumentRegisters(const ArgumentRegisters &argReg);
 
     void fillRegister(Word *word, size_t reg);
