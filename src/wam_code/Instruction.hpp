@@ -9,6 +9,7 @@
 struct Instruction
 {
     virtual Instruction *clone(void) = 0;
+    virtual ~Instruction(void) = default;
     virtual void execute(WAMState &state) = 0;
     virtual void print(std::ostream &os) = 0;
 };
