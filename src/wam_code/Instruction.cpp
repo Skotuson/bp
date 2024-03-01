@@ -11,8 +11,16 @@ Instruction *MarkInstruction::clone(void)
 
 void MarkInstruction::execute(WAMState &state)
 {
-    ChoicePoint *cp = new ChoicePoint(state.m_ArgumentRegisters, 0, 0, 0, 0);
-    state.stackPush(cp);
+    ChoicePoint *cp = state.stackTop();
+    ChoicePoint *ncp;
+    if (cp)
+    {
+        ncp = new ChoicePoint(state.m_ArgumentRegisters, cp->m_BCP, 0, 0, 0);
+    }
+    else
+        ncp = new ChoicePoint(state.m_ArgumentRegisters, 0, 0, 0, 0);
+    state.stackPush(ncp);
+    std::cout << state << std::endl;
 }
 
 void MarkInstruction::print(std::ostream &os)
@@ -60,21 +68,23 @@ void BacktrackInstruction::print(std::ostream &os)
 }
 
 // Procedural Instructions
-CallInstruction::CallInstruction(const std::string &label)
-    : m_Label(label)
+CallInstruction::CallInstruction(const std::string &label, size_t address)
+    : m_Label(label),
+      m_Address(address)
 {
 }
 
 Instruction *CallInstruction::clone(void)
 {
-    return new CallInstruction(m_Label);
+    return new CallInstruction(m_Label, m_Address);
 }
 
 void CallInstruction::execute(WAMState &state)
 {
-    state.m_ContinuationPointer = state.m_ProgramCounter + 1;
-    //TODO: add actual label address
-    //state.m_ProgramCounter = 
+    ChoicePoint *cp = state.stackTop();
+    // Program counter already points to another instruction
+    cp->m_BCP = state.m_ProgramCounter;
+    state.m_ProgramCounter = m_Address;
 }
 
 void CallInstruction::print(std::ostream &os)
@@ -89,6 +99,13 @@ Instruction *ReturnInstruction::clone(void)
 
 void ReturnInstruction::execute(WAMState &state)
 {
+    ChoicePoint *cp = state.stackTop();
+    if (cp)
+    {
+        state.m_ProgramCounter = cp->m_BCP;
+        state.stackPop();
+    }
+    std::cout << state << std::endl;
 }
 
 void ReturnInstruction::print(std::ostream &os)
@@ -181,7 +198,7 @@ Instruction *PutConstantInstruction::clone(void)
 
 void PutConstantInstruction::execute(WAMState &state)
 {
-    ChoicePoint * cp = state.stackTop();
+    ChoicePoint *cp = state.stackTop();
     cp->m_ArgumentRegisters.fillRegister(new ConstantWord(m_Name), m_ArgumentRegister - 1);
 }
 
