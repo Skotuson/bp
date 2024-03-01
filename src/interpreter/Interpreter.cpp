@@ -51,6 +51,7 @@ bool Interpreter::run(void)
     WAMCode queryCode = queryCompiler.dump();
 
     // Pop the backtrack instruction
+    delete queryCode.m_Program.back();
     queryCode.popInstructions(1);
 
     // Add the query instructions to the other code
@@ -65,8 +66,6 @@ bool Interpreter::run(void)
     while ((instr = fetch()))
         execute(instr);
     
-    //std::cout << m_State << std::endl;
-
     // Remove the query code
     m_Program.popInstructions(queryCode.m_Program.size());
 
@@ -80,6 +79,7 @@ Instruction *Interpreter::fetch(void)
 
 void Interpreter::execute(Instruction *instr)
 {
+    std::cout << "executing ";
     instr->print(std::cout);
     std::cout << std::endl;
     instr->execute(m_State);
