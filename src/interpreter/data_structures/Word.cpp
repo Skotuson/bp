@@ -20,3 +20,12 @@ Word *ConstantWord::clone(void)
 {
     return new ConstantWord(m_Value);
 }
+
+TAG ConstantWord::tag(void) 
+{
+    return m_Tag;
+}
+
+bool ConstantWord::compareToConst(ConstantWord * cword) {
+    return cword->m_Value == m_Value;
+}
