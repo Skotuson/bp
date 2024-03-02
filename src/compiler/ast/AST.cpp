@@ -301,7 +301,10 @@ std::string ClauseNode::codegen(CompilationContext &cctx)
     ++entry->m_Generated;
     std::string retryLabel = entry->m_Generated == entry->m_Clauses ? "quit" : m_Head + std::to_string(entry->m_Generated);
     code += "\tretry-me-else " + retryLabel + "\n";
+    // TODO: check case when retryLabel doesn't have address yet
     cctx.addInstructions({new RetryMeElseInstruction(retryLabel, cctx.getLabelAddress(retryLabel))});
+
+    cctx.addInstructions({new AllocateInstruction(0)});
 
     size_t currentArgumentRegister = 1;
     for (size_t i = 0; i < m_Args.size(); i++)

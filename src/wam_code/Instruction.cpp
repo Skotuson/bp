@@ -20,7 +20,7 @@ void MarkInstruction::execute(WAMState &state)
     else
         ncp = new ChoicePoint(state.m_ArgumentRegisters, 0, 0, 0, 0);
     state.stackPush(ncp);
-    std::cout << state << std::endl;
+    // std::cout << state << std::endl;
 }
 
 void MarkInstruction::print(std::ostream &os)
@@ -82,6 +82,26 @@ void FailInstruction::print(std::ostream &os)
 }
 
 // Procedural Instructions
+AllocateInstruction::AllocateInstruction(size_t n)
+    : m_N(n)
+{
+}
+
+Instruction *AllocateInstruction::clone(void)
+{
+    return new AllocateInstruction(m_N);
+}
+
+void AllocateInstruction::execute(WAMState &state)
+{
+    state.m_EnvironmentRegister = state.m_BacktrackRegister;
+}
+
+void AllocateInstruction::print(std::ostream &os)
+{
+    os << "allocate " << m_N;
+}
+
 CallInstruction::CallInstruction(const std::string &label, size_t address)
     : m_Label(label),
       m_Address(address)
@@ -121,7 +141,7 @@ void ReturnInstruction::execute(WAMState &state)
             state.m_ProgramCounter = cp->m_BCP;
         delete cp;
     }
-    std::cout << state << std::endl;
+    // std::cout << state << std::endl;
 }
 
 void ReturnInstruction::print(std::ostream &os)

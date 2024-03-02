@@ -48,6 +48,15 @@ struct FailInstruction : public Instruction
 };
 
 // Procedural Instructions
+struct AllocateInstruction : public Instruction
+{
+    AllocateInstruction(size_t n);
+    Instruction *clone(void) override;
+    void execute(WAMState &state) override;
+    void print(std::ostream &os) override;
+    size_t m_N;
+};
+
 struct CallInstruction : public Instruction
 {
     CallInstruction(const std::string &label, size_t address);
