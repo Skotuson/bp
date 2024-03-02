@@ -15,12 +15,20 @@ void MarkInstruction::execute(WAMState &state)
     ChoicePoint *ncp;
     if (cp)
     {
-        ncp = new ChoicePoint(cp->m_ArgumentRegisters, cp->m_BCP, 0, 0, 0);
+        ncp = new ChoicePoint(cp->m_ArgumentRegisters,
+                              state.m_EnvironmentRegister,
+                              state.m_ContinuationPointer,
+                              state.m_BacktrackRegister,
+                              state.m_ProgramCounter);
     }
     else
-        ncp = new ChoicePoint(state.m_ArgumentRegisters, 0, 0, 0, 0);
+        ncp = new ChoicePoint(state.m_ArgumentRegisters,
+                              state.m_EnvironmentRegister,
+                              state.m_ContinuationPointer,
+                              state.m_BacktrackRegister,
+                              state.m_ProgramCounter);
     state.stackPush(ncp);
-    // std::cout << state << std::endl;
+    std::cout << state << std::endl;
 }
 
 void MarkInstruction::print(std::ostream &os)
@@ -115,9 +123,8 @@ Instruction *CallInstruction::clone(void)
 
 void CallInstruction::execute(WAMState &state)
 {
-    ChoicePoint *cp = state.stackTop();
     // Program counter already points to another instruction
-    cp->m_BCP = state.m_ProgramCounter;
+    state.m_ContinuationPointer = state.m_ProgramCounter;
     state.m_ProgramCounter = m_Address;
 }
 
@@ -141,7 +148,7 @@ void ReturnInstruction::execute(WAMState &state)
             state.m_ProgramCounter = cp->m_BCP;
         delete cp;
     }
-    // std::cout << state << std::endl;
+    std::cout << state << std::endl;
 }
 
 void ReturnInstruction::print(std::ostream &os)
