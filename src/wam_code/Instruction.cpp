@@ -39,7 +39,7 @@ void MarkInstruction::execute(WAMState &state)
                               state.m_BacktrackRegister,
                               state.m_ProgramCounter);
     state.stackPush(ncp);
-    state.m_BacktrackRegister = state.SReg() - 1;
+    state.m_BacktrackRegister = state.SReg();
     std::cout << state << std::endl;
 }
 
@@ -69,7 +69,7 @@ void RetryMeElseInstruction::execute(WAMState &state)
 
 void RetryMeElseInstruction::print(std::ostream &os)
 {
-    os << "retry-me-else " << m_Label;
+    os << "retry-me-else " << m_Label << "[" << m_Address << "]";
 }
 
 Instruction *BacktrackInstruction::clone(void)
@@ -79,8 +79,11 @@ Instruction *BacktrackInstruction::clone(void)
 
 void BacktrackInstruction::execute(WAMState &state)
 {
-    state.stackPop(); // Discard the choice point
-    state.m_BacktrackRegister = state.getChoicePoint(state.m_BacktrackRegister)->m_BB;
+    ChoicePoint *cp = state.getChoicePoint(state.m_BacktrackRegister);
+    if (cp)
+    {
+        state.m_BacktrackRegister = cp->m_BB;
+    }
     Instruction *fail = new FailInstruction();
     fail->execute(state);
     delete fail;
@@ -98,7 +101,12 @@ Instruction *FailInstruction::clone(void)
 
 void FailInstruction::execute(WAMState &state)
 {
-    state.m_ProgramCounter = state.getChoicePoint(state.m_BacktrackRegister)->m_FA;
+    //state.stackPop();
+    ChoicePoint *cp = state.getChoicePoint(state.m_BacktrackRegister);
+    if (cp)
+    {
+        state.m_ProgramCounter = cp->m_FA;
+    }
 }
 
 void FailInstruction::print(std::ostream &os)
@@ -146,7 +154,7 @@ void CallInstruction::execute(WAMState &state)
 
 void CallInstruction::print(std::ostream &os)
 {
-    os << "call " + m_Label;
+    os << "call " + m_Label << "[" << m_Address << "]";
 }
 
 Instruction *ReturnInstruction::clone(void)
@@ -156,10 +164,12 @@ Instruction *ReturnInstruction::clone(void)
 
 void ReturnInstruction::execute(WAMState &state)
 {
-    std::cout << state.m_EnvironmentRegister << std::endl;
     ChoicePoint *cp = state.getChoicePoint(state.m_EnvironmentRegister);
-    state.m_ProgramCounter = cp->m_BCP;
-    state.m_EnvironmentRegister = cp->m_BCE;
+    if (cp)
+    {
+        state.m_ProgramCounter = cp->m_BCP;
+        state.m_EnvironmentRegister = cp->m_BCE;
+    }
     std::cout << state << std::endl;
 }
 
@@ -188,8 +198,7 @@ Instruction *GetConstantInstruction::clone(void)
 
 void GetConstantInstruction::execute(WAMState &state)
 {
-    ChoicePoint *cp = state.stackTop();
-    Word *reg = cp->m_ArgumentRegisters.dereferenceRegister(m_ArgumentRegister);
+    Word *reg = state.m_ArgumentRegisters.dereferenceRegister(m_ArgumentRegister);
     ConstantWord *cword = new ConstantWord(m_Name);
     if (!reg || !reg->compareToConst(cword))
     {
@@ -264,8 +273,7 @@ Instruction *PutConstantInstruction::clone(void)
 
 void PutConstantInstruction::execute(WAMState &state)
 {
-    ChoicePoint *cp = state.stackTop();
-    cp->m_ArgumentRegisters.fillRegister(new ConstantWord(m_Name), m_ArgumentRegister);
+    state.fillRegister(new ConstantWord(m_Name), m_ArgumentRegister);
 }
 
 void PutConstantInstruction::print(std::ostream &os)
