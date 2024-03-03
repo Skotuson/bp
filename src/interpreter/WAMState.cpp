@@ -40,11 +40,21 @@ ChoicePoint *WAMState::stackTop(void)
     return nullptr;
 }
 
+ChoicePoint *WAMState::getChoicePoint(size_t address)
+{
+    if (m_Stack.size())
+    {
+        return m_Stack[address];
+    }
+    
+    return nullptr;
+}
+
 std::ostream &operator<<(std::ostream &os, const WAMState &state)
 {
     os << "STACK-BOT" << std::endl;
     size_t n = 1;
-    for(const auto & cp : state.m_Stack) 
+    for (const auto &cp : state.m_Stack)
     {
         std::cout << "Stack pos: " << n++ << std::endl;
         os << *cp << std::endl;

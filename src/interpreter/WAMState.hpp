@@ -20,6 +20,7 @@ struct WAMState
     void stackPop(void);
     bool stackEmpty(void);
     ChoicePoint *stackTop(void);
+    ChoicePoint *getChoicePoint(size_t address);
 
     friend std::ostream &operator<<(std::ostream &os, const WAMState &state);
 
