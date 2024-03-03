@@ -27,10 +27,7 @@ std::string ProgramNode::codegen(CompilationContext &cctx)
     cctx.addLabel("quit");
     cctx.addInstructions({new BacktrackInstruction()});
 
-    for (BranchInstruction *jump : cctx.m_Jumps)
-    {
-        jump->setAddress(cctx.getLabelAddress(jump->m_Label));
-    }
+    cctx.getCode().updateJumpInstructions();
 
     return code;
 }
@@ -100,7 +97,7 @@ std::string StructNode::codegen(CompilationContext &cctx)
         {
             code += "call " + m_Name;
             BranchInstruction * bi = new CallInstruction(m_Name);
-            cctx.m_Jumps.push_back(bi);
+            cctx.getCode().addJumpInstructions({bi});
             cctx.addInstructions({bi});
         }
         // Treat structs without arguments as constants (if they are an argument)
@@ -309,7 +306,7 @@ std::string ClauseNode::codegen(CompilationContext &cctx)
     code += "\tretry-me-else " + retryLabel + "\n";
     // TODO: check case when retryLabel doesn't have address yet
     BranchInstruction * bi = new RetryMeElseInstruction(retryLabel);
-    cctx.m_Jumps.push_back(bi);
+    cctx.getCode().addJumpInstructions({bi});
     cctx.addInstructions({bi});
 
     cctx.addInstructions({new AllocateInstruction(0)});
