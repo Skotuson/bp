@@ -22,6 +22,7 @@ void WAMState::stackPush(ChoicePoint *cp)
 
 void WAMState::stackPop(void)
 {
+    delete m_Stack.back();
     m_Stack.pop_back();
 }
 
@@ -46,7 +47,7 @@ ChoicePoint *WAMState::getChoicePoint(size_t address)
     {
         return m_Stack[address];
     }
-    
+
     return nullptr;
 }
 
