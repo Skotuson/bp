@@ -9,6 +9,17 @@ Instruction *MarkInstruction::clone(void)
     return new MarkInstruction();
 }
 
+BranchInstruction::BranchInstruction(const std::string &label, size_t address)
+    : m_Label(label),
+      m_Address(address)
+{
+}
+
+void BranchInstruction::setAddress(size_t address)
+{
+    m_Address = address;
+}
+
 void MarkInstruction::execute(WAMState &state)
 {
     ChoicePoint *cp = state.stackTop();
@@ -28,6 +39,7 @@ void MarkInstruction::execute(WAMState &state)
                               state.m_BacktrackRegister,
                               state.m_ProgramCounter);
     state.stackPush(ncp);
+    state.m_BacktrackRegister = state.SReg() - 1;
     std::cout << state << std::endl;
 }
 
@@ -37,8 +49,7 @@ void MarkInstruction::print(std::ostream &os)
 }
 
 RetryMeElseInstruction::RetryMeElseInstruction(const std::string &label, size_t address)
-    : m_Label(label),
-      m_Address(address)
+    : BranchInstruction(label, address)
 {
 }
 
@@ -82,6 +93,7 @@ Instruction *FailInstruction::clone(void)
 
 void FailInstruction::execute(WAMState &state)
 {
+    std::cout << "FAIL" << std::endl;
 }
 
 void FailInstruction::print(std::ostream &os)
@@ -111,8 +123,7 @@ void AllocateInstruction::print(std::ostream &os)
 }
 
 CallInstruction::CallInstruction(const std::string &label, size_t address)
-    : m_Label(label),
-      m_Address(address)
+    : BranchInstruction(label, address)
 {
 }
 
@@ -140,14 +151,10 @@ Instruction *ReturnInstruction::clone(void)
 
 void ReturnInstruction::execute(WAMState &state)
 {
-    ChoicePoint *cp = state.stackTop();
-    if (cp)
-    {
-        state.stackPop();
-        if (!state.stackEmpty())
-            state.m_ProgramCounter = cp->m_BCP;
-        delete cp;
-    }
+    std::cout << state.m_EnvironmentRegister << std::endl;
+    ChoicePoint *cp = state.getChoicePoint(state.m_EnvironmentRegister);
+    state.m_ProgramCounter = cp->m_BCP;
+    state.m_EnvironmentRegister = cp->m_BCE;
     std::cout << state << std::endl;
 }
 

@@ -14,6 +14,15 @@ struct Instruction
     virtual void print(std::ostream &os) = 0;
 };
 
+struct BranchInstruction : public Instruction
+{
+    BranchInstruction(const std::string & label, size_t address = 0);
+    void setAddress(size_t address);
+
+    std::string m_Label;
+    size_t m_Address = 0;
+};
+
 // Indexing instructions
 struct MarkInstruction : public Instruction
 {
@@ -22,15 +31,12 @@ struct MarkInstruction : public Instruction
     void print(std::ostream &os) override;
 };
 
-struct RetryMeElseInstruction : public Instruction
+struct RetryMeElseInstruction : public BranchInstruction
 {
-    RetryMeElseInstruction(const std::string &label, size_t address);
+    RetryMeElseInstruction(const std::string &label, size_t address = 0);
     Instruction *clone(void) override;
     void execute(WAMState &state) override;
     void print(std::ostream &os) override;
-
-    std::string m_Label;
-    size_t m_Address;
 };
 
 struct BacktrackInstruction : public Instruction
@@ -57,9 +63,9 @@ struct AllocateInstruction : public Instruction
     size_t m_N;
 };
 
-struct CallInstruction : public Instruction
+struct CallInstruction : public BranchInstruction
 {
-    CallInstruction(const std::string &label, size_t address);
+    CallInstruction(const std::string &label, size_t address = 0);
     Instruction *clone(void) override;
     void execute(WAMState &state) override;
     void print(std::ostream &os) override;
