@@ -41,3 +41,8 @@ WAMCode CompilationContext::code()
 {
     return m_GeneratedCode;
 }
+
+WAMCode & CompilationContext::getCode()
+{
+    return m_GeneratedCode;
+}
