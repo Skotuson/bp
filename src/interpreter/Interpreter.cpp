@@ -54,9 +54,11 @@ bool Interpreter::run(void)
     delete queryCode.m_Program.back();
     queryCode.popInstructions(1);
 
-    // Add the query instructions to the other code
     m_Program.addLabel(queryLabel);
-    m_Program.addInstructions(queryCode.m_Program);
+    // Add the query instructions to the other code
+    // TODO: add existing labels to the queryCode
+    m_Program.merge(queryCode);
+    //m_Program.addInstructions(queryCode.m_Program);
 
     m_Program.dump(std::cout);
 
@@ -68,6 +70,7 @@ bool Interpreter::run(void)
     
     // Remove the query code
     m_Program.popInstructions(queryCode.m_Program.size());
+    // TODO: add same for Jump
 
     return true;
 }
