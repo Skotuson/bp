@@ -5,7 +5,16 @@ WAMCode::WAMCode(const WAMCode &wamCode)
       m_LabelToAddress(wamCode.m_LabelToAddress)
 {
     for (Instruction *instr : wamCode.m_Program)
-        m_Program.push_back(instr->clone());
+    {
+        Instruction *i = instr->clone();
+        m_Program.push_back(i);
+
+        BranchInstruction *bi;
+        if ((bi = dynamic_cast<BranchInstruction *>(i)))
+        {
+            m_Jumps.push_back(bi);
+        }
+    }
 }
 
 WAMCode &WAMCode::operator=(const WAMCode &wamCode)
@@ -19,7 +28,15 @@ WAMCode &WAMCode::operator=(const WAMCode &wamCode)
     m_LabelToAddress = wamCode.m_LabelToAddress;
 
     for (Instruction *instr : wamCode.m_Program)
-        m_Program.push_back(instr->clone());
+    {
+        Instruction *i = instr->clone();
+        m_Program.push_back(i);
+        BranchInstruction *bi;
+        if ((bi = dynamic_cast<BranchInstruction *>(i)))
+        {
+            m_Jumps.push_back(bi);
+        }
+    }
 
     return *this;
 }
