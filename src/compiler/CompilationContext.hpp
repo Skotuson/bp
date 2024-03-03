@@ -35,6 +35,7 @@ public:
 
     WAMCode code();
 
+    std::vector<BranchInstruction*> m_Jumps;
 private:
     std::unordered_map<std::string, TableEntry *> m_SymbolTable;
     WAMCode m_GeneratedCode;
