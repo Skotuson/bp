@@ -43,6 +43,26 @@ void WAMCode::popInstructions(size_t n)
     }
 }
 
+void WAMCode::addJumpInstructions(const std::vector<BranchInstruction *> &jumps)
+{
+    m_Jumps.insert(m_Jumps.end(), jumps.begin(), jumps.end());
+}
+
+void WAMCode::updateJumpInstructions(void)
+{
+    for (BranchInstruction *jump : m_Jumps)
+    {
+        jump->setAddress(getLabelAddress(jump->m_Label));
+    }
+}
+
+void WAMCode::merge(const WAMCode &code)
+{
+    addInstructions(code.m_Program);
+    addJumpInstructions(code.m_Jumps);
+    updateJumpInstructions();
+}
+
 Instruction *WAMCode::getInstruction(size_t pc)
 {
     if (pc >= m_Program.size())

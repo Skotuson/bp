@@ -19,6 +19,12 @@ struct WAMCode
 
     void addInstructions(const std::vector<Instruction *> &instructions);
     void popInstructions(size_t n);
+
+    void addJumpInstructions(const std::vector<BranchInstruction *> &jumps);
+    void updateJumpInstructions(void);
+
+    void merge(const WAMCode & code);
+
     Instruction *getInstruction(size_t pc);
     void dump(std::ostream &os);
     void addLabel(const Label &label);
@@ -28,6 +34,7 @@ struct WAMCode
     std::map<size_t, Label> m_AddressToLabel;
     std::map<Label, size_t> m_LabelToAddress;
     std::vector<Instruction *> m_Program;
+    std::vector<BranchInstruction *> m_Jumps;
 };
 
 #endif // WAMCODE_H
