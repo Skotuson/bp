@@ -50,8 +50,10 @@ bool Interpreter::run(void)
     queryCompiler.compile();
     WAMCode queryCode = queryCompiler.dump();
 
+    // Delete the first three instructions
+    for(size_t i = 0; i < 3; i++)
+        queryCode.deleteInstruction(0);
     // Pop the backtrack instruction
-    delete queryCode.m_Program.back();
     queryCode.popInstructions(1);
 
     m_Program.addLabel(queryLabel);
