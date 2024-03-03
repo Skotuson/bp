@@ -27,6 +27,11 @@ std::string ProgramNode::codegen(CompilationContext &cctx)
     cctx.addLabel("quit");
     cctx.addInstructions({new BacktrackInstruction()});
 
+    for (BranchInstruction *jump : cctx.m_Jumps)
+    {
+        jump->setAddress(cctx.getLabelAddress(jump->m_Label));
+    }
+
     return code;
 }
 
@@ -91,11 +96,12 @@ std::string StructNode::codegen(CompilationContext &cctx)
             code += arg->codegen(cctx) + "\n\t";
             m_AvailableReg = arg->m_AvailableReg;
         }
-        // Call if the struct has arguments or it exists in the symbol table
         if (!m_IsArg)
         {
             code += "call " + m_Name;
-            cctx.addInstructions({new CallInstruction(m_Name, cctx.getLabelAddress(m_Name))});
+            BranchInstruction * bi = new CallInstruction(m_Name);
+            cctx.m_Jumps.push_back(bi);
+            cctx.addInstructions({bi});
         }
         // Treat structs without arguments as constants (if they are an argument)
         else if (!m_Args.size() && m_IsArg)
@@ -302,7 +308,9 @@ std::string ClauseNode::codegen(CompilationContext &cctx)
     std::string retryLabel = entry->m_Generated == entry->m_Clauses ? "quit" : m_Head + std::to_string(entry->m_Generated);
     code += "\tretry-me-else " + retryLabel + "\n";
     // TODO: check case when retryLabel doesn't have address yet
-    cctx.addInstructions({new RetryMeElseInstruction(retryLabel, cctx.getLabelAddress(retryLabel))});
+    BranchInstruction * bi = new RetryMeElseInstruction(retryLabel);
+    cctx.m_Jumps.push_back(bi);
+    cctx.addInstructions({bi});
 
     cctx.addInstructions({new AllocateInstruction(0)});
 
