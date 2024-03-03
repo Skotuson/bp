@@ -69,9 +69,6 @@ struct CallInstruction : public BranchInstruction
     Instruction *clone(void) override;
     void execute(WAMState &state) override;
     void print(std::ostream &os) override;
-
-    std::string m_Label;
-    size_t m_Address;
 };
 
 struct ReturnInstruction : public Instruction
