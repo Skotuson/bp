@@ -1,6 +1,7 @@
 #include "ChoicePoint.hpp"
 
-ChoicePoint::ChoicePoint(const ArgumentRegisters &argReg, size_t bcp, size_t bce, size_t bb, size_t fa)
+ChoicePoint::ChoicePoint(const ArgumentRegisters &argReg, size_t bce, size_t bcp,
+                         size_t bb, size_t fa)
     : m_ArgumentRegisters(argReg),
       m_BCE(bce),
       m_BCP(bcp),
