@@ -7,7 +7,7 @@ void WAMState::fillRegister(Word *word, size_t reg)
 
 size_t WAMState::SReg(void)
 {
-    return m_Stack.size();
+    return m_Stack.size() - 1;
 }
 
 size_t WAMState::TRReg(void)
@@ -22,8 +22,11 @@ void WAMState::stackPush(ChoicePoint *cp)
 
 void WAMState::stackPop(void)
 {
-    delete m_Stack.back();
-    m_Stack.pop_back();
+    if (!m_Stack.empty())
+    {
+        delete m_Stack.back();
+        m_Stack.pop_back();
+    }
 }
 
 bool WAMState::stackEmpty(void)
