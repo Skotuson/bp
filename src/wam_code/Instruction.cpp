@@ -79,6 +79,11 @@ Instruction *BacktrackInstruction::clone(void)
 
 void BacktrackInstruction::execute(WAMState &state)
 {
+    state.stackPop(); // Discard the choice point
+    state.m_BacktrackRegister = state.getChoicePoint(state.m_BacktrackRegister)->m_BB;
+    Instruction *fail = new FailInstruction();
+    fail->execute(state);
+    delete fail;
 }
 
 void BacktrackInstruction::print(std::ostream &os)
@@ -93,7 +98,7 @@ Instruction *FailInstruction::clone(void)
 
 void FailInstruction::execute(WAMState &state)
 {
-    std::cout << "FAIL" << std::endl;
+    state.m_ProgramCounter = state.getChoicePoint(state.m_BacktrackRegister)->m_FA;
 }
 
 void FailInstruction::print(std::ostream &os)
