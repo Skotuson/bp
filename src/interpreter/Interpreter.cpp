@@ -56,9 +56,7 @@ bool Interpreter::run(void)
 
     m_Program.addLabel(queryLabel);
     // Add the query instructions to the other code
-    // TODO: add existing labels to the queryCode
     m_Program.merge(queryCode);
-    //m_Program.addInstructions(queryCode.m_Program);
 
     m_Program.dump(std::cout);
 
