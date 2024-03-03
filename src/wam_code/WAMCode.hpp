@@ -18,6 +18,7 @@ struct WAMCode
     ~WAMCode(void);
 
     void addInstructions(const std::vector<Instruction *> &instructions);
+    void deleteInstruction(size_t idx);
     void popInstructions(size_t n);
 
     void addJumpInstructions(const std::vector<BranchInstruction *> &jumps);

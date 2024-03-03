@@ -52,10 +52,16 @@ void WAMCode::addInstructions(const std::vector<Instruction *> &instructions)
     m_Program.insert(m_Program.end(), instructions.begin(), instructions.end());
 }
 
+void WAMCode::deleteInstruction(size_t idx)
+{
+    m_Program.erase(m_Program.begin() + idx);
+}
+
 void WAMCode::popInstructions(size_t n)
 {
     while (n--)
     {
+        delete m_Program.back();
         m_Program.pop_back();
     }
 }
