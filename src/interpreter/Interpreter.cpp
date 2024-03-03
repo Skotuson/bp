@@ -51,7 +51,7 @@ bool Interpreter::run(void)
     WAMCode queryCode = queryCompiler.dump();
 
     // Delete the first three instructions
-    for(size_t i = 0; i < 3; i++)
+    for (size_t i = 0; i < 3; i++)
         queryCode.deleteInstruction(0);
     // Pop the backtrack instruction
     queryCode.popInstructions(1);
@@ -66,8 +66,11 @@ bool Interpreter::run(void)
 
     Instruction *instr;
     while ((instr = fetch()))
+    {
+        //std::cout << m_State.m_ContinuationPointer << std::endl;
         execute(instr);
-    
+    }
+
     // Remove the query code
     m_Program.popInstructions(queryCode.m_Program.size());
     // TODO: add same for Jump
