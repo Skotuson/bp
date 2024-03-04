@@ -9,6 +9,8 @@
 #include <vector>
 #include <cstdlib>
 
+const size_t UNSET_REG = -1;
+
 struct WAMState
 {
     void fillRegister(Word *word, size_t reg);
@@ -27,14 +29,15 @@ struct WAMState
     size_t m_ProgramCounter = 0;
     size_t m_ContinuationPointer = 0;
 
-    size_t m_BacktrackRegister = 0;
-    size_t m_EnvironmentRegister = 0;
+    size_t m_BacktrackRegister = UNSET_REG;
+    size_t m_EnvironmentRegister = UNSET_REG;
 
     std::vector<Word *> m_Trail;
     std::vector<ChoicePoint *> m_Stack; // Represented as a vector because I need to have a random access available
     ArgumentRegisters m_ArgumentRegisters;
 
     bool m_ModeFlag = false;
+    bool m_FailFlag = false;
 };
 
 #endif // WAMSTATE_H
