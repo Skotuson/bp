@@ -96,9 +96,7 @@ std::string StructNode::codegen(CompilationContext &cctx)
         if (!m_IsArg)
         {
             code += "call " + m_Name;
-            BranchInstruction * bi = new CallInstruction(m_Name);
-            cctx.getCode().addJumpInstructions({bi});
-            cctx.addInstructions({bi});
+            cctx.addInstructions({new CallInstruction(m_Name)});
             // Reset available registers after call
             m_AvailableReg = 1;
         }
@@ -304,10 +302,7 @@ std::string ClauseNode::codegen(CompilationContext &cctx)
     ++entry->m_Generated;
     std::string retryLabel = entry->m_Generated == entry->m_Clauses ? "quit" : m_Head + std::to_string(entry->m_Generated);
     code += "\tretry-me-else " + retryLabel + "\n";
-    // TODO: check case when retryLabel doesn't have address yet
-    BranchInstruction * bi = new RetryMeElseInstruction(retryLabel);
-    cctx.getCode().addJumpInstructions({bi});
-    cctx.addInstructions({bi});
+    cctx.addInstructions({new RetryMeElseInstruction(retryLabel)});
 
     cctx.addInstructions({new AllocateInstruction(0)});
 
