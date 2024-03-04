@@ -65,9 +65,8 @@ bool Interpreter::run(void)
     m_State.m_ProgramCounter = m_Program.getLabelAddress(queryLabel);
 
     Instruction *instr;
-    while ((instr = fetch()))
+    while ((instr = fetch()) && !m_State.m_FailFlag)
     {
-        //std::cout << m_State.m_ContinuationPointer << std::endl;
         execute(instr);
     }
 
