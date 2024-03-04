@@ -74,6 +74,7 @@ bool Interpreter::run(void)
     m_Program.popInstructions(queryCode.m_Program.size());
     // TODO: add same for Jump
 
+    m_State.m_FailFlag = false;
     return true;
 }
 
