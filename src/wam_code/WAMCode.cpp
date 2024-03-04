@@ -61,6 +61,11 @@ void WAMCode::popInstructions(size_t n)
 {
     while (n--)
     {
+        Instruction *i = m_Program.back(), *bi;
+        if ((bi = dynamic_cast<BranchInstruction *>(i)))
+        {
+            m_Jumps.pop_back();
+        }
         delete m_Program.back();
         m_Program.pop_back();
     }
