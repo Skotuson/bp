@@ -46,7 +46,7 @@ ChoicePoint *WAMState::stackTop(void)
 
 ChoicePoint *WAMState::getChoicePoint(size_t address)
 {
-    if (m_Stack.size())
+    if (m_Stack.size() && address < m_Stack.size())
     {
         return m_Stack[address];
     }
