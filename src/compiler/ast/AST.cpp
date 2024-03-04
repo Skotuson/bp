@@ -99,12 +99,12 @@ std::string StructNode::codegen(CompilationContext &cctx)
             BranchInstruction * bi = new CallInstruction(m_Name);
             cctx.getCode().addJumpInstructions({bi});
             cctx.addInstructions({bi});
+            // Reset available registers after call
+            m_AvailableReg = 1;
         }
         // Treat structs without arguments as constants (if they are an argument)
         else if (!m_Args.size() && m_IsArg)
-            cctx.addInstructions({new PutConstantInstruction(m_Name, m_AvailableReg)});
-        // Reset available registers after call
-        m_AvailableReg = 1;
+            cctx.addInstructions({new PutConstantInstruction(m_Name, m_AvailableReg++)});
         return code;
     }
 
