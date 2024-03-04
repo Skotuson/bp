@@ -13,6 +13,7 @@ const size_t UNSET_REG = -1;
 
 struct WAMState
 {
+    ~WAMState(void);
     void fillRegister(Word *word, size_t reg);
 
     size_t SReg(void);

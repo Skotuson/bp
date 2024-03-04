@@ -1,5 +1,13 @@
 #include "WAMState.hpp"
 
+WAMState::~WAMState(void)
+{
+    for (auto word : m_Trail)
+        delete word;
+    for (auto cp : m_Stack)
+        delete cp;
+}
+
 void WAMState::fillRegister(Word *word, size_t reg)
 {
     m_ArgumentRegisters.fillRegister(word, reg);
