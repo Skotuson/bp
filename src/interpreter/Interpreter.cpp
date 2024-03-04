@@ -65,6 +65,7 @@ bool Interpreter::run(void)
     m_State.m_ProgramCounter = m_Program.getLabelAddress(queryLabel);
 
     // TODO: handle emptying arg regs after sucessfully completing a goal (multiple goals in conjuction in a query)
+    // Maybe delete them from arg reg after sucessfuly unifying/.... (have to check whether possible)
     Instruction *instr;
     while ((instr = fetch()) && !m_State.m_FailFlag)
     {
