@@ -6,14 +6,7 @@ WAMCode::WAMCode(const WAMCode &wamCode)
 {
     for (Instruction *instr : wamCode.m_Program)
     {
-        Instruction *i = instr->clone();
-        m_Program.push_back(i);
-
-        BranchInstruction *bi;
-        if ((bi = dynamic_cast<BranchInstruction *>(i)))
-        {
-            m_Jumps.push_back(bi);
-        }
+        m_Program.push_back(instr->clone());
     }
 }
 
@@ -29,13 +22,7 @@ WAMCode &WAMCode::operator=(const WAMCode &wamCode)
 
     for (Instruction *instr : wamCode.m_Program)
     {
-        Instruction *i = instr->clone();
-        m_Program.push_back(i);
-        BranchInstruction *bi;
-        if ((bi = dynamic_cast<BranchInstruction *>(i)))
-        {
-            m_Jumps.push_back(bi);
-        }
+        m_Program.push_back(instr->clone());
     }
 
     return *this;
@@ -49,7 +36,10 @@ WAMCode::~WAMCode(void)
 
 void WAMCode::addInstructions(const std::vector<Instruction *> &instructions)
 {
-    m_Program.insert(m_Program.end(), instructions.begin(), instructions.end());
+    std::vector<Instruction *> instrCpy;
+    for(auto instr : instructions)
+        instrCpy.push_back(instr->clone());
+    m_Program.insert(m_Program.end(), instrCpy.begin(), instrCpy.end());
 }
 
 void WAMCode::deleteInstruction(size_t idx)
@@ -61,33 +51,26 @@ void WAMCode::popInstructions(size_t n)
 {
     while (n--)
     {
-        Instruction *i = m_Program.back(), *bi;
-        if ((bi = dynamic_cast<BranchInstruction *>(i)))
-        {
-            m_Jumps.pop_back();
-        }
         delete m_Program.back();
         m_Program.pop_back();
     }
 }
 
-void WAMCode::addJumpInstructions(const std::vector<BranchInstruction *> &jumps)
-{
-    m_Jumps.insert(m_Jumps.end(), jumps.begin(), jumps.end());
-}
-
 void WAMCode::updateJumpInstructions(void)
 {
-    for (BranchInstruction *jump : m_Jumps)
+    for (Instruction *instr : m_Program)
     {
-        jump->setAddress(getLabelAddress(jump->m_Label));
+        BranchInstruction *jump = dynamic_cast<BranchInstruction *>(instr);
+        if (jump)
+        {
+            jump->setAddress(getLabelAddress(jump->m_Label));
+        }
     }
 }
 
 void WAMCode::merge(const WAMCode &code)
 {
     addInstructions(code.m_Program);
-    addJumpInstructions(code.m_Jumps);
     updateJumpInstructions();
 }
 

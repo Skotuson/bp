@@ -21,7 +21,6 @@ struct WAMCode
     void deleteInstruction(size_t idx);
     void popInstructions(size_t n);
 
-    void addJumpInstructions(const std::vector<BranchInstruction *> &jumps);
     void updateJumpInstructions(void);
 
     void merge(const WAMCode & code);
@@ -35,7 +34,6 @@ struct WAMCode
     std::map<size_t, Label> m_AddressToLabel;
     std::map<Label, size_t> m_LabelToAddress;
     std::vector<Instruction *> m_Program;
-    std::vector<BranchInstruction *> m_Jumps;
 };
 
 #endif // WAMCODE_H
