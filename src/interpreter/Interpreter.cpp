@@ -74,7 +74,8 @@ bool Interpreter::run(void)
     m_Program.popInstructions(queryCode.m_Program.size());
     // TODO: add same for Jump
 
-    m_State.m_FailFlag = false;
+    // Reset the WAM
+    m_State = WAMState();
     return true;
 }
 
