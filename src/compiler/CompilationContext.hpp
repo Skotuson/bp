@@ -24,13 +24,16 @@ struct TableEntry
 class CompilationContext
 {
 public:
+    ~CompilationContext(void);
+
     void add(const std::string &symbol,
              TableEntry *entry);
     TableEntry *get(const std::string &symbol);
     void addInstructions(const std::vector<Instruction*> & instructions);
     void addLabel(const Label & label);
-
-    WAMCode code();
+    size_t getLabelAddress(const Label & label);
+    WAMCode & getCode(void);
+    WAMCode code(void);
 
 private:
     std::unordered_map<std::string, TableEntry *> m_SymbolTable;

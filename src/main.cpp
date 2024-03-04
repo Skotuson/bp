@@ -53,10 +53,10 @@ int main(int argc, const char **argv)
 
     Compiler comp(ifs);
     comp.compile();
-    comp.dump(std::cout);
-
+    
     Interpreter intp(comp.dump());
-    intp.run();
+    
+    while(intp.run());
 
     return res;
 }

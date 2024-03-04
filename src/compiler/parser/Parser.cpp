@@ -8,6 +8,11 @@ bool Parser::parse(void)
     return true;
 }
 
+Parser::~Parser(void)
+{
+    delete m_ASTRoot;
+}
+
 ProgramNode *Parser::getAST(void)
 {
     return m_ASTRoot;
@@ -104,13 +109,18 @@ std::vector<GoalNode *> Parser::Body(void)
 {
     std::vector<GoalNode *> body, bodyCont;
     StructNode *compound;
+    TermNode *term;
     switch (m_Lex.peek())
     {
     case TOK_ATOM_LOWER:
         m_Lex.match(TOK_ATOM_LOWER);
         compound = BodyLower();
-        if (!BodyTerm())
+        if (!(term = BodyTerm()))
             body.push_back(compound);
+        //TODO: check this
+        else delete compound;
+        // TODO: delete for now so it doesn't leak
+        delete term;
         bodyCont = BodyCont();
         body.insert(body.end(), bodyCont.begin(), bodyCont.end());
         return body;
@@ -118,7 +128,9 @@ std::vector<GoalNode *> Parser::Body(void)
         m_Lex.match(TOK_CONST);
         m_Lex.match(TOK_EQUAL);
         // TODO: Unification
-        Term();
+        term = Term();
+        // TODO: delete for now so it doesn't leak
+        delete term;
         bodyCont = BodyCont();
         body.insert(body.end(), bodyCont.begin(), bodyCont.end());
         return body;
@@ -126,7 +138,9 @@ std::vector<GoalNode *> Parser::Body(void)
         m_Lex.match(TOK_VAR);
         m_Lex.match(TOK_EQUAL);
         // TODO: Unification
-        Term();
+        term = Term();
+        // TODO: delete for now so it doesn't leak
+        delete term;
         bodyCont = BodyCont();
         body.insert(body.end(), bodyCont.begin(), bodyCont.end());
         return body;
@@ -195,8 +209,8 @@ TermNode *Parser::Term(void)
         m_Lex.match(TOK_ATOM_LOWER);
         return TermLower();
     case TOK_CONST:
-        m_Lex . match ( TOK_CONST );
-        return new ConstNode( m_Lex.numericValue() );
+        m_Lex.match(TOK_CONST);
+        return new ConstNode(m_Lex.numericValue());
     case TOK_LSPAR:
         m_Lex.match(TOK_LSPAR);
         list = ListInner();

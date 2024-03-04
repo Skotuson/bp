@@ -8,45 +8,73 @@
 
 struct Instruction
 {
-    virtual void execute(WAMState & state) = 0;
+    virtual Instruction *clone(void) = 0;
+    virtual ~Instruction(void) = default;
+    virtual void execute(WAMState &state) = 0;
     virtual void print(std::ostream &os) = 0;
+};
+
+struct BranchInstruction : public Instruction
+{
+    BranchInstruction(const std::string & label, size_t address = 0);
+    void setAddress(size_t address);
+
+    std::string m_Label;
+    size_t m_Address = 0;
 };
 
 // Indexing instructions
 struct MarkInstruction : public Instruction
 {
-    void execute(WAMState & state) override;
+    Instruction *clone(void) override;
+    void execute(WAMState &state) override;
     void print(std::ostream &os) override;
 };
 
-struct RetryMeElseInstruction : public Instruction
+struct RetryMeElseInstruction : public BranchInstruction
 {
-    RetryMeElseInstruction(const std::string &label);
-    void execute(WAMState & state) override;
+    RetryMeElseInstruction(const std::string &label, size_t address = 0);
+    Instruction *clone(void) override;
+    void execute(WAMState &state) override;
     void print(std::ostream &os) override;
-
-    std::string m_Label;
 };
 
 struct BacktrackInstruction : public Instruction
 {
-    void execute(WAMState & state) override;
+    Instruction *clone(void) override;
+    void execute(WAMState &state) override;
+    void print(std::ostream &os) override;
+};
+
+struct FailInstruction : public Instruction
+{
+    Instruction *clone(void) override;
+    void execute(WAMState &state) override;
     void print(std::ostream &os) override;
 };
 
 // Procedural Instructions
-struct CallInstruction : public Instruction
+struct AllocateInstruction : public Instruction
 {
-    CallInstruction(const std::string &label);
-    void execute(WAMState & state) override;
+    AllocateInstruction(size_t n);
+    Instruction *clone(void) override;
+    void execute(WAMState &state) override;
     void print(std::ostream &os) override;
+    size_t m_N;
+};
 
-    std::string m_Label;
+struct CallInstruction : public BranchInstruction
+{
+    CallInstruction(const std::string &label, size_t address = 0);
+    Instruction *clone(void) override;
+    void execute(WAMState &state) override;
+    void print(std::ostream &os) override;
 };
 
 struct ReturnInstruction : public Instruction
 {
-    void execute(WAMState & state) override;
+    Instruction *clone(void) override;
+    void execute(WAMState &state) override;
     void print(std::ostream &os) override;
 };
 
@@ -62,7 +90,8 @@ protected:
 struct GetConstantInstruction : public GetInstruction
 {
     GetConstantInstruction(const std::string &name, size_t argumentRegister);
-    void execute(WAMState & state) override;
+    Instruction *clone(void) override;
+    void execute(WAMState &state) override;
     void print(std::ostream &os) override;
 };
 
@@ -73,14 +102,16 @@ struct GetListInstruction : public GetInstruction
 struct GetStructureInstruction : public GetInstruction
 {
     GetStructureInstruction(const std::string &name, size_t argumentRegister);
-    void execute(WAMState & state) override;
+    Instruction *clone(void) override;
+    void execute(WAMState &state) override;
     void print(std::ostream &os) override;
 };
 
 struct GetVariableInstruction : public GetInstruction
 {
     GetVariableInstruction(const std::string &name, size_t argumentRegister);
-    void execute(WAMState & state) override;
+    Instruction *clone(void) override;
+    void execute(WAMState &state) override;
     void print(std::ostream &os) override;
 };
 // Put Instructions
@@ -94,14 +125,16 @@ protected:
 struct PutConstantInstruction : public PutInstruction
 {
     PutConstantInstruction(const std::string &name, size_t argumentRegister);
-    void execute(WAMState & state) override;
+    Instruction *clone(void) override;
+    void execute(WAMState &state) override;
     void print(std::ostream &os) override;
 };
 
 struct PutVariableInstruction : public PutInstruction
 {
     PutVariableInstruction(const std::string &name, size_t argumentRegister);
-    void execute(WAMState & state) override;
+    Instruction *clone(void) override;
+    void execute(WAMState &state) override;
     void print(std::ostream &os) override;
 };
 
@@ -121,14 +154,16 @@ protected:
 struct UnifyConstantInstruction : public UnifyInstruction
 {
     UnifyConstantInstruction(const std::string &name);
-    void execute(WAMState & state) override;
+    Instruction *clone(void) override;
+    void execute(WAMState &state) override;
     void print(std::ostream &os) override;
 };
 
 struct UnifyVariableInstruction : public UnifyInstruction
 {
     UnifyVariableInstruction(const std::string &name);
-    void execute(WAMState & state) override;
+    Instruction *clone(void) override;
+    void execute(WAMState &state) override;
     void print(std::ostream &os) override;
 };
 

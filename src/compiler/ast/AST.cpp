@@ -27,7 +27,15 @@ std::string ProgramNode::codegen(CompilationContext &cctx)
     cctx.addLabel("quit");
     cctx.addInstructions({new BacktrackInstruction()});
 
+    cctx.getCode().updateJumpInstructions();
+
     return code;
+}
+
+ProgramNode::~ProgramNode(void)
+{
+    for (ClauseNode *clause : m_Clauses)
+        delete clause;
 }
 
 void ProgramNode::print(const std::string &indent)
@@ -66,6 +74,12 @@ StructNode::StructNode(const std::string &name, std::vector<TermNode *> args)
 {
 }
 
+StructNode::~StructNode(void)
+{
+    for (TermNode *arg : m_Args)
+        delete arg;
+}
+
 std::string StructNode::codegen(CompilationContext &cctx)
 {
     std::string code = "";
@@ -74,14 +88,21 @@ std::string StructNode::codegen(CompilationContext &cctx)
         for (const auto &arg : m_Args)
         {
             arg->m_IsGoal = true;
+            arg->m_IsArg = true;
             arg->m_AvailableReg = m_AvailableReg;
             code += arg->codegen(cctx) + "\n\t";
             m_AvailableReg = arg->m_AvailableReg;
         }
-        code += "call " + m_Name;
-        cctx.addInstructions({new CallInstruction(m_Name)});
-        // Reset available registers after call
-        m_AvailableReg = 1;
+        if (!m_IsArg)
+        {
+            code += "call " + m_Name;
+            cctx.addInstructions({new CallInstruction(m_Name)});
+            // Reset available registers after call
+            m_AvailableReg = 1;
+        }
+        // Treat structs without arguments as constants (if they are an argument)
+        else if (!m_Args.size() && m_IsArg)
+            cctx.addInstructions({new PutConstantInstruction(m_Name, m_AvailableReg++)});
         return code;
     }
 
@@ -147,6 +168,13 @@ ListNode::ListNode(const std::vector<TermNode *> &list, TermNode *tail)
             m_Tail = new ListNode({list.begin() + 1, list.end()});
         }
     }
+}
+
+ListNode::~ListNode(void)
+{
+    for (TermNode *el : m_Head)
+        delete el;
+    delete m_Tail;
 }
 
 std::string ListNode::codegen(CompilationContext &cctx)
@@ -245,6 +273,14 @@ ClauseNode::ClauseNode(const std::string &head,
 {
 }
 
+ClauseNode::~ClauseNode(void)
+{
+    for (TermNode *arg : m_Args)
+        delete arg;
+    for (GoalNode *goal : m_Body)
+        delete goal;
+}
+
 std::string ClauseNode::codegen(CompilationContext &cctx)
 {
     std::string code = "";
@@ -267,6 +303,8 @@ std::string ClauseNode::codegen(CompilationContext &cctx)
     std::string retryLabel = entry->m_Generated == entry->m_Clauses ? "quit" : m_Head + std::to_string(entry->m_Generated);
     code += "\tretry-me-else " + retryLabel + "\n";
     cctx.addInstructions({new RetryMeElseInstruction(retryLabel)});
+
+    cctx.addInstructions({new AllocateInstruction(0)});
 
     size_t currentArgumentRegister = 1;
     for (size_t i = 0; i < m_Args.size(); i++)

@@ -19,7 +19,7 @@ public:
     Interpreter(std::istream &is);
     Interpreter(const WAMCode &wamCode);
 
-    void run(void);
+    bool run(void);
 
 private:
     Instruction * fetch(void);
