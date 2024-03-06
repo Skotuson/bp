@@ -1,6 +1,8 @@
 #ifndef INTERPRETER_H
 #define INTERPRETER_H
 
+// TODO: pragma once
+
 #include "WAMState.hpp"
 #include "../wam_code/WAMCode.hpp"
 #include "../wam_code/Instruction.hpp"
@@ -16,9 +18,10 @@ using Label = std::string;
 class Interpreter
 {
 public:
+    // TODO: split
     Interpreter(std::istream &is);
     Interpreter(const WAMCode &wamCode);
-
+    
     bool run(void);
 
 private:

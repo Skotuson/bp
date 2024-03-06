@@ -74,8 +74,7 @@ bool Interpreter::run(void)
 
     // Remove the query code
     m_Program.popInstructions(queryCode.m_Program.size());
-    // TODO: add same for Jump
-
+    
     // Reset the WAM
     m_State = WAMState();
     return true;
