@@ -303,7 +303,8 @@ std::string ClauseNode::codegen(CompilationContext &cctx)
     std::string retryLabel = entry->m_Generated == entry->m_Clauses ? "quit" : m_Head + std::to_string(entry->m_Generated);
     code += "\tretry-me-else " + retryLabel + "\n";
     cctx.addInstructions({new RetryMeElseInstruction(retryLabel)});
-
+    
+    // TODO: count all variables and complex objects (even nested) and generate the "n" afterwards
     cctx.addInstructions({new AllocateInstruction(0)});
 
     size_t currentArgumentRegister = 1;
