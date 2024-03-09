@@ -3,6 +3,7 @@
 
 #include "ArgumentRegisters.hpp"
 #include "Word.hpp"
+#include <map>
 
 struct ChoicePoint
 {
@@ -15,7 +16,8 @@ struct ChoicePoint
     size_t m_BCP; // Backtrack Continuation Pointer
     size_t m_BB;  // Backtrack B (register)
     size_t m_FA;  // Failure Address
-    std::vector<VariableWord*> m_Variables;
+    
+    std::map<std::string, VariableWord*> m_Variables;
 };
 
 #endif // CHOICEPOINT_H
