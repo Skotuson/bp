@@ -39,10 +39,24 @@ public:
     Word *clone(void) override;
     TAG tag(void) override;
 
-    bool compareToConst(ConstantWord * cword) override;
+    bool compareToConst(ConstantWord *cword) override;
 
 private:
     std::string m_Value;
+};
+
+class VariableWord : public Word
+{
+public:
+    VariableWord(const std::string &name);
+    void print(std::ostream &os) override;
+    Word *clone(void) override;
+    TAG tag(void) override;
+
+    virtual bool compareToConst(ConstantWord *cword) override;
+private:
+    std::string m_Name;
+    size_t m_Address = 0;
 };
 
 #endif // WORD_H
