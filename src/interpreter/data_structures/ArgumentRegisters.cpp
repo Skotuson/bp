@@ -19,10 +19,6 @@ ArgumentRegisters::ArgumentRegisters(const ArgumentRegisters &argReg)
 
 void ArgumentRegisters::fillRegister(Word *word, size_t reg)
 {
-    // if (m_ArgumentRegisters.capacity() < reg)
-    //{
-    //     m_ArgumentRegisters.reserve(reg * 2);
-    // }
     m_ArgumentRegisters.insert(m_ArgumentRegisters.begin() + (reg - 1), word);
 }
 
