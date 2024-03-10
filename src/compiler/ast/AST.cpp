@@ -104,7 +104,8 @@ std::string StructNode::codegen(CompilationContext &cctx)
         else if (!m_Args.size() && m_IsArg)
             cctx.addInstructions({new PutConstantInstruction(m_Name, m_AvailableReg++)});
         // Allocate space for complex structure buried inside other complex structure
-        else cctx.allocate()++;
+        else
+            cctx.allocate()++;
         return code;
     }
 
@@ -126,6 +127,8 @@ std::string StructNode::codegen(CompilationContext &cctx)
             cctx.addInstructions({new UnifyConstantInstruction(arg->name())});
             break;
         case TermNode::VAR:
+            // Note variable if it appears in complex structure
+            cctx.noteVariable(arg->name());
             cctx.addInstructions({new UnifyVariableInstruction(arg->name())});
             break;
         case TermNode::STRUCT:
@@ -222,9 +225,11 @@ std::string VarNode::codegen(CompilationContext &cctx)
 {
     cctx.noteVariable(m_Name);
     if (!m_IsGoal)
-        cctx.addInstructions({new GetVariableInstruction(m_Name, m_AvailableReg)});
+        cctx.addInstructions(
+            {new GetVariableInstruction(m_Name, m_AvailableReg, cctx.getVarOffset(m_Name))});
     else
-        cctx.addInstructions({new PutVariableInstruction(m_Name, m_AvailableReg)});
+        cctx.addInstructions(
+            {new PutVariableInstruction(m_Name, m_AvailableReg, cctx.getVarOffset(m_Name))});
     return (m_IsGoal ? "put " : "get ") + m_Name + " A" + std::to_string(m_AvailableReg++);
 }
 
