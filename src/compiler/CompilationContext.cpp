@@ -51,3 +51,16 @@ size_t & CompilationContext::allocate(void)
 {
     return m_Allocate;
 }
+
+void CompilationContext::noteVariable(const std::string &variable)
+{
+    if (m_Variables.count(variable))
+        return;
+    m_Variables.insert(variable);
+    m_Allocate++;
+}
+
+void CompilationContext::resetVariables(void)
+{
+    m_Variables.clear();
+}
