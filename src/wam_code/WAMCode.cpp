@@ -36,10 +36,7 @@ WAMCode::~WAMCode(void)
 
 void WAMCode::addInstructions(const std::vector<Instruction *> &instructions)
 {
-    std::vector<Instruction *> instrCpy;
-    for(auto instr : instructions)
-        instrCpy.push_back(instr->clone());
-    m_Program.insert(m_Program.end(), instrCpy.begin(), instrCpy.end());
+    m_Program.insert(m_Program.end(), instructions.begin(), instructions.end());
 }
 
 void WAMCode::deleteInstruction(size_t idx)
@@ -70,7 +67,10 @@ void WAMCode::updateJumpInstructions(void)
 
 void WAMCode::merge(const WAMCode &code)
 {
-    addInstructions(code.m_Program);
+    std::vector<Instruction *> instrCpy;
+    for(auto instr : code.m_Program)
+        instrCpy.push_back(instr->clone());
+    addInstructions(instrCpy);
     updateJumpInstructions();
 }
 
