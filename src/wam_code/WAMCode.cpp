@@ -41,6 +41,7 @@ void WAMCode::addInstructions(const std::vector<Instruction *> &instructions)
 
 void WAMCode::deleteInstruction(size_t idx)
 {
+    delete m_Program[idx];
     m_Program.erase(m_Program.begin() + idx);
 }
 
