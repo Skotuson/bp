@@ -308,6 +308,11 @@ Instruction *PutVariableInstruction::clone(void)
 
 void PutVariableInstruction::execute(WAMState &state)
 {
+    ChoicePoint *cp = state.stackTop();
+    Word *word = cp->m_Variables[m_Offset];
+    if(word->tag() == TAG::VARIABLE)
+        state.fillRegister(new ReferenceWord(word), m_ArgumentRegister);
+    else state.fillRegister(word, m_ArgumentRegister);
 }
 
 void PutVariableInstruction::print(std::ostream &os)
