@@ -103,6 +103,8 @@ std::string StructNode::codegen(CompilationContext &cctx)
         // Treat structs without arguments as constants (if they are an argument)
         else if (!m_Args.size() && m_IsArg)
             cctx.addInstructions({new PutConstantInstruction(m_Name, m_AvailableReg++)});
+        // Allocate space for complex structure buried inside other complex structure
+        else cctx.allocate()++;
         return code;
     }
 
@@ -218,6 +220,7 @@ VarNode::VarNode(const std::string &name)
 
 std::string VarNode::codegen(CompilationContext &cctx)
 {
+    cctx.noteVariable(m_Name);
     if (!m_IsGoal)
         cctx.addInstructions({new GetVariableInstruction(m_Name, m_AvailableReg)});
     else
@@ -303,9 +306,12 @@ std::string ClauseNode::codegen(CompilationContext &cctx)
     std::string retryLabel = entry->m_Generated == entry->m_Clauses ? "quit" : m_Head + std::to_string(entry->m_Generated);
     code += "\tretry-me-else " + retryLabel + "\n";
     cctx.addInstructions({new RetryMeElseInstruction(retryLabel)});
-    
+
     // TODO: count all variables and complex objects (even nested) and generate the "n" afterwards
-    cctx.addInstructions({new AllocateInstruction(0)});
+    cctx.allocate() = 0;
+    cctx.resetVariables();
+    AllocateInstruction *alloc = new AllocateInstruction(0);
+    cctx.addInstructions({alloc});
 
     size_t currentArgumentRegister = 1;
     for (size_t i = 0; i < m_Args.size(); i++)
@@ -326,6 +332,8 @@ std::string ClauseNode::codegen(CompilationContext &cctx)
         code += "\t" + m_Body[i]->codegen(cctx) + "\n";
         currentArgumentRegister = m_Body[i]->m_AvailableReg;
     }
+
+    alloc->m_N = cctx.allocate();
 
     cctx.addInstructions({new ReturnInstruction()});
     return code + "\treturn\n";
