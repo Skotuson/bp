@@ -16,7 +16,7 @@ struct Instruction
 
 struct BranchInstruction : public Instruction
 {
-    BranchInstruction(const std::string & label, size_t address = 0);
+    BranchInstruction(const std::string &label, size_t address = 0);
     void setAddress(size_t address);
 
     std::string m_Label;
@@ -109,10 +109,12 @@ struct GetStructureInstruction : public GetInstruction
 
 struct GetVariableInstruction : public GetInstruction
 {
-    GetVariableInstruction(const std::string &name, size_t argumentRegister);
+    GetVariableInstruction(const std::string &name, size_t argumentRegister, size_t offset);
     Instruction *clone(void) override;
     void execute(WAMState &state) override;
     void print(std::ostream &os) override;
+
+    size_t m_Offset;
 };
 // Put Instructions
 struct PutInstruction : public Instruction
@@ -132,10 +134,12 @@ struct PutConstantInstruction : public PutInstruction
 
 struct PutVariableInstruction : public PutInstruction
 {
-    PutVariableInstruction(const std::string &name, size_t argumentRegister);
+    PutVariableInstruction(const std::string &name, size_t argumentRegister, size_t offset);
     Instruction *clone(void) override;
     void execute(WAMState &state) override;
     void print(std::ostream &os) override;
+
+    size_t m_Offset;
 };
 
 struct PutStructureInstruction : public PutInstruction
