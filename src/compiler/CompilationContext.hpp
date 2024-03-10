@@ -32,12 +32,14 @@ public:
     void addInstructions(const std::vector<Instruction*> & instructions);
     void addLabel(const Label & label);
     size_t getLabelAddress(const Label & label);
+    size_t & allocate(void);
     WAMCode & getCode(void);
     WAMCode code(void);
 
 private:
     std::unordered_map<std::string, TableEntry *> m_SymbolTable;
     WAMCode m_GeneratedCode;
+    size_t m_Allocate = 0;
 };
 
 #endif

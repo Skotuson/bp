@@ -46,3 +46,8 @@ WAMCode & CompilationContext::getCode()
 {
     return m_GeneratedCode;
 }
+
+size_t & CompilationContext::allocate(void)
+{
+    return m_Allocate;
+}
