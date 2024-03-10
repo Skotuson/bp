@@ -37,6 +37,7 @@ public:
 
     size_t &allocate(void);
     void noteVariable(const std::string &variable);
+    size_t getVarOffset(const std::string &variable);
     void resetVariables(void);
 
 private:
@@ -45,7 +46,7 @@ private:
 
     // Used in Clause-Level compilation
     size_t m_Allocate = 0;
-    std::set<std::string> m_Variables;
+    std::map<std::string, size_t> m_Variables;
 };
 
 #endif
