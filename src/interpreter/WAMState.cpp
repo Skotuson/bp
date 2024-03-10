@@ -62,6 +62,23 @@ ChoicePoint *WAMState::getChoicePoint(size_t address)
     return nullptr;
 }
 
+void WAMState::trailPush(Word *word)
+{
+    m_Trail.push_back(word);
+}
+
+void WAMState::trailPop(void)
+{
+    Word * word = trailTop();
+    m_Trail.pop_back();
+    delete word;
+}
+
+Word *WAMState::trailTop(void)
+{
+    return m_Trail[TRReg()];
+}
+
 std::ostream &operator<<(std::ostream &os, const WAMState &state)
 {
     os << "STACK-BOT" << std::endl;
@@ -71,6 +88,15 @@ std::ostream &operator<<(std::ostream &os, const WAMState &state)
         std::cout << "Stack pos: " << n++ << std::endl;
         os << *cp << std::endl;
     }
-    os << "STACK-TOP";
+    os << "STACK-TOP" << std::endl;
+    os << "TRAIL-BOT" << std::endl;
+
+    n = 1;
+    for (const auto &w : state.m_Trail)
+    {
+        std::cout << "Trail pos: " << n++ << std::endl;
+        os << *w << std::endl;
+    }
+    os << "TRAIL-TOP";
     return os;
 }

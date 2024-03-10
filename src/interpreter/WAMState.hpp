@@ -25,6 +25,10 @@ struct WAMState
     ChoicePoint *stackTop(void);
     ChoicePoint *getChoicePoint(size_t address);
 
+    void trailPush(Word *word);
+    void trailPop(void);
+    Word *trailTop(void);
+
     friend std::ostream &operator<<(std::ostream &os, const WAMState &state);
 
     size_t m_ProgramCounter = UNSET_REG;
