@@ -109,7 +109,7 @@ void FailInstruction::execute(WAMState &state)
     {
         state.m_ProgramCounter = cp->m_FA;
     }
-    //TODO: Experimental (check when choice point stack is empty)
+    // TODO: Experimental (check when choice point stack is empty)
     else if (state.m_BacktrackRegister == UNSET_REG)
         state.m_FailFlag = true;
 }
@@ -132,6 +132,12 @@ Instruction *AllocateInstruction::clone(void)
 
 void AllocateInstruction::execute(WAMState &state)
 {
+    ChoicePoint *cp = state.stackTop();
+    for (size_t i = 0; i < m_N; i++)
+    {
+        cp->m_Variables.push_back(new VariableWord("", cp->m_Variables.size()));
+    }
+
     state.m_EnvironmentRegister = state.m_BacktrackRegister;
 }
 
@@ -239,14 +245,16 @@ void GetStructureInstruction::print(std::ostream &os)
     os << "get-structure " << m_Name << " A" << m_ArgumentRegister;
 }
 
-GetVariableInstruction::GetVariableInstruction(const std::string &name, size_t argumentRegister)
-    : GetInstruction(name, argumentRegister)
+GetVariableInstruction::GetVariableInstruction(const std::string &name,
+                                               size_t argumentRegister, size_t offset)
+    : GetInstruction(name, argumentRegister),
+      m_Offset(offset)
 {
 }
 
 Instruction *GetVariableInstruction::clone(void)
 {
-    return new GetVariableInstruction(m_Name, m_ArgumentRegister);
+    return new GetVariableInstruction(m_Name, m_ArgumentRegister, m_Offset);
 }
 
 void GetVariableInstruction::execute(WAMState &state)
@@ -255,7 +263,7 @@ void GetVariableInstruction::execute(WAMState &state)
 
 void GetVariableInstruction::print(std::ostream &os)
 {
-    os << "getv " << m_Name << " A" << m_ArgumentRegister;
+    os << "getv " << m_Name << "(" << m_Offset << ")" << " A" << m_ArgumentRegister;
 }
 
 // Put Instructions
@@ -286,14 +294,16 @@ void PutConstantInstruction::print(std::ostream &os)
     os << "put-constant " << m_Name << " A" << m_ArgumentRegister;
 }
 
-PutVariableInstruction::PutVariableInstruction(const std::string &name, size_t argumentRegister)
-    : PutInstruction(name, argumentRegister)
+PutVariableInstruction::PutVariableInstruction(const std::string &name,
+                                               size_t argumentRegister, size_t offset)
+    : PutInstruction(name, argumentRegister),
+      m_Offset(offset)
 {
 }
 
 Instruction *PutVariableInstruction::clone(void)
 {
-    return new PutVariableInstruction(m_Name, m_ArgumentRegister);
+    return new PutVariableInstruction(m_Name, m_ArgumentRegister, m_Offset);
 }
 
 void PutVariableInstruction::execute(WAMState &state)
@@ -302,7 +312,7 @@ void PutVariableInstruction::execute(WAMState &state)
 
 void PutVariableInstruction::print(std::ostream &os)
 {
-    os << "putv " << m_Name << " A" << m_ArgumentRegister;
+    os << "putv " << m_Name << "(" << m_Offset << ")" << " A" << m_ArgumentRegister;
 }
 
 // Unify Instructions
