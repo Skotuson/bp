@@ -8,6 +8,7 @@
 struct ChoicePoint
 {
     ChoicePoint(const ArgumentRegisters &argReg, size_t bce, size_t bcp, size_t bb, size_t fa);
+    ~ChoicePoint(void);
 
     friend std::ostream &operator<<(std::ostream &os, const ChoicePoint &cp);
 
