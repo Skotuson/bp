@@ -27,8 +27,8 @@ struct WAMState
 
     friend std::ostream &operator<<(std::ostream &os, const WAMState &state);
 
-    size_t m_ProgramCounter = 0;
-    size_t m_ContinuationPointer = 0;
+    size_t m_ProgramCounter = UNSET_REG;
+    size_t m_ContinuationPointer = UNSET_REG;
 
     size_t m_BacktrackRegister = UNSET_REG;
     size_t m_EnvironmentRegister = UNSET_REG;
