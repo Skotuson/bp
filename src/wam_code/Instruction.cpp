@@ -211,14 +211,20 @@ void GetConstantInstruction::execute(WAMState &state)
 {
     Word *reg = state.m_ArgumentRegisters.dereferenceRegister(m_ArgumentRegister);
     ConstantWord *cword = new ConstantWord(m_Name);
-    if (!reg || !reg->compareToConst(cword))
+
+    if (reg && reg->tag() == TAG::VARIABLE)
+    {
+        state.trailPush(reg); // Trail
+        state.fillRegister(cword, m_ArgumentRegister);
+    }
+    else if (!reg || !reg->compareToConst(cword))
     {
         // TODO: Make a singleton object maybe?
         Instruction *fail = new FailInstruction();
         fail->execute(state);
         delete fail;
+        delete cword;
     }
-    delete cword;
 }
 
 void GetConstantInstruction::print(std::ostream &os)
@@ -263,7 +269,8 @@ void GetVariableInstruction::execute(WAMState &state)
 
 void GetVariableInstruction::print(std::ostream &os)
 {
-    os << "getv " << m_Name << "(" << m_Offset << ")" << " A" << m_ArgumentRegister;
+    os << "getv " << m_Name << "(" << m_Offset << ")"
+       << " A" << m_ArgumentRegister;
 }
 
 // Put Instructions
@@ -310,14 +317,16 @@ void PutVariableInstruction::execute(WAMState &state)
 {
     ChoicePoint *cp = state.stackTop();
     Word *word = cp->m_Variables[m_Offset];
-    if(word->tag() == TAG::VARIABLE)
+    if (word->tag() == TAG::VARIABLE)
         state.fillRegister(new ReferenceWord(word), m_ArgumentRegister);
-    else state.fillRegister(word, m_ArgumentRegister);
+    else
+        state.fillRegister(word, m_ArgumentRegister);
 }
 
 void PutVariableInstruction::print(std::ostream &os)
 {
-    os << "putv " << m_Name << "(" << m_Offset << ")" << " A" << m_ArgumentRegister;
+    os << "putv " << m_Name << "(" << m_Offset << ")"
+       << " A" << m_ArgumentRegister;
 }
 
 // Unify Instructions
