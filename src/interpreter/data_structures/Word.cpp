@@ -59,6 +59,11 @@ TAG VariableWord::tag(void)
     return m_Tag;
 }
 
+size_t VariableWord::address(void)
+{
+    return m_Address;
+}
+
 bool VariableWord::compareToConst(ConstantWord *cword)
 {
     // TODO
@@ -85,7 +90,8 @@ Word *ReferenceWord::clone(void)
 
 TAG ReferenceWord::tag(void)
 {
-    return TAG::REFERENCE;
+    // TODO: return the actual tag of the referenced object
+    return m_Word->tag();
 }
 
 bool ReferenceWord::compareToConst(ConstantWord *cword)
