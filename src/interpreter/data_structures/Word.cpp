@@ -5,13 +5,19 @@ Word::Word(TAG tag)
 {
 }
 
+std::ostream &operator<<(std::ostream &os, const Word &word)
+{
+    word.print(os);
+    return os;
+}
+
 ConstantWord::ConstantWord(const std::string &value)
     : Word(TAG::CONSTANT),
       m_Value(value)
 {
 }
 
-void ConstantWord::print(std::ostream &os)
+void ConstantWord::print(std::ostream &os) const
 {
     os << "constant -> " << m_Value;
 }
@@ -38,7 +44,7 @@ VariableWord::VariableWord(const std::string &name, size_t address)
 {
 }
 
-void VariableWord::print(std::ostream &os)
+void VariableWord::print(std::ostream &os) const
 {
     os << "variable " << m_Name << " -> " << m_Address;
 }
@@ -56,5 +62,33 @@ TAG VariableWord::tag(void)
 bool VariableWord::compareToConst(ConstantWord *cword)
 {
     // TODO
+    return false;
+}
+
+ReferenceWord::ReferenceWord(Word *word)
+    : Word(TAG::REFERENCE),
+      m_Word(word)
+{
+}
+
+void ReferenceWord::print(std::ostream &os) const
+{
+    os << "reference "
+       << " -> "
+       << "[" << *m_Word << "]";
+}
+
+Word *ReferenceWord::clone(void)
+{
+    return new ReferenceWord(m_Word);
+}
+
+TAG ReferenceWord::tag(void)
+{
+    return TAG::REFERENCE;
+}
+
+bool ReferenceWord::compareToConst(ConstantWord *cword)
+{
     return false;
 }
