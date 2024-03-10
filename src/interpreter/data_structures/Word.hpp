@@ -55,6 +55,8 @@ public:
     Word *clone(void) override;
     TAG tag(void) override;
 
+    size_t address(void);
+
     virtual bool compareToConst(ConstantWord *cword) override;
 
 private:
