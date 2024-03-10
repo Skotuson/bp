@@ -48,7 +48,7 @@ private:
 class VariableWord : public Word
 {
 public:
-    VariableWord(const std::string &name);
+    VariableWord(const std::string &name, size_t address);
     void print(std::ostream &os) override;
     Word *clone(void) override;
     TAG tag(void) override;

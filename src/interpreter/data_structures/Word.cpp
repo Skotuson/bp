@@ -31,9 +31,10 @@ bool ConstantWord::compareToConst(ConstantWord *cword)
     return cword->m_Value == m_Value;
 }
 
-VariableWord::VariableWord(const std::string &name)
+VariableWord::VariableWord(const std::string &name, size_t address)
     : Word(TAG::VARIABLE),
-      m_Name(name)
+      m_Name(name),
+      m_Address(address)
 {
 }
 
@@ -44,7 +45,7 @@ void VariableWord::print(std::ostream &os)
 
 Word *VariableWord::clone(void)
 {
-    return new VariableWord(m_Name);
+    return new VariableWord(m_Name, m_Address);
 }
 
 TAG VariableWord::tag(void)
