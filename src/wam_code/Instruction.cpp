@@ -24,12 +24,14 @@ void MarkInstruction::execute(WAMState &state)
 {
     ChoicePoint *cp = state.stackTop();
     ChoicePoint *ncp;
+    // TODO: remove duplicity
     if (cp)
     {
-        ncp = new ChoicePoint(cp->m_ArgumentRegisters,
+        ncp = new ChoicePoint(state.m_ArgumentRegisters,
                               state.m_EnvironmentRegister,
                               state.m_ContinuationPointer,
                               state.m_BacktrackRegister,
+                              state.TRReg(),
                               state.m_ProgramCounter);
     }
     else
@@ -37,6 +39,7 @@ void MarkInstruction::execute(WAMState &state)
                               state.m_EnvironmentRegister,
                               state.m_ContinuationPointer,
                               state.m_BacktrackRegister,
+                              state.TRReg(),
                               state.m_ProgramCounter);
     state.stackPush(ncp);
     state.m_BacktrackRegister = state.SReg();
@@ -104,14 +107,24 @@ Instruction *FailInstruction::clone(void)
 
 void FailInstruction::execute(WAMState &state)
 {
+    print(std::cout);
+    std::cout << std::endl;
     ChoicePoint *cp = state.getChoicePoint(state.m_BacktrackRegister);
     if (cp)
     {
+        // Reload arg registers
+        state.m_ArgumentRegisters = cp->m_ArgumentRegisters;
+        while(state.TRReg() != cp->m_BTR)
+        {
+            state.trailPop();
+            // TODO
+        }
         state.m_ProgramCounter = cp->m_FA;
     }
     // TODO: Experimental (check when choice point stack is empty)
     else if (state.m_BacktrackRegister == UNSET_REG)
         state.m_FailFlag = true;
+    std::cout << state << std::endl;
 }
 
 void FailInstruction::print(std::ostream &os)
@@ -211,11 +224,11 @@ void GetConstantInstruction::execute(WAMState &state)
 {
     Word *reg = state.m_ArgumentRegisters.dereferenceRegister(m_ArgumentRegister);
     ConstantWord *cword = new ConstantWord(m_Name);
-
     if (reg && reg->tag() == TAG::VARIABLE)
     {
-        state.trailPush(reg); // Trail
+        state.trailPush(reg->clone()); // Trail
         state.fillRegister(cword, m_ArgumentRegister);
+        std::cout << state << std::endl;
     }
     else if (!reg || !reg->compareToConst(cword))
     {
