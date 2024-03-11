@@ -11,21 +11,29 @@ ArgumentRegisters::~ArgumentRegisters(void)
 ArgumentRegisters::ArgumentRegisters(const ArgumentRegisters &argReg)
 {
     // TODO: this won't copy possible gaps in registers
+    std::vector<Word *> cpy;
     for (const auto &arg : argReg.m_ArgumentRegisters)
     {
-        m_ArgumentRegisters.push_back(arg->clone());
+        cpy.push_back(arg->clone());
     }
+    m_ArgumentRegisters = cpy;
 }
 
 ArgumentRegisters &ArgumentRegisters::operator=(const ArgumentRegisters &argReg)
 {
     if (&argReg == this)
         return *this;
+
+    std::vector<Word *> cpy;
+
     for (const auto &arg : argReg.m_ArgumentRegisters)
     {
-        m_ArgumentRegisters.push_back(arg->clone());
+        cpy.push_back(arg->clone());
     }
 
+    // TODO: check for leaks
+
+    m_ArgumentRegisters = cpy;
     return *this;
 }
 
