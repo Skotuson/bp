@@ -34,7 +34,11 @@ std::ostream &operator<<(std::ostream &os, const ArgumentRegisters &argReg)
     for (size_t i = 1; i <= argReg.m_ArgumentRegisters.size(); i++)
     {
         os << "A" << i << ": ";
-        argReg.dereferenceRegister(i)->print(os);
+        auto reg = argReg.dereferenceRegister(i);
+        if (reg)
+            reg->print(os);
+        else
+            os << "EMPTY";
         os << std::endl;
     }
     return os;
