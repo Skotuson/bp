@@ -19,7 +19,18 @@ ArgumentRegisters::ArgumentRegisters(const ArgumentRegisters &argReg)
 
 void ArgumentRegisters::fillRegister(Word *word, size_t reg)
 {
-    m_ArgumentRegisters.insert(m_ArgumentRegisters.begin() + (reg - 1), word);
+    if (reg >= m_ArgumentRegisters.size())
+    {
+        while(m_ArgumentRegisters.size() < reg - 1)
+            m_ArgumentRegisters.push_back(nullptr);
+        m_ArgumentRegisters.push_back(word);
+    }
+    else {
+       auto old = m_ArgumentRegisters[reg-1];
+        m_ArgumentRegisters[reg-1] = word;
+       delete old;
+    }
+    //m_ArgumentRegisters.insert(m_ArgumentRegisters.begin() + (reg - 1), word);
 }
 
 Word *ArgumentRegisters::dereferenceRegister(size_t reg) const
