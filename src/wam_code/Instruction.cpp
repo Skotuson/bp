@@ -114,7 +114,7 @@ void FailInstruction::execute(WAMState &state)
     {
         // Reload arg registers
         state.m_ArgumentRegisters = cp->m_ArgumentRegisters;
-        while(state.TRReg() != cp->m_BTR)
+        while (state.TRReg() != cp->m_BTR)
         {
             state.trailPop();
             // TODO
@@ -124,7 +124,6 @@ void FailInstruction::execute(WAMState &state)
     // TODO: Experimental (check when choice point stack is empty)
     else if (state.m_BacktrackRegister == UNSET_REG)
         state.m_FailFlag = true;
-    std::cout << state << std::endl;
 }
 
 void FailInstruction::print(std::ostream &os)
@@ -228,7 +227,6 @@ void GetConstantInstruction::execute(WAMState &state)
     {
         state.trailPush(reg->clone()); // Trail
         state.fillRegister(cword, m_ArgumentRegister);
-        std::cout << state << std::endl;
     }
     else if (!reg || !reg->compareToConst(cword))
     {
@@ -333,7 +331,7 @@ void PutVariableInstruction::execute(WAMState &state)
     if (word->tag() == TAG::VARIABLE)
         state.fillRegister(new ReferenceWord(word), m_ArgumentRegister);
     else
-        state.fillRegister(word, m_ArgumentRegister);
+        state.fillRegister(word->clone(), m_ArgumentRegister);
 }
 
 void PutVariableInstruction::print(std::ostream &os)
