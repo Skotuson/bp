@@ -22,7 +22,9 @@ ChoicePoint::~ChoicePoint(void)
 std::ostream &operator<<(std::ostream &os, const ChoicePoint &cp)
 {
   os << "-------------------------" << std::endl;
+  os << "START-ARG-REGS" << std::endl;
   os << cp.m_ArgumentRegisters;
+  os << "END-ARG-REGS" << std::endl;
   os << "BCP:" << cp.m_BCP << std::endl;
   os << "BCE:" << cp.m_BCE << std::endl;
   os << "BB:" << cp.m_BB << std::endl;
