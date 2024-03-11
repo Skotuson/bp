@@ -76,7 +76,7 @@ void WAMState::trailPop(void)
 
 Word *WAMState::trailTop(void)
 {
-    return m_Trail[TRReg()];
+    return m_Trail[TRReg() - 1];
 }
 
 std::ostream &operator<<(std::ostream &os, const WAMState &state)
