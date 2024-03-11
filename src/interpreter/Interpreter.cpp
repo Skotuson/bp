@@ -51,9 +51,9 @@ bool Interpreter::run(void)
     WAMCode queryCode = queryCompiler.dump();
 
     //// Delete the first three instructions
-    //for (size_t i = 0; i < 3; i++)
-    //    queryCode.deleteInstruction(0);
-    // Pop the backtrack instruction
+    // for (size_t i = 0; i < 3; i++)
+    //     queryCode.deleteInstruction(0);
+    //  Pop the backtrack instruction
     queryCode.popInstructions(1);
 
     m_Program.addLabel(queryLabel);
@@ -72,9 +72,16 @@ bool Interpreter::run(void)
         execute(instr);
     }
 
+    if (m_State.m_FailFlag)
+        std::cout << "false." << std::endl;
+    else
+    {
+        std::cout << "true." << std::endl;
+    }
+
     // Remove the query code
     m_Program.popInstructions(queryCode.m_Program.size());
-    
+
     // Reset the WAM
     m_State = WAMState();
     return true;
