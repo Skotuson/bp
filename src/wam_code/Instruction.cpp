@@ -22,25 +22,14 @@ void BranchInstruction::setAddress(size_t address)
 
 void MarkInstruction::execute(WAMState &state)
 {
-    ChoicePoint *cp = state.stackTop();
     ChoicePoint *ncp;
     // TODO: remove duplicity
-    if (cp)
-    {
-        ncp = new ChoicePoint(state.m_ArgumentRegisters,
-                              state.m_EnvironmentRegister,
-                              state.m_ContinuationPointer,
-                              state.m_BacktrackRegister,
-                              state.TRReg(),
-                              state.m_ProgramCounter);
-    }
-    else
-        ncp = new ChoicePoint(state.m_ArgumentRegisters,
-                              state.m_EnvironmentRegister,
-                              state.m_ContinuationPointer,
-                              state.m_BacktrackRegister,
-                              state.TRReg(),
-                              state.m_ProgramCounter);
+    ncp = new ChoicePoint(state.m_ArgumentRegisters,
+                          state.m_EnvironmentRegister,
+                          state.m_ContinuationPointer,
+                          state.m_BacktrackRegister,
+                          state.TRReg(),
+                          state.m_ProgramCounter);
     state.stackPush(ncp);
     state.m_BacktrackRegister = state.SReg();
     std::cout << state << std::endl;
@@ -107,8 +96,6 @@ Instruction *FailInstruction::clone(void)
 
 void FailInstruction::execute(WAMState &state)
 {
-    print(std::cout);
-    std::cout << std::endl;
     ChoicePoint *cp = state.getChoicePoint(state.m_BacktrackRegister);
     if (cp)
     {
@@ -226,6 +213,8 @@ void GetConstantInstruction::execute(WAMState &state)
     if (reg && reg->tag() == TAG::VARIABLE)
     {
         state.trailPush(reg->clone()); // Trail
+        // TODO page 264 - description of get-constant
+        // TODO fill the variable address - get the address
         state.fillRegister(cword, m_ArgumentRegister);
     }
     else if (!reg || !reg->compareToConst(cword))
