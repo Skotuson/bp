@@ -81,6 +81,7 @@ Word *WAMState::trailTop(void)
 
 std::ostream &operator<<(std::ostream &os, const WAMState &state)
 {
+    os << state.m_ArgumentRegisters << std::endl;
     os << "STACK-BOT" << std::endl;
     size_t n = 1;
     for (const auto &cp : state.m_Stack)
