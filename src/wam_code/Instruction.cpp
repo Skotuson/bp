@@ -22,9 +22,7 @@ void BranchInstruction::setAddress(size_t address)
 
 void MarkInstruction::execute(WAMState &state)
 {
-    ChoicePoint *ncp;
-    // TODO: remove duplicity
-    ncp = new ChoicePoint(state.m_ArgumentRegisters,
+    auto ncp = new ChoicePoint(state.m_ArgumentRegisters,
                           state.m_EnvironmentRegister,
                           state.m_ContinuationPointer,
                           state.m_BacktrackRegister,
