@@ -17,6 +17,18 @@ ArgumentRegisters::ArgumentRegisters(const ArgumentRegisters &argReg)
     }
 }
 
+ArgumentRegisters &ArgumentRegisters::operator=(const ArgumentRegisters &argReg)
+{
+    if (&argReg == this)
+        return *this;
+    for (const auto &arg : argReg.m_ArgumentRegisters)
+    {
+        m_ArgumentRegisters.push_back(arg->clone());
+    }
+
+    return *this;
+}
+
 void ArgumentRegisters::fillRegister(Word *word, size_t reg)
 {
     if (reg > m_ArgumentRegisters.size())
@@ -31,7 +43,6 @@ void ArgumentRegisters::fillRegister(Word *word, size_t reg)
         m_ArgumentRegisters[reg - 1] = word;
         delete old;
     }
-    // m_ArgumentRegisters.insert(m_ArgumentRegisters.begin() + (reg - 1), word);
 }
 
 Word *ArgumentRegisters::dereferenceRegister(size_t reg) const
@@ -45,13 +56,14 @@ std::ostream &operator<<(std::ostream &os, const ArgumentRegisters &argReg)
 {
     for (size_t i = 1; i <= argReg.m_ArgumentRegisters.size(); i++)
     {
+        if (i != 1)
+            os << std::endl;
         os << "A" << i << ": ";
         auto reg = argReg.dereferenceRegister(i);
         if (reg)
             reg->print(os);
         else
             os << "EMPTY";
-        os << std::endl;
     }
     return os;
 }
