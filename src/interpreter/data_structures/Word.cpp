@@ -78,7 +78,7 @@ ReferenceWord::ReferenceWord(Word *word)
 
 void ReferenceWord::print(std::ostream &os) const
 {
-    os << "reference "
+    os << "reference"
        << " -> "
        << "[" << *m_Word << "]";
 }
