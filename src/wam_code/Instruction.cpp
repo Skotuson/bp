@@ -1,6 +1,7 @@
 #include "Instruction.hpp"
 
 #include <iostream>
+#include <cassert>
 
 // Indexing Instructions
 
@@ -23,11 +24,11 @@ void BranchInstruction::setAddress(size_t address)
 void MarkInstruction::execute(WAMState &state)
 {
     auto ncp = new ChoicePoint(state.m_ArgumentRegisters,
-                          state.m_EnvironmentRegister,
-                          state.m_ContinuationPointer,
-                          state.m_BacktrackRegister,
-                          state.TRReg(),
-                          state.m_ProgramCounter);
+                               state.m_EnvironmentRegister,
+                               state.m_ContinuationPointer,
+                               state.m_BacktrackRegister,
+                               state.TRReg(),
+                               state.m_ProgramCounter);
     state.stackPush(ncp);
     state.m_BacktrackRegister = state.SReg();
     std::cout << state << std::endl;
@@ -132,7 +133,10 @@ void AllocateInstruction::execute(WAMState &state)
     ChoicePoint *cp = state.stackTop();
     for (size_t i = 0; i < m_N; i++)
     {
-        cp->m_Variables.push_back(new VariableWord("", cp->m_Variables.size()));
+        // Put dummy element at first
+        cp->m_Variables.push_back(nullptr);
+        size_t back = cp->m_Variables.size() - 1;
+        cp->m_Variables[back] = new VariableWord("", &cp->m_Variables[back]);
     }
 
     state.m_EnvironmentRegister = state.m_BacktrackRegister;
@@ -208,12 +212,17 @@ void GetConstantInstruction::execute(WAMState &state)
 {
     Word *reg = state.m_ArgumentRegisters.dereferenceRegister(m_ArgumentRegister);
     ConstantWord *cword = new ConstantWord(m_Name);
-    if (reg && reg->tag() == TAG::VARIABLE)
+    if (!reg)
     {
+        assert(false);
+    }
+    if (reg->tag() == TAG::VARIABLE)
+    {
+        VariableWord *vw = dynamic_cast<VariableWord *>(reg);
         state.trailPush(reg->clone()); // Trail
         // TODO page 264 - description of get-constant
-        // TODO fill the variable address - get the address
-        state.fillRegister(cword, m_ArgumentRegister);
+        *vw->ref() = cword;
+        // state.fillRegister(cword, m_ArgumentRegister);
     }
     else if (!reg || !reg->compareToConst(cword))
     {
@@ -316,7 +325,9 @@ void PutVariableInstruction::execute(WAMState &state)
     ChoicePoint *cp = state.stackTop();
     Word *word = cp->m_Variables[m_Offset];
     if (word->tag() == TAG::VARIABLE)
+    {
         state.fillRegister(new ReferenceWord(word), m_ArgumentRegister);
+    }
     else
         state.fillRegister(word->clone(), m_ArgumentRegister);
 }
