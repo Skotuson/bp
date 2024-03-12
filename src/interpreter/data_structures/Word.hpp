@@ -14,6 +14,8 @@ enum TAG
     REFERENCE
 };
 
+std::ostream &operator<<(std::ostream &os, const TAG &tag);
+
 class ConstantWord;
 
 class Word
