@@ -57,6 +57,15 @@ Word *ArgumentRegisters::dereferenceRegister(size_t reg) const
 {
     if (reg > m_ArgumentRegisters.size())
         return nullptr;
+    Word *w = m_ArgumentRegisters[reg - 1];
+
+    if (w->tag() == TAG::REFERENCE)
+    {
+        // TODO: handles only direct -> now
+        ReferenceWord *rw = dynamic_cast<ReferenceWord *>(w);
+        return rw->word();
+    }
+
     return m_ArgumentRegisters[reg - 1];
 }
 
