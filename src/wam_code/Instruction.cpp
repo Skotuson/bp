@@ -131,12 +131,12 @@ Instruction *AllocateInstruction::clone(void)
 void AllocateInstruction::execute(WAMState &state)
 {
     ChoicePoint *cp = state.stackTop();
+    //Pre-Alloc space
+    cp->m_Variables.resize(m_N, nullptr);
     for (size_t i = 0; i < m_N; i++)
     {
         // Put dummy element at first
-        cp->m_Variables.push_back(nullptr);
-        size_t back = cp->m_Variables.size() - 1;
-        cp->m_Variables[back] = new VariableWord("", &cp->m_Variables[back]);
+        cp->m_Variables[i] = new VariableWord("", &cp->m_Variables[i]);
     }
 
     state.m_EnvironmentRegister = state.m_BacktrackRegister;
@@ -218,11 +218,10 @@ void GetConstantInstruction::execute(WAMState &state)
     }
     if (reg->tag() == TAG::VARIABLE)
     {
-        VariableWord *vw = dynamic_cast<VariableWord *>(reg);
-        state.trailPush(reg->clone()); // Trail
-        // TODO page 264 - description of get-constant
+        Word *rcpy = reg->clone();
+        VariableWord *vw = dynamic_cast<VariableWord *>(rcpy);
+        state.trailPush(rcpy); // Trail
         *vw->ref() = cword;
-        // state.fillRegister(cword, m_ArgumentRegister);
     }
     else if (!reg || !reg->compareToConst(cword))
     {
