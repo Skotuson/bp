@@ -50,31 +50,34 @@ private:
 class VariableWord : public Word
 {
 public:
-    VariableWord(const std::string &name, size_t address);
+    VariableWord(const std::string &name, Word **ref);
     void print(std::ostream &os) const override;
     Word *clone(void) override;
     TAG tag(void) override;
 
-    size_t address(void);
+    Word **ref(void);
 
     virtual bool compareToConst(ConstantWord *cword) override;
 
 private:
     std::string m_Name;
-    size_t m_Address = 0;
+    Word **m_Ref = nullptr;
 };
 
 class ReferenceWord : public Word
 {
 public:
-    ReferenceWord(Word * word);
+    ReferenceWord(Word *word);
     void print(std::ostream &os) const override;
     Word *clone(void) override;
     TAG tag(void) override;
 
+    Word *word(void);
+
     virtual bool compareToConst(ConstantWord *cword) override;
+
 private:
-    Word * m_Word;
+    Word *m_Word;
 };
 
 #endif // WORD_H

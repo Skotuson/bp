@@ -37,21 +37,21 @@ bool ConstantWord::compareToConst(ConstantWord *cword)
     return cword->m_Value == m_Value;
 }
 
-VariableWord::VariableWord(const std::string &name, size_t address)
+VariableWord::VariableWord(const std::string &name, Word **ref)
     : Word(TAG::VARIABLE),
       m_Name(name),
-      m_Address(address)
+      m_Ref(ref)
 {
 }
 
 void VariableWord::print(std::ostream &os) const
 {
-    os << "variable " << m_Name << " -> " << m_Address;
+    os << "variable " << m_Name << " -> " << m_Ref;
 }
 
 Word *VariableWord::clone(void)
 {
-    return new VariableWord(m_Name, m_Address);
+    return new VariableWord(m_Name, m_Ref);
 }
 
 TAG VariableWord::tag(void)
@@ -59,9 +59,9 @@ TAG VariableWord::tag(void)
     return m_Tag;
 }
 
-size_t VariableWord::address(void)
+Word **VariableWord::ref(void)
 {
-    return m_Address;
+    return m_Ref;
 }
 
 bool VariableWord::compareToConst(ConstantWord *cword)
@@ -91,7 +91,12 @@ Word *ReferenceWord::clone(void)
 TAG ReferenceWord::tag(void)
 {
     // TODO: return the actual tag of the referenced object
-    return m_Word->tag();
+    return m_Tag;
+}
+
+Word *ReferenceWord::word(void)
+{
+    return m_Word;
 }
 
 bool ReferenceWord::compareToConst(ConstantWord *cword)
