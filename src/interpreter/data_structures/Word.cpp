@@ -66,7 +66,7 @@ VariableWord::VariableWord(Word **ref, bool bound)
 
 void VariableWord::print(std::ostream &os) const
 {
-    os << "variable -> " << m_Ref;
+    os << ( m_Bound ? "reference" : "variable" ) << " -> " << m_Ref << "[" << *m_Ref << "]";
 }
 
 Word *VariableWord::clone(void)
@@ -79,47 +79,23 @@ TAG VariableWord::tag(void)
     return m_Tag;
 }
 
+void VariableWord::setRef(Word **ref)
+{
+    m_Ref = ref;
+}
+
 Word **VariableWord::ref(void)
 {
     return m_Ref;
 }
 
+bool VariableWord::bound(void)
+{
+    return m_Bound;
+}
+
 bool VariableWord::compareToConst(ConstantWord *cword)
 {
     // TODO
-    return false;
-}
-
-ReferenceWord::ReferenceWord(Word *word)
-    : Word(TAG::REFERENCE),
-      m_Word(word)
-{
-}
-
-void ReferenceWord::print(std::ostream &os) const
-{
-    os << "reference"
-       << " -> "
-       << "[" << *m_Word << "]";
-}
-
-Word *ReferenceWord::clone(void)
-{
-    return new ReferenceWord(m_Word);
-}
-
-TAG ReferenceWord::tag(void)
-{
-    // TODO: return the actual tag of the referenced object
-    return m_Tag;
-}
-
-Word *ReferenceWord::word(void)
-{
-    return m_Word;
-}
-
-bool ReferenceWord::compareToConst(ConstantWord *cword)
-{
     return false;
 }

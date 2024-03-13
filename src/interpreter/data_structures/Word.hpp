@@ -50,7 +50,7 @@ private:
 };
 
 /**
- * @brief 
+ * @brief
  *
  */
 class VariableWord : public Word
@@ -60,30 +60,16 @@ public:
     void print(std::ostream &os) const override;
     Word *clone(void) override;
     TAG tag(void) override;
-
+    
+    void setRef(Word **ref);
     Word **ref(void);
+    bool bound(void);
 
     virtual bool compareToConst(ConstantWord *cword) override;
 
 private:
     Word **m_Ref = nullptr;
     bool m_Bound = false;
-};
-
-class ReferenceWord : public Word
-{
-public:
-    ReferenceWord(Word *word);
-    void print(std::ostream &os) const override;
-    Word *clone(void) override;
-    TAG tag(void) override;
-
-    Word *word(void);
-
-    virtual bool compareToConst(ConstantWord *cword) override;
-
-private:
-    Word *m_Word;
 };
 
 #endif // WORD_H
