@@ -31,7 +31,7 @@ void MarkInstruction::execute(WAMState &state)
                                state.m_ProgramCounter);
     state.stackPush(ncp);
     state.m_BacktrackRegister = state.SReg();
-    // std::cout << state << std::endl;
+    std::cout << state << std::endl;
 }
 
 void MarkInstruction::print(std::ostream &os)
@@ -184,7 +184,7 @@ void ReturnInstruction::execute(WAMState &state)
         state.m_ProgramCounter = cp->m_BCP;
         state.m_EnvironmentRegister = cp->m_BCE;
     }
-    // std::cout << state << std::endl;
+    std::cout << state << std::endl;
 }
 
 void ReturnInstruction::print(std::ostream &os)
