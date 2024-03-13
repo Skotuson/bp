@@ -49,10 +49,14 @@ private:
     std::string m_Value;
 };
 
+/**
+ * @brief 
+ *
+ */
 class VariableWord : public Word
 {
 public:
-    VariableWord(const std::string &name, Word **ref);
+    VariableWord(Word **ref, bool bound = false);
     void print(std::ostream &os) const override;
     Word *clone(void) override;
     TAG tag(void) override;
@@ -62,8 +66,8 @@ public:
     virtual bool compareToConst(ConstantWord *cword) override;
 
 private:
-    std::string m_Name;
     Word **m_Ref = nullptr;
+    bool m_Bound = false;
 };
 
 class ReferenceWord : public Word

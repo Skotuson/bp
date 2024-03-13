@@ -136,7 +136,7 @@ void AllocateInstruction::execute(WAMState &state)
     for (size_t i = 0; i < m_N; i++)
     {
         // Put dummy element at first
-        cp->m_Variables[i] = new VariableWord("", &cp->m_Variables[i]);
+        cp->m_Variables[i] = new VariableWord(&cp->m_Variables[i]);
     }
 
     state.m_EnvironmentRegister = state.m_BacktrackRegister;
