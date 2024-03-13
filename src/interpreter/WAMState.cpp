@@ -62,7 +62,7 @@ ChoicePoint *WAMState::getChoicePoint(size_t address)
     return nullptr;
 }
 
-void WAMState::trailPush(Word *word)
+void WAMState::trailPush(VariableWord *word)
 {
     m_Trail.push_back(word);
 }
@@ -74,7 +74,7 @@ void WAMState::trailPop(void)
     delete word;
 }
 
-Word *WAMState::trailTop(void)
+VariableWord *WAMState::trailTop(void)
 {
     return m_Trail[TRReg() - 1];
 }
