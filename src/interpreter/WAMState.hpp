@@ -25,9 +25,9 @@ struct WAMState
     ChoicePoint *stackTop(void);
     ChoicePoint *getChoicePoint(size_t address);
 
-    void trailPush(Word *word);
+    void trailPush(VariableWord *word);
     void trailPop(void);
-    Word *trailTop(void);
+    VariableWord *trailTop(void);
 
     friend std::ostream &operator<<(std::ostream &os, const WAMState &state);
 
@@ -37,7 +37,7 @@ struct WAMState
     size_t m_BacktrackRegister = UNSET_REG;
     size_t m_EnvironmentRegister = UNSET_REG;
 
-    std::vector<Word *> m_Trail;
+    std::vector<VariableWord *> m_Trail;
     std::vector<ChoicePoint *> m_Stack; // Represented as a vector because I need to have a random access available
     ArgumentRegisters m_ArgumentRegisters;
 
