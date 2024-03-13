@@ -31,7 +31,7 @@ void MarkInstruction::execute(WAMState &state)
                                state.m_ProgramCounter);
     state.stackPush(ncp);
     state.m_BacktrackRegister = state.SReg();
-    std::cout << state << std::endl;
+    // std::cout << state << std::endl;
 }
 
 void MarkInstruction::print(std::ostream &os)
@@ -102,6 +102,8 @@ void FailInstruction::execute(WAMState &state)
         state.m_ArgumentRegisters = cp->m_ArgumentRegisters;
         while (state.TRReg() != cp->m_BTR)
         {
+            VariableWord *popped = state.trailTop();
+            *popped->ref() = popped->clone();
             state.trailPop();
             // TODO
         }
@@ -131,7 +133,7 @@ Instruction *AllocateInstruction::clone(void)
 void AllocateInstruction::execute(WAMState &state)
 {
     ChoicePoint *cp = state.stackTop();
-    //Pre-Alloc space
+    // Pre-Alloc space
     cp->m_Variables.resize(m_N, nullptr);
     for (size_t i = 0; i < m_N; i++)
     {
@@ -182,7 +184,7 @@ void ReturnInstruction::execute(WAMState &state)
         state.m_ProgramCounter = cp->m_BCP;
         state.m_EnvironmentRegister = cp->m_BCE;
     }
-    std::cout << state << std::endl;
+    // std::cout << state << std::endl;
 }
 
 void ReturnInstruction::print(std::ostream &os)
@@ -220,7 +222,7 @@ void GetConstantInstruction::execute(WAMState &state)
     {
         Word *rcpy = reg->clone();
         VariableWord *vw = dynamic_cast<VariableWord *>(rcpy);
-        state.trailPush(rcpy); // Trail
+        state.trailPush(vw); // Trail
         *vw->ref() = cword;
     }
     else if (!reg || !reg->compareToConst(cword))
@@ -325,7 +327,7 @@ void PutVariableInstruction::execute(WAMState &state)
     Word *word = cp->m_Variables[m_Offset];
     if (word->tag() == TAG::VARIABLE)
     {
-        state.fillRegister(new ReferenceWord(word), m_ArgumentRegister);
+        state.fillRegister(new VariableWord(&cp->m_Variables[m_Offset], true), m_ArgumentRegister);
     }
     else
         state.fillRegister(word->clone(), m_ArgumentRegister);
