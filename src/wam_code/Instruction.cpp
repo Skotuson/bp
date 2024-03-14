@@ -273,6 +273,44 @@ Instruction *GetVariableInstruction::clone(void)
 
 void GetVariableInstruction::execute(WAMState &state)
 {
+    std::vector<std::vector<size_t>> table = {
+        {1, 1, 1, 1, 1},
+        {2, 3, 5, 5, 5},
+        {2, 4, 6, 0, 0},
+        {2, 4, 0, 7, 0},
+        {2, 4, 0, 0, 8}};
+
+    // TODO: placeholder nullptr
+    Word *X = nullptr, *Y = nullptr;
+    size_t branch = table[X->tag()][Y->tag()];
+
+    bool loop = true;
+    while (loop)
+    {
+        switch (branch)
+        {
+        case 1:
+            
+            break;
+        case 2:
+            break;
+        case 3:
+            break;
+        case 4:
+            break;
+        case 5:
+            break;
+        case 6:
+            break;
+        case 7:
+            break;
+        case 8:
+            break;
+        // Fail
+        default:
+            break;
+        }
+    }
 }
 
 void GetVariableInstruction::print(std::ostream &os)
