@@ -6,12 +6,12 @@
 
 enum TAG
 {
-    CONSTANT,
-    VARIABLE,
-    LIST,
-    STRUCTURE,
-    S_POINTER, // Structure pointer
-    REFERENCE
+    REFERENCE = 1,
+    VARIABLE = 2,
+    CONSTANT = 3,
+    LIST = 4,
+    S_POINTER = 5, // Structure pointer
+    STRUCTURE = 6
 };
 
 std::ostream &operator<<(std::ostream &os, const TAG &tag);
@@ -60,7 +60,7 @@ public:
     void print(std::ostream &os) const override;
     Word *clone(void) override;
     TAG tag(void) override;
-    
+
     void setRef(Word **ref);
     Word **ref(void);
     bool bound(void);
