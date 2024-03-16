@@ -3,6 +3,12 @@
 #include <iostream>
 #include <cassert>
 
+std::ostream &operator<<(std::ostream &os, const Instruction & instr)
+{
+    instr.print(os);
+    return os;
+}
+
 // Indexing Instructions
 
 Instruction *MarkInstruction::clone(void)
@@ -35,7 +41,7 @@ void MarkInstruction::execute(WAMState &state)
     //std::cout << state << std::endl;
 }
 
-void MarkInstruction::print(std::ostream &os)
+void MarkInstruction::print(std::ostream &os) const
 {
     os << "mark";
 }
@@ -59,7 +65,7 @@ void RetryMeElseInstruction::execute(WAMState &state)
     }
 }
 
-void RetryMeElseInstruction::print(std::ostream &os)
+void RetryMeElseInstruction::print(std::ostream &os) const
 {
     os << "retry-me-else " << m_Label << "[" << m_Address << "]";
 }
@@ -84,7 +90,7 @@ void BacktrackInstruction::execute(WAMState &state)
     state.stackPop(); // Discard the choice point (last clause in the chain failed)
 }
 
-void BacktrackInstruction::print(std::ostream &os)
+void BacktrackInstruction::print(std::ostream &os) const
 {
     os << "backtrack";
 }
@@ -115,7 +121,7 @@ void FailInstruction::execute(WAMState &state)
         state.m_FailFlag = true;
 }
 
-void FailInstruction::print(std::ostream &os)
+void FailInstruction::print(std::ostream &os) const
 {
     os << "__fail__";
 }
@@ -144,7 +150,7 @@ void AllocateInstruction::execute(WAMState &state)
     state.m_EnvironmentRegister = state.m_BacktrackRegister;
 }
 
-void AllocateInstruction::print(std::ostream &os)
+void AllocateInstruction::print(std::ostream &os) const
 {
     os << "allocate " << m_N;
 }
@@ -166,7 +172,7 @@ void CallInstruction::execute(WAMState &state)
     state.m_ProgramCounter = m_Address;
 }
 
-void CallInstruction::print(std::ostream &os)
+void CallInstruction::print(std::ostream &os) const
 {
     os << "call " + m_Label << "[" << m_Address << "]";
 }
@@ -187,7 +193,7 @@ void ReturnInstruction::execute(WAMState &state)
     //std::cout << state << std::endl;
 }
 
-void ReturnInstruction::print(std::ostream &os)
+void ReturnInstruction::print(std::ostream &os) const
 {
     os << "return";
 }
@@ -236,7 +242,7 @@ void GetConstantInstruction::execute(WAMState &state)
     }
 }
 
-void GetConstantInstruction::print(std::ostream &os)
+void GetConstantInstruction::print(std::ostream &os) const
 {
     os << "get-constant " << m_Name << " A" << m_ArgumentRegister;
 }
@@ -255,7 +261,7 @@ void GetStructureInstruction::execute(WAMState &state)
 {
 }
 
-void GetStructureInstruction::print(std::ostream &os)
+void GetStructureInstruction::print(std::ostream &os) const
 {
     os << "get-structure " << m_Name << " A" << m_ArgumentRegister;
 }
@@ -354,7 +360,7 @@ void GetVariableInstruction::execute(WAMState &state)
     }
 }
 
-void GetVariableInstruction::print(std::ostream &os)
+void GetVariableInstruction::print(std::ostream &os) const
 {
     os << "getv " << m_Name << "(" << m_Offset << ")"
        << " A" << m_ArgumentRegister;
@@ -383,7 +389,7 @@ void PutConstantInstruction::execute(WAMState &state)
     state.fillRegister(new ConstantWord(m_Name), m_ArgumentRegister);
 }
 
-void PutConstantInstruction::print(std::ostream &os)
+void PutConstantInstruction::print(std::ostream &os) const
 {
     os << "put-constant " << m_Name << " A" << m_ArgumentRegister;
 }
@@ -412,7 +418,7 @@ void PutVariableInstruction::execute(WAMState &state)
         state.fillRegister(word->clone(), m_ArgumentRegister);
 }
 
-void PutVariableInstruction::print(std::ostream &os)
+void PutVariableInstruction::print(std::ostream &os) const
 {
     os << "putv " << m_Name << "(" << m_Offset << ")"
        << " A" << m_ArgumentRegister;
@@ -439,7 +445,7 @@ void UnifyConstantInstruction::execute(WAMState &state)
 {
 }
 
-void UnifyConstantInstruction::print(std::ostream &os)
+void UnifyConstantInstruction::print(std::ostream &os) const
 {
     os << "unify-constant " << m_Name;
 }
@@ -458,7 +464,7 @@ void UnifyVariableInstruction::execute(WAMState &state)
 {
 }
 
-void UnifyVariableInstruction::print(std::ostream &os)
+void UnifyVariableInstruction::print(std::ostream &os) const
 {
     os << "unifyv " << m_Name;
 }
