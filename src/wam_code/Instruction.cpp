@@ -220,11 +220,7 @@ void GetConstantInstruction::execute(WAMState &state)
 {
     Word *reg = state.m_ArgumentRegisters.dereferenceRegister(m_ArgumentRegister);
     ConstantWord *cword = new ConstantWord(m_Name);
-    if (!reg)
-    {
-        assert(false);
-    }
-    if (reg->tag() == TAG::VARIABLE)
+    if (reg && reg->tag() == TAG::VARIABLE)
     {
         Word *rcpy = reg->clone();
         VariableWord *vw = static_cast<VariableWord *>(rcpy);
