@@ -54,7 +54,7 @@ int main(int argc, const char **argv)
     Compiler comp(ifs);
     comp.compile();
     
-    Interpreter intp(comp.dump());
+    Interpreter intp(comp.dump(), Renderer());
     
     while(intp.run());
 

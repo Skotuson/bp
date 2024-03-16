@@ -1,6 +1,6 @@
 #include "Renderer.hpp"
 
-void renderCode(std::ostream &os, const WAMCode &code, size_t pc)
+void Renderer::renderCode(std::ostream &os, const WAMCode &code, size_t pc)
 {
     for (size_t i = 0; i < code.size(); i++)
     {
@@ -15,7 +15,7 @@ void renderCode(std::ostream &os, const WAMCode &code, size_t pc)
     }
 }
 
-void clearScreen(std::ostream &os)
+void Renderer::clearScreen(std::ostream &os)
 {
     os << ANSI_CLEAR_SCREEN << ANSI_CLEAR_SCREEN_BUFFER << ANSI_RETURN_CURSOR;
 }

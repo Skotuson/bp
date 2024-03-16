@@ -25,6 +25,9 @@ const std::string ANSI_SHOW_CURSOR = "\033[?25h",
                   ANSI_COLOR_B_MAGENTA = "\033[0;95m",
                   ANSI_COLOR_B_CYAN = "\033[0;96m";
 
-void renderCode(std::ostream &os, const WAMCode &code, size_t pc);
-
-void clearScreen(std::ostream &os);
+class Renderer
+{
+public:
+    void renderCode(std::ostream &os, const WAMCode &code, size_t pc);
+    void clearScreen(std::ostream &os);
+};
