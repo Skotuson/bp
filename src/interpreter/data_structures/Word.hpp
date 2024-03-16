@@ -6,12 +6,12 @@
 
 enum TAG
 {
-    REFERENCE = 1,
-    VARIABLE = 2,
-    CONSTANT = 3,
-    LIST = 4,
-    S_POINTER = 5, // Structure pointer
-    STRUCTURE = 6
+    REFERENCE = 0,
+    VARIABLE = 1,
+    CONSTANT = 2,
+    LIST = 3,
+    S_POINTER = 4, // Structure pointer
+    STRUCTURE = 5
 };
 
 std::ostream &operator<<(std::ostream &os, const TAG &tag);
