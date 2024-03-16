@@ -61,7 +61,7 @@ Word *ArgumentRegisters::dereferenceRegister(size_t reg) const
 
     if (w->tag() == TAG::VARIABLE)
     {
-        VariableWord *vw = dynamic_cast<VariableWord *>(w);
+        VariableWord *vw = static_cast<VariableWord *>(w);
         // TODO: handles only direct -> now
         if (vw->bound())
             return *vw->ref();
