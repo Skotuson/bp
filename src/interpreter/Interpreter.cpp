@@ -3,6 +3,7 @@
 #include <sstream>
 
 #include "../compiler/Compiler.hpp"
+#include "../Render.hpp"
 
 Interpreter::Interpreter(const WAMCode &wamCode)
     : m_Program(wamCode)
@@ -44,16 +45,30 @@ bool Interpreter::run(void)
     // TODO: handle emptying arg regs after sucessfully completing a goal (multiple goals in conjuction in a query)
     // Maybe delete them from arg reg after sucessfuly unifying/.... (have to check whether possible)
     Instruction *instr;
+    bool skip = true;
     while ((instr = fetch()) && !m_State.m_FailFlag)
     {
+        if (!skip)
+        {
+            std::string com = "";
+            std::getline(std::cin, com);
+
+            if (com == "state")
+                std::cout << m_State << std::endl;
+            if (com == "run")
+                skip = true;
+        }
+
         execute(instr);
     }
 
+    std::cout << m_State << std::endl;
+
     if (m_State.m_FailFlag)
-        std::cout << "false." << std::endl;
+        std::cout << ANSI_COLOR_RED << "false." << ANSI_COLOR_DEFAULT << std::endl;
     else
     {
-        std::cout << "true." << std::endl;
+        std::cout << ANSI_COLOR_GREEN << "true." << ANSI_COLOR_DEFAULT << std::endl;
     }
 
     // Remove the query code
@@ -71,8 +86,8 @@ Instruction *Interpreter::fetch(void)
 
 void Interpreter::execute(Instruction *instr)
 {
-    std::cout << "executing ";
+    std::cout << ANSI_COLOR_B_GREEN << "executing ";
     instr->print(std::cout);
-    std::cout << std::endl;
+    std::cout << ANSI_COLOR_DEFAULT << std::endl;
     instr->execute(m_State);
 }
