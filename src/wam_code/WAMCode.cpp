@@ -34,6 +34,11 @@ WAMCode::~WAMCode(void)
         delete instr;
 }
 
+size_t WAMCode::size()
+{
+    return m_Program.size();
+}
+
 void WAMCode::addInstructions(const std::vector<Instruction *> &instructions)
 {
     m_Program.insert(m_Program.end(), instructions.begin(), instructions.end());

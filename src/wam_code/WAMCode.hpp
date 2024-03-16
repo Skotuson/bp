@@ -17,6 +17,8 @@ struct WAMCode
     WAMCode &operator=(const WAMCode &wamCode);
     ~WAMCode(void);
 
+    size_t size();
+
     void addInstructions(const std::vector<Instruction *> &instructions);
     void deleteInstruction(size_t idx);
     void popInstructions(size_t n);
