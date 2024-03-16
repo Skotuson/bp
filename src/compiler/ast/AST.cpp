@@ -14,7 +14,7 @@ std::string ProgramNode::codegen(CompilationContext &cctx)
         else
             entry->m_Clauses++;
     }
-
+    
     for (const auto &clause : m_Clauses)
     {
         if (!code.empty())
@@ -317,6 +317,7 @@ std::string ClauseNode::codegen(CompilationContext &cctx)
     cctx.resetVariables();
     AllocateInstruction *alloc = new AllocateInstruction(0);
     cctx.addInstructions({alloc});
+    size_t allocInstrIdx = cctx.getCode().size() - 1;
 
     size_t currentArgumentRegister = 1;
     for (size_t i = 0; i < m_Args.size(); i++)
@@ -338,7 +339,10 @@ std::string ClauseNode::codegen(CompilationContext &cctx)
         currentArgumentRegister = m_Body[i]->m_AvailableReg;
     }
 
-    alloc->m_N = cctx.allocate();
+    // Generate allocate only if N is non-zero
+    if (cctx.allocate())
+        alloc->m_N = cctx.allocate();
+    else cctx.getCode().deleteInstruction(allocInstrIdx);
 
     cctx.addInstructions({new ReturnInstruction()});
     return code + "\treturn\n";
