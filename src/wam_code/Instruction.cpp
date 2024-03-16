@@ -30,8 +30,9 @@ void MarkInstruction::execute(WAMState &state)
                                state.TRReg(),
                                state.m_ProgramCounter);
     state.stackPush(ncp);
-    state.m_BacktrackRegister = state.SReg();
-    std::cout << state << std::endl;
+    // Set E and B registers
+    state.m_BacktrackRegister = state.m_EnvironmentRegister = state.SReg();
+    //std::cout << state << std::endl;
 }
 
 void MarkInstruction::print(std::ostream &os)
@@ -137,7 +138,6 @@ void AllocateInstruction::execute(WAMState &state)
     cp->m_Variables.resize(m_N, nullptr);
     for (size_t i = 0; i < m_N; i++)
     {
-        // Put dummy element at first
         cp->m_Variables[i] = new VariableWord(&cp->m_Variables[i]);
     }
 
@@ -184,7 +184,7 @@ void ReturnInstruction::execute(WAMState &state)
         state.m_ProgramCounter = cp->m_BCP;
         state.m_EnvironmentRegister = cp->m_BCE;
     }
-    std::cout << state << std::endl;
+    //std::cout << state << std::endl;
 }
 
 void ReturnInstruction::print(std::ostream &os)
@@ -221,8 +221,9 @@ void GetConstantInstruction::execute(WAMState &state)
     if (reg->tag() == TAG::VARIABLE)
     {
         Word *rcpy = reg->clone();
-        VariableWord *vw = dynamic_cast<VariableWord *>(rcpy);
+        VariableWord *vw = static_cast<VariableWord *>(rcpy);
         state.trailPush(vw); // Trail
+        // TODO add bind(Word**w) method?
         *vw->ref() = cword;
     }
     else if (!reg || !reg->compareToConst(cword))
@@ -273,6 +274,7 @@ Instruction *GetVariableInstruction::clone(void)
 
 void GetVariableInstruction::execute(WAMState &state)
 {
+    // Make static for class
     std::vector<std::vector<size_t>> table = {
         {1, 1, 1, 1, 1},
         {2, 3, 5, 5, 5},
@@ -281,33 +283,72 @@ void GetVariableInstruction::execute(WAMState &state)
         {2, 4, 0, 0, 8}};
 
     // TODO: placeholder nullptr
-    Word *X = nullptr, *Y = nullptr;
+    Word *X = state.m_ArgumentRegisters.dereferenceRegister(m_ArgumentRegister),
+         *Y = state.stackTop()->m_Variables[m_Offset];
+    
     size_t branch = table[X->tag()][Y->tag()];
 
-    bool loop = true;
-    while (loop)
+    while (42)
     {
-        switch (branch)
+        // X is a ref, dereference: UNUSED (argReg already dereferences)
+        if (branch == 1)
         {
-        case 1:
-            
+            X = *static_cast<VariableWord *>(X)->ref();
+        }
+
+        // Y is a ref, dereference:
+        else if (branch == 2)
+        {
+            Y = *static_cast<VariableWord *>(Y)->ref();
+        }
+
+        // X and Y are both unbound variables
+        else if (branch == 3)
+        {
+        }
+
+        // X is a constant, Y is an unbound variable
+        else if (branch == 4)
+        {
+            VariableWord *vw = static_cast<VariableWord *>(Y);
+            // Trail
+            state.trailPush(vw);
+            *vw->ref() = X->clone();
             break;
-        case 2:
+        }
+
+        // Y is a constant, X is an unbound variable
+        else if (branch == 5)
+        {
+            VariableWord *vw = static_cast<VariableWord *>(X);
+            // Trail
+            state.trailPush(vw);
+            *vw->ref() = Y->clone();
             break;
-        case 3:
+        }
+
+        // Both X and Y are constants
+        else if (branch == 6)
+        {
+            ConstantWord *xc = static_cast<ConstantWord *>(X);
+            if (!Y->compareToConst(xc))
+            {
+                // TODO: Fail
+            }
             break;
-        case 4:
-            break;
-        case 5:
-            break;
-        case 6:
-            break;
-        case 7:
-            break;
-        case 8:
-            break;
-        // Fail
-        default:
+        }
+
+        else if (branch == 7)
+        {
+        }
+
+        else if (branch == 8)
+        {
+        }
+
+        // Fail branch
+        else
+        {
             break;
         }
     }
@@ -361,7 +402,7 @@ Instruction *PutVariableInstruction::clone(void)
 
 void PutVariableInstruction::execute(WAMState &state)
 {
-    ChoicePoint *cp = state.stackTop();
+    ChoicePoint *cp = state.getChoicePoint(state.m_EnvironmentRegister);
     Word *word = cp->m_Variables[m_Offset];
     if (word->tag() == TAG::VARIABLE)
     {
