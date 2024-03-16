@@ -17,7 +17,7 @@ struct WAMCode
     WAMCode &operator=(const WAMCode &wamCode);
     ~WAMCode(void);
 
-    size_t size();
+    size_t size() const;
 
     void addInstructions(const std::vector<Instruction *> &instructions);
     void deleteInstruction(size_t idx);
@@ -27,7 +27,7 @@ struct WAMCode
 
     void merge(const WAMCode & code);
 
-    Instruction *getInstruction(size_t pc);
+    Instruction *getInstruction(size_t pc) const;
     void dump(std::ostream &os);
     void addLabel(const Label &label);
     void removeLabel(const Label &label);

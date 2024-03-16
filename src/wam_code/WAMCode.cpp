@@ -34,7 +34,7 @@ WAMCode::~WAMCode(void)
         delete instr;
 }
 
-size_t WAMCode::size()
+size_t WAMCode::size() const
 {
     return m_Program.size();
 }
@@ -80,7 +80,7 @@ void WAMCode::merge(const WAMCode &code)
     updateJumpInstructions();
 }
 
-Instruction *WAMCode::getInstruction(size_t pc)
+Instruction *WAMCode::getInstruction(size_t pc) const
 {
     if (pc >= m_Program.size())
         return nullptr;
