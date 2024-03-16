@@ -3,7 +3,7 @@
 #include <iostream>
 #include <cassert>
 
-std::ostream &operator<<(std::ostream &os, const Instruction & instr)
+std::ostream &operator<<(std::ostream &os, const Instruction &instr)
 {
     instr.print(os);
     return os;
@@ -38,7 +38,7 @@ void MarkInstruction::execute(WAMState &state)
     state.stackPush(ncp);
     // Set E and B registers
     state.m_BacktrackRegister = state.m_EnvironmentRegister = state.SReg();
-    //std::cout << state << std::endl;
+    // std::cout << state << std::endl;
 }
 
 void MarkInstruction::print(std::ostream &os) const
@@ -190,7 +190,7 @@ void ReturnInstruction::execute(WAMState &state)
         state.m_ProgramCounter = cp->m_BCP;
         state.m_EnvironmentRegister = cp->m_BCE;
     }
-    //std::cout << state << std::endl;
+    // std::cout << state << std::endl;
 }
 
 void ReturnInstruction::print(std::ostream &os) const
@@ -287,7 +287,7 @@ void GetVariableInstruction::execute(WAMState &state)
     // TODO: placeholder nullptr
     Word *X = state.m_ArgumentRegisters.dereferenceRegister(m_ArgumentRegister),
          *Y = state.stackTop()->m_Variables[m_Offset];
-    
+
     size_t branch = table[X->tag()][Y->tag()];
 
     while (42)
@@ -307,6 +307,14 @@ void GetVariableInstruction::execute(WAMState &state)
         // X and Y are both unbound variables
         else if (branch == 3)
         {
+            VariableWord *x = static_cast<VariableWord *>(X);
+            VariableWord *y = static_cast<VariableWord *>(Y);
+            // Trail both X and Y
+            state.trailPush(x);
+            state.trailPush(y);
+            // Bind them together
+            *y->ref() = X;
+            break;
         }
 
         // X is a constant, Y is an unbound variable
