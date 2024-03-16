@@ -28,6 +28,7 @@ struct WAMCode
     void merge(const WAMCode & code);
 
     Instruction *getInstruction(size_t pc) const;
+    void dumpInstruction(size_t pc, std::ostream &os) const;
     void dump(std::ostream &os);
     void addLabel(const Label &label);
     void removeLabel(const Label &label);

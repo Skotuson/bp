@@ -87,22 +87,23 @@ Instruction *WAMCode::getInstruction(size_t pc) const
     return m_Program[pc];
 }
 
+void WAMCode::dumpInstruction(size_t pc, std::ostream &os) const
+{
+    auto it = m_AddressToLabel.find(pc);
+    if (it != m_AddressToLabel.end())
+    {
+        os << it->second << ": ";
+    }
+    // TODO: adjust for the label length
+    os << "\t";
+    os << *getInstruction(pc);
+    os << std::endl;
+}
+
 void WAMCode::dump(std::ostream &os)
 {
-    size_t line = 0;
-    for (const auto &instruction : m_Program)
-    {
-        auto it = m_AddressToLabel.find(line);
-        if (it != m_AddressToLabel.end())
-        {
-            os << it->second << ": ";
-        }
-        // TODO: adjust for the label length
-        os << "\t";
-        instruction->print(os);
-        os << std::endl;
-        line++;
-    }
+    for(size_t i = 0; i < size(); i++)
+        dumpInstruction(i, os);
 }
 
 void WAMCode::addLabel(const Label &label)
