@@ -12,6 +12,7 @@ Interpreter::Interpreter(const WAMCode &wamCode)
 
 bool Interpreter::run(void)
 {
+    clearScreen(std::cout);
     std::cout << "?> ";
     std::string query;
     std::getline(std::cin >> std::ws, query);
@@ -28,10 +29,6 @@ bool Interpreter::run(void)
     queryCompiler.compile();
     WAMCode queryCode = queryCompiler.dump();
 
-    //// Delete the first three instructions
-    // for (size_t i = 0; i < 3; i++)
-    //     queryCode.deleteInstruction(0);
-    //  Pop the backtrack instruction
     queryCode.popInstructions(1);
 
     m_Program.addLabel(queryLabel);
@@ -45,7 +42,7 @@ bool Interpreter::run(void)
     // TODO: handle emptying arg regs after sucessfully completing a goal (multiple goals in conjuction in a query)
     // Maybe delete them from arg reg after sucessfuly unifying/.... (have to check whether possible)
     Instruction *instr;
-    bool skip = true;
+    bool skip = false;
     while ((instr = fetch()) && !m_State.m_FailFlag)
     {
         if (!skip)
@@ -59,8 +56,15 @@ bool Interpreter::run(void)
                 skip = true;
         }
 
+        clearScreen(std::cout);
+        renderCode(std::cout, m_Program, m_State.m_ProgramCounter - 1);
+        std::cout << m_State << std::endl;
+        std::cout << ANSI_RETURN_CURSOR;
+
         execute(instr);
     }
+
+    clearScreen(std::cout);
 
     std::cout << m_State << std::endl;
 
@@ -70,6 +74,10 @@ bool Interpreter::run(void)
     {
         std::cout << ANSI_COLOR_GREEN << "true." << ANSI_COLOR_DEFAULT << std::endl;
     }
+
+    // Wait for enter
+    std::string com = "";
+    std::getline(std::cin, com);
 
     // Remove the query code
     m_Program.popInstructions(queryCode.m_Program.size());
@@ -86,8 +94,5 @@ Instruction *Interpreter::fetch(void)
 
 void Interpreter::execute(Instruction *instr)
 {
-    std::cout << ANSI_COLOR_B_GREEN << "executing ";
-    instr->print(std::cout);
-    std::cout << ANSI_COLOR_DEFAULT << std::endl;
     instr->execute(m_State);
 }
