@@ -1,4 +1,4 @@
-#include "Render.hpp"
+#include "Renderer.hpp"
 
 void renderCode(std::ostream &os, const WAMCode &code, size_t pc)
 {
