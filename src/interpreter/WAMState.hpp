@@ -1,5 +1,4 @@
-#ifndef WAMSTATE_H
-#define WAMSTATE_H
+#pragma once
 
 #include "data_structures/Word.hpp"
 #include "data_structures/ChoicePoint.hpp"
@@ -53,5 +52,3 @@ struct WAMState
     bool m_ModeFlag = false;
     bool m_FailFlag = false;
 };
-
-#endif // WAMSTATE_H
