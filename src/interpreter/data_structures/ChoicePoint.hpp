@@ -1,5 +1,4 @@
-#ifndef CHOICEPOINT_H
-#define CHOICEPOINT_H
+#pragma once
 
 #include "ArgumentRegisters.hpp"
 #include "Word.hpp"
@@ -21,5 +20,3 @@ struct ChoicePoint
 
     std::vector<Word *> m_Variables;
 };
-
-#endif // CHOICEPOINT_H

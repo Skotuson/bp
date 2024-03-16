@@ -1,5 +1,4 @@
-#ifndef LEXER_H
-#define LEXER_H
+#pragma once
 
 #include <string>
 #include <iostream>
@@ -62,5 +61,3 @@ private:
 };
 
 std::ostream &operator<<(std::ostream &os, const Token &tok);
-
-#endif // LEXER_H

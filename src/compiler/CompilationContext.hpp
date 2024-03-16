@@ -1,5 +1,4 @@
-#ifndef SYMBOLTABLE_H
-#define SYMBOLTABLE_H
+#pragma once
 
 #include <set>
 #include <string>
@@ -48,5 +47,3 @@ private:
     size_t m_Allocate = 0;
     std::map<std::string, size_t> m_Variables;
 };
-
-#endif

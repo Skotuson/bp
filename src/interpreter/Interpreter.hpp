@@ -1,7 +1,4 @@
-#ifndef INTERPRETER_H
-#define INTERPRETER_H
-
-// TODO: pragma once
+#pragma once
 
 #include "WAMState.hpp"
 #include "../wam_code/WAMCode.hpp"
@@ -29,5 +26,3 @@ private:
     WAMState m_State;
     WAMCode m_Program;
 };
-
-#endif // INTERPRETER_H

@@ -1,5 +1,4 @@
-#ifndef ARGUMENT_REGISTERS_H
-#define ARGUMENT_REGISTERS_H
+#pragma once
 
 #include "Word.hpp"
 
@@ -21,5 +20,3 @@ public:
 private:
     std::vector<Word *> m_ArgumentRegisters;
 };
-
-#endif

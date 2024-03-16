@@ -1,5 +1,4 @@
-#ifndef INSTRUCTION_H
-#define INSTRUCTION_H
+#pragma once
 
 #include "../interpreter/WAMState.hpp"
 
@@ -172,5 +171,3 @@ struct UnifyVariableInstruction : public UnifyInstruction
     void execute(WAMState &state) override;
     void print(std::ostream &os) const override;
 };
-
-#endif // INSTRUCTION_H

@@ -1,5 +1,4 @@
-#ifndef WAMCODE_H
-#define WAMCODE_H
+#pragma once
 
 #include "Instruction.hpp"
 
@@ -38,5 +37,3 @@ struct WAMCode
     std::map<Label, size_t> m_LabelToAddress;
     std::vector<Instruction *> m_Program;
 };
-
-#endif // WAMCODE_H

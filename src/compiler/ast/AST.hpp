@@ -1,5 +1,4 @@
-#ifndef AST_H
-#define AST_H
+#pragma once
 
 #include "../CompilationContext.hpp"
 #include "../../wam_code/WAMCode.hpp"
@@ -110,5 +109,3 @@ struct ProgramNode : public Node
     void print(const std::string &indent = "") override;
     std::vector<ClauseNode *> m_Clauses;
 };
-
-#endif

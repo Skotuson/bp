@@ -1,5 +1,4 @@
-#ifndef WORD_H
-#define WORD_H
+#pragma once
 
 #include <string>
 #include <iostream>
@@ -71,5 +70,3 @@ private:
     Word **m_Ref = nullptr;
     bool m_Bound = false;
 };
-
-#endif // WORD_H
