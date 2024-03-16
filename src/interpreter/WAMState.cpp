@@ -23,6 +23,11 @@ size_t WAMState::TRReg(void)
     return m_Trail.size();
 }
 
+size_t WAMState::PDLReg(void)
+{
+    return m_PushDownList.size();
+}
+
 void WAMState::stackPush(ChoicePoint *cp)
 {
     m_Stack.push_back(cp);
@@ -69,7 +74,7 @@ void WAMState::trailPush(VariableWord *word)
 
 void WAMState::trailPop(void)
 {
-    Word * word = trailTop();
+    Word *word = trailTop();
     m_Trail.pop_back();
     delete word;
 }
@@ -77,6 +82,18 @@ void WAMState::trailPop(void)
 VariableWord *WAMState::trailTop(void)
 {
     return m_Trail[TRReg() - 1];
+}
+
+void WAMState::pdlPush(void)
+{
+}
+
+void WAMState::pdlPop(void)
+{
+}
+
+void WAMState::pldTop(void)
+{
 }
 
 std::ostream &operator<<(std::ostream &os, const WAMState &state)

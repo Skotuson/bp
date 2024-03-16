@@ -18,16 +18,24 @@ struct WAMState
 
     size_t SReg(void);
     size_t TRReg(void);
+    size_t PDLReg(void);
 
+    // Choice Point Stack operations
     void stackPush(ChoicePoint *cp);
     void stackPop(void);
     bool stackEmpty(void);
     ChoicePoint *stackTop(void);
     ChoicePoint *getChoicePoint(size_t address);
 
+    // Trail operations
     void trailPush(VariableWord *word);
     void trailPop(void);
     VariableWord *trailTop(void);
+
+    // PDL operations
+    void pdlPush(void);
+    void pdlPop(void);
+    void pldTop(void);
 
     friend std::ostream &operator<<(std::ostream &os, const WAMState &state);
 
@@ -39,6 +47,7 @@ struct WAMState
 
     std::vector<VariableWord *> m_Trail;
     std::vector<ChoicePoint *> m_Stack; // Represented as a vector because I need to have a random access available
+    std::vector<Word*> m_PushDownList;
     ArgumentRegisters m_ArgumentRegisters;
 
     bool m_ModeFlag = false;
