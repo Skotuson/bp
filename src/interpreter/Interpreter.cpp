@@ -3,19 +3,20 @@
 #include <sstream>
 
 #include "../compiler/Compiler.hpp"
-#include "../Render.hpp"
 
-Interpreter::Interpreter(const WAMCode &wamCode)
-    : m_Program(wamCode)
+Interpreter::Interpreter(const WAMCode &wamCode, const Renderer &renderer)
+    : m_Program(wamCode),
+      m_Renderer(renderer)
 {
 }
 
 bool Interpreter::run(void)
 {
-    clearScreen(std::cout);
     std::cout << "?> ";
     std::string query;
     std::getline(std::cin >> std::ws, query);
+
+    m_Renderer.clearScreen(std::cout);
 
     // TODO: will add as an instruction
     if (query == "halt.")
@@ -42,7 +43,7 @@ bool Interpreter::run(void)
     // TODO: handle emptying arg regs after sucessfully completing a goal (multiple goals in conjuction in a query)
     // Maybe delete them from arg reg after sucessfuly unifying/.... (have to check whether possible)
     Instruction *instr;
-    bool skip = false;
+    bool skip = true;
     while ((instr = fetch()) && !m_State.m_FailFlag)
     {
         if (!skip)
@@ -56,15 +57,15 @@ bool Interpreter::run(void)
                 skip = true;
         }
 
-        clearScreen(std::cout);
-        renderCode(std::cout, m_Program, m_State.m_ProgramCounter - 1);
+        m_Renderer.clearScreen(std::cout);
+        m_Renderer.renderCode(std::cout, m_Program, m_State.m_ProgramCounter - 1);
         std::cout << m_State << std::endl;
         std::cout << ANSI_RETURN_CURSOR;
 
         execute(instr);
     }
 
-    clearScreen(std::cout);
+    m_Renderer.clearScreen(std::cout);
 
     std::cout << m_State << std::endl;
 
@@ -74,10 +75,6 @@ bool Interpreter::run(void)
     {
         std::cout << ANSI_COLOR_GREEN << "true." << ANSI_COLOR_DEFAULT << std::endl;
     }
-
-    // Wait for enter
-    std::string com = "";
-    std::getline(std::cin, com);
 
     // Remove the query code
     m_Program.popInstructions(queryCode.m_Program.size());
