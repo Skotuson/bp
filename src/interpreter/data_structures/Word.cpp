@@ -66,7 +66,14 @@ VariableWord::VariableWord(Word **ref, bool bound)
 
 void VariableWord::print(std::ostream &os) const
 {
-    os << ( m_Bound ? "reference" : "variable" ) << " -> " << m_Ref << "[" << *m_Ref << "]";
+    if (m_Bound)
+    {
+        os << "reference -> " << m_Ref << "[" << **m_Ref << "]";
+    }
+    else
+    {
+        os << "variable -> " << m_Ref;
+    }
 }
 
 Word *VariableWord::clone(void)
