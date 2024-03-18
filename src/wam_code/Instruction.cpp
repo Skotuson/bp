@@ -291,6 +291,7 @@ void GetStructureInstruction::execute(WAMState &state)
 
     else
     {
+        fail(state);
     }
 }
 
