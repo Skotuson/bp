@@ -120,7 +120,7 @@ std::string StructNode::codegen(CompilationContext &cctx)
                 case TermNode::VAR:
                     // Note variable if it appears in complex structure
                     cctx.noteVariable(arg->name());
-                    cctx.addInstructions({new UnifyVariableInstruction(arg->name())});
+                    cctx.addInstructions({new UnifyVariableInstruction(arg->name(), cctx.getVarOffset(arg->name()))});
                     break;
                 case TermNode::STRUCT:
                     cctx.allocate()++;
@@ -152,7 +152,7 @@ std::string StructNode::codegen(CompilationContext &cctx)
         case TermNode::VAR:
             // Note variable if it appears in complex structure
             cctx.noteVariable(arg->name());
-            cctx.addInstructions({new UnifyVariableInstruction(arg->name())});
+            cctx.addInstructions({new UnifyVariableInstruction(arg->name(), cctx.getVarOffset(arg->name()))});
             break;
         case TermNode::STRUCT:
             break;

@@ -537,14 +537,15 @@ void UnifyConstantInstruction::print(std::ostream &os) const
     os << "unify-constant " << m_Name;
 }
 
-UnifyVariableInstruction::UnifyVariableInstruction(const std::string &name)
-    : UnifyInstruction(name)
+UnifyVariableInstruction::UnifyVariableInstruction(const std::string &name, size_t offset)
+    : UnifyInstruction(name),
+      m_Offset(offset)
 {
 }
 
 Instruction *UnifyVariableInstruction::clone(void)
 {
-    return new UnifyVariableInstruction(m_Name);
+    return new UnifyVariableInstruction(m_Name, m_Offset);
 }
 
 void UnifyVariableInstruction::execute(WAMState &state)

@@ -188,8 +188,10 @@ struct UnifyConstantInstruction : public UnifyInstruction
 
 struct UnifyVariableInstruction : public UnifyInstruction
 {
-    UnifyVariableInstruction(const std::string &name);
+    UnifyVariableInstruction(const std::string &name, size_t offset);
     Instruction *clone(void) override;
     void execute(WAMState &state) override;
     void print(std::ostream &os) const override;
+
+    size_t m_Offset;
 };
