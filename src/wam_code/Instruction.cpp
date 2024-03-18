@@ -583,7 +583,7 @@ void UnifyVariableInstruction::execute(WAMState &state)
         return;
     }
 
-    Word *sp = state.heapAt(state.SPReg());
+    Word *sp = state.heapAt(state.SPReg())->dereference();
     // TODO: unify
     state.m_StructurePointer++;
 }
