@@ -61,15 +61,17 @@ Word *ArgumentRegisters::dereferenceRegister(size_t reg) const
         return nullptr;
     Word *w = m_ArgumentRegisters[reg - 1];
 
-    if (w->tag() == TAG::VARIABLE)
-    {
-        VariableWord *vw = static_cast<VariableWord *>(w);
-        // TODO: handles only direct -> now
-        if (vw->bound())
-            return *vw->ref();
-    }
+    return w->dereference();
 
-    return m_ArgumentRegisters[reg - 1];
+    //if (w->tag() == TAG::VARIABLE)
+    //{
+    //    return w->dereference();
+    //    VariableWord *vw = static_cast<VariableWord *>(w);
+    //    // TODO: handles only direct -> now
+    //    if (vw->bound())
+    //        return *vw->ref();
+    //}
+    //return m_ArgumentRegisters[reg - 1];
 }
 
 std::ostream &operator<<(std::ostream &os, const ArgumentRegisters &argReg)
