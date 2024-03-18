@@ -530,6 +530,25 @@ Instruction *UnifyConstantInstruction::clone(void)
 
 void UnifyConstantInstruction::execute(WAMState &state)
 {
+    if (!state.readMode())
+    {
+        state.heapPush(new ConstantWord(m_Name));
+        return;
+    }
+
+    Word *w = state.heapAt(state.SPReg());
+    state.m_StructurePointer++;
+
+    if(w->tag() == VARIABLE)
+    {
+        // TODO: dereference
+        //state.trailPush(w);
+    }
+
+    if(w->tag() == CONSTANT)
+    {
+        
+    }
 }
 
 void UnifyConstantInstruction::print(std::ostream &os) const
@@ -550,6 +569,16 @@ Instruction *UnifyVariableInstruction::clone(void)
 
 void UnifyVariableInstruction::execute(WAMState &state)
 {
+    Word *w = state.getChoicePoint(state.m_EnvironmentRegister)->m_Variables[m_Offset];
+    if(!state.readMode())
+    {
+        state.heapPush(w->clone());
+        return;
+    }
+
+    Word *sp = state.heapAt(state.SPReg());
+    // TODO: unify
+    state.m_StructurePointer++;
 }
 
 void UnifyVariableInstruction::print(std::ostream &os) const
