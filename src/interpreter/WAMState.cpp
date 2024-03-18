@@ -48,7 +48,7 @@ void WAMState::setReadMode(void)
     m_ReadMode = true;
 }
 
-bool WAMState::readMode(void)
+bool WAMState::readMode(void) const
 {
     return m_ReadMode;
 }
@@ -145,6 +145,7 @@ void WAMState::pldTop(void)
 
 std::ostream &operator<<(std::ostream &os, const WAMState &state)
 {
+    os << "Mode: " << (state.readMode() ? "READ" : "WRITE") << std::endl;
     os << state.m_ArgumentRegisters << std::endl;
     os << "HEAP-BOT" << std::endl;
     for (const auto &w : state.m_Heap)
