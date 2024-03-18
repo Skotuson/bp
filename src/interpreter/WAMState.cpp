@@ -28,6 +28,28 @@ size_t WAMState::PDLReg(void)
     return m_PushDownList.size();
 }
 
+size_t WAMState::SPReg(void)
+{
+    return m_StructurePointer;
+}
+
+void WAMState::heapPush(Word *word)
+{
+    m_Heap.push_back(word);
+}
+
+void WAMState::heapPop(void)
+{
+    Word *top = m_Heap.back();
+    m_Heap.pop_back();
+    delete top;
+}
+
+Word *WAMState::heapTop(void)
+{
+    return m_Heap.back();
+}
+
 void WAMState::stackPush(ChoicePoint *cp)
 {
     m_Stack.push_back(cp);

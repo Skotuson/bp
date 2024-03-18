@@ -18,6 +18,12 @@ struct WAMState
     size_t SReg(void);
     size_t TRReg(void);
     size_t PDLReg(void);
+    size_t SPReg(void);
+
+    // Heap operations
+    void heapPush(Word *word);
+    void heapPop(void);
+    Word *heapTop(void);
 
     // Choice Point Stack operations
     void stackPush(ChoicePoint *cp);
@@ -38,15 +44,18 @@ struct WAMState
 
     friend std::ostream &operator<<(std::ostream &os, const WAMState &state);
 
+    size_t m_StructurePointer;
+
     size_t m_ProgramCounter = UNSET_REG;
     size_t m_ContinuationPointer = UNSET_REG;
 
     size_t m_BacktrackRegister = UNSET_REG;
     size_t m_EnvironmentRegister = UNSET_REG;
 
+    std::vector<Word *> m_Heap;
     std::vector<VariableWord *> m_Trail;
     std::vector<ChoicePoint *> m_Stack; // Represented as a vector because I need to have a random access available
-    std::vector<Word*> m_PushDownList;
+    std::vector<Word *> m_PushDownList;
     ArgumentRegisters m_ArgumentRegisters;
 
     bool m_ModeFlag = false;
