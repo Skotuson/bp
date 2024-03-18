@@ -75,23 +75,31 @@ public:
     ListWord(void);
     void print(std::ostream &os) const override;
     Word *clone(void) override;
+
 private:
 };
 
 class StructurePointerWord : public Word
 {
 public:
-    StructurePointerWord(void);
+    StructurePointerWord(size_t heapAddress);
     void print(std::ostream &os) const override;
     Word *clone(void) override;
+
+    size_t m_HeapAddress;
+
 private:
 };
 
 class StructureWord : public Word
 {
 public:
-    StructureWord(void);
+    StructureWord(const std::string &functor, size_t arity);
     void print(std::ostream &os) const override;
     Word *clone(void) override;
+
+    std::string m_Functor;
+    size_t m_Arity;
+
 private:
 };

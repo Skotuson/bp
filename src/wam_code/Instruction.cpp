@@ -499,8 +499,8 @@ Instruction *PutStructureInstruction::clone(void)
 
 void PutStructureInstruction::execute(WAMState &state)
 {
-    state.fillRegister(new StructurePointerWord(), m_ArgumentRegister);
-    state.heapPush(new StructureWord());
+    state.fillRegister(new StructurePointerWord(state.HReg()), m_ArgumentRegister);
+    state.heapPush(new StructureWord(m_Name, m_Arity));
     state.setWriteMode();
 }
 

@@ -122,32 +122,35 @@ Word *ListWord::clone(void)
     return new ListWord();
 }
 
-StructurePointerWord::StructurePointerWord(void)
-    : Word(TAG::S_POINTER)
+StructurePointerWord::StructurePointerWord(size_t heapAddress)
+    : Word(TAG::S_POINTER),
+      m_HeapAddress(heapAddress)
 {
 }
 
 void StructurePointerWord::print(std::ostream &os) const
 {
-    os << "structure-pointer ->";
+    os << "structure-pointer -> HEAP-BOT + " << m_HeapAddress;
 }
 
 Word *StructurePointerWord::clone(void)
 {
-    return new StructurePointerWord();
+    return new StructurePointerWord(m_HeapAddress);
 }
 
-StructureWord::StructureWord(void)
-    : Word(TAG::STRUCTURE)
+StructureWord::StructureWord(const std::string &functor, size_t arity)
+    : Word(TAG::STRUCTURE),
+      m_Functor(functor),
+      m_Arity(arity)
 {
 }
 
 void StructureWord::print(std::ostream &os) const
 {
-    os << "structure ->";
+    os << "structure -> " << m_Functor << "/" << m_Arity;
 }
 
 Word *StructureWord::clone(void) 
 {
-    return new StructureWord();
+    return new StructureWord(m_Functor, m_Arity);
 }
