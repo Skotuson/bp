@@ -46,7 +46,7 @@ void MarkInstruction::execute(WAMState &state)
     state.stackPush(ncp);
     // Set E and B registers
     state.m_BacktrackRegister = state.m_EnvironmentRegister = state.SReg();
-    std::cout << state << std::endl;
+    //std::cout << state << std::endl;
 }
 
 void MarkInstruction::print(std::ostream &os) const
@@ -196,7 +196,7 @@ void ReturnInstruction::execute(WAMState &state)
         state.m_ProgramCounter = cp->m_BCP;
         state.m_EnvironmentRegister = cp->m_BCE;
     }
-    std::cout << state << std::endl;
+    //std::cout << state << std::endl;
 }
 
 void ReturnInstruction::print(std::ostream &os) const
@@ -602,5 +602,5 @@ void UnifyVariableInstruction::execute(WAMState &state)
 
 void UnifyVariableInstruction::print(std::ostream &os) const
 {
-    os << "unifyv " << m_Name;
+    os << "unifyv " << m_Name << "(" << m_Offset << ")";
 }
