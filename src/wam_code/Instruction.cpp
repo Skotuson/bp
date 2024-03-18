@@ -2,6 +2,13 @@
 
 #include <iostream>
 #include <cassert>
+#include <memory>
+
+void Instruction::fail(WAMState &state)
+{
+    std::shared_ptr<FailInstruction> fail = std::make_shared<FailInstruction>();
+    fail->execute(state);
+}
 
 std::ostream &operator<<(std::ostream &os, const Instruction &instr)
 {
@@ -39,7 +46,7 @@ void MarkInstruction::execute(WAMState &state)
     state.stackPush(ncp);
     // Set E and B registers
     state.m_BacktrackRegister = state.m_EnvironmentRegister = state.SReg();
-    // std::cout << state << std::endl;
+    std::cout << state << std::endl;
 }
 
 void MarkInstruction::print(std::ostream &os) const
@@ -84,9 +91,7 @@ void BacktrackInstruction::execute(WAMState &state)
         state.m_BacktrackRegister = cp->m_BB;
     }
 
-    Instruction *fail = new FailInstruction();
-    fail->execute(state);
-    delete fail;
+    fail(state);
 
     state.stackPop(); // Discard the choice point (last clause in the chain failed)
 }
@@ -191,7 +196,7 @@ void ReturnInstruction::execute(WAMState &state)
         state.m_ProgramCounter = cp->m_BCP;
         state.m_EnvironmentRegister = cp->m_BCE;
     }
-    // std::cout << state << std::endl;
+    std::cout << state << std::endl;
 }
 
 void ReturnInstruction::print(std::ostream &os) const
@@ -231,10 +236,7 @@ void GetConstantInstruction::execute(WAMState &state)
     }
     else if (!reg || !reg->compareToConst(cword))
     {
-        // TODO: Make a singleton object maybe?
-        Instruction *fail = new FailInstruction();
-        fail->execute(state);
-        delete fail;
+        fail(state);
         delete cword;
     }
 }
@@ -276,6 +278,20 @@ Instruction *GetStructureInstruction::clone(void)
 
 void GetStructureInstruction::execute(WAMState &state)
 {
+    Word *w = state.m_ArgumentRegisters.dereferenceRegister(m_ArgumentRegister);
+    if (w->tag() == VARIABLE)
+    {
+        state.setWriteMode();
+    }
+
+    else if (w->tag() == S_POINTER)
+    {
+        state.setReadMode();
+    }
+
+    else
+    {
+    }
 }
 
 void GetStructureInstruction::print(std::ostream &os) const

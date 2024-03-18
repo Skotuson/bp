@@ -12,6 +12,8 @@ struct Instruction
     virtual void execute(WAMState &state) = 0;
     virtual void print(std::ostream &os) const = 0;
 
+    void fail(WAMState & state);
+
     friend std::ostream &operator<<(std::ostream &os, const Instruction &instr);
 };
 
