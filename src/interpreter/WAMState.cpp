@@ -33,6 +33,11 @@ size_t WAMState::SPReg(void)
     return m_StructurePointer;
 }
 
+size_t HReg(void)
+{
+    return m_Heap.size();
+}
+
 void WAMState::setWriteMode(void)
 {
     m_ReadMode = false;

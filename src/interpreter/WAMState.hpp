@@ -19,6 +19,7 @@ struct WAMState
     size_t TRReg(void);
     size_t PDLReg(void);
     size_t SPReg(void);
+    size_t HReg(void);
 
     void setWriteMode(void);
     void setReadMode(void);
