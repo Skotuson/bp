@@ -429,6 +429,47 @@ void PutVariableInstruction::print(std::ostream &os) const
        << " A" << m_ArgumentRegister;
 }
 
+// TODO: name is redundant here
+PutListInstruction::PutListInstruction(const std::string &name, size_t ArgumentRegister)
+    : PutInstruction(m_Name, ArgumentRegister)
+{
+}
+
+Instruction *PutListInstruction::clone(void)
+{
+    return new PutListInstruction(m_Name, m_ArgumentRegister);
+}
+
+void PutListInstruction::execute(WAMState &state)
+{
+}
+
+void PutListInstruction::print(std::ostream &os) const
+{
+    std::cout << "put-list A" << m_ArgumentRegister;
+}
+
+PutStructureInstruction::PutStructureInstruction(const std::string &name, size_t argumentRegister, size_t arity)
+    : PutInstruction(name, argumentRegister),
+      m_Arity(arity)
+{
+}
+
+Instruction *PutStructureInstruction::clone(void)
+{
+    return new PutStructureInstruction(m_Name, m_ArgumentRegister, m_Arity);
+}
+
+void PutStructureInstruction::execute(WAMState &state)
+{
+}
+
+void PutStructureInstruction::print(std::ostream &os) const
+{
+}
+
+size_t m_Arity;
+
 // Unify Instructions
 
 UnifyInstruction::UnifyInstruction(const std::string &name)

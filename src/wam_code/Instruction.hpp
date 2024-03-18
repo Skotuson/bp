@@ -12,7 +12,7 @@ struct Instruction
     virtual void execute(WAMState &state) = 0;
     virtual void print(std::ostream &os) const = 0;
 
-    friend std::ostream &operator<<(std::ostream &os, const Instruction & instr);
+    friend std::ostream &operator<<(std::ostream &os, const Instruction &instr);
 };
 
 struct BranchInstruction : public Instruction
@@ -143,8 +143,22 @@ struct PutVariableInstruction : public PutInstruction
     size_t m_Offset;
 };
 
+struct PutListInstruction : public PutInstruction
+{
+    PutListInstruction(const std::string &name, size_t ArgumentRegister);
+    Instruction *clone(void) override;
+    void execute(WAMState &state) override;
+    void print(std::ostream &os) const override;
+};
+
 struct PutStructureInstruction : public PutInstruction
 {
+    PutStructureInstruction(const std::string &name, size_t argumentRegister, size_t arity);
+    Instruction *clone(void) override;
+    void execute(WAMState &state) override;
+    void print(std::ostream &os) const override;
+
+    size_t m_Arity;
 };
 
 // Unify Instructions
