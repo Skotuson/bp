@@ -499,6 +499,9 @@ Instruction *PutStructureInstruction::clone(void)
 
 void PutStructureInstruction::execute(WAMState &state)
 {
+    state.fillRegister(new StructurePointerWord(), m_ArgumentRegister);
+    state.heapPush(new StructureWord());
+    state.setWriteMode();
 }
 
 void PutStructureInstruction::print(std::ostream &os) const
