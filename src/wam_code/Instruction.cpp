@@ -451,7 +451,7 @@ Instruction *PutVariableInstruction::clone(void)
 void PutVariableInstruction::execute(WAMState &state)
 {
     ChoicePoint *cp = state.getChoicePoint(state.m_EnvironmentRegister);
-    Word *word = cp->m_Variables[m_Offset];
+    Word *word = cp->m_Variables[m_Offset]->dereference();
     if (word->tag() == TAG::VARIABLE)
     {
         state.fillRegister(new VariableWord(&cp->m_Variables[m_Offset], true), m_ArgumentRegister);
@@ -536,19 +536,26 @@ void UnifyConstantInstruction::execute(WAMState &state)
         return;
     }
 
-    Word *w = state.heapAt(state.SPReg());
+    Word *w = state.heapAt(state.SPReg())->dereference();
     state.m_StructurePointer++;
 
-    if(w->tag() == VARIABLE)
+    if (w->tag() == VARIABLE)
     {
-        // TODO: dereference
-        //state.trailPush(w);
+        VariableWord *vw = static_cast<VariableWord *>(w);
+        state.trailPush(vw);
+        *vw->ref() = new ConstantWord(m_Name);
     }
 
-    if(w->tag() == CONSTANT)
+    if (w->tag() == CONSTANT)
     {
-        
+        ConstantWord *cw = static_cast<ConstantWord *>(w);
+        if (!cw->compareToConst(cw))
+        {
+            fail(state);
+        }
     }
+
+    fail(state);
 }
 
 void UnifyConstantInstruction::print(std::ostream &os) const
@@ -570,7 +577,7 @@ Instruction *UnifyVariableInstruction::clone(void)
 void UnifyVariableInstruction::execute(WAMState &state)
 {
     Word *w = state.getChoicePoint(state.m_EnvironmentRegister)->m_Variables[m_Offset];
-    if(!state.readMode())
+    if (!state.readMode())
     {
         state.heapPush(w->clone());
         return;
