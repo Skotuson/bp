@@ -281,12 +281,24 @@ void GetStructureInstruction::execute(WAMState &state)
     Word *w = state.m_ArgumentRegisters.dereferenceRegister(m_ArgumentRegister);
     if (w->tag() == VARIABLE)
     {
+        VariableWord *vw = static_cast<VariableWord *>(w);
+        state.trailPush(vw);
+        *vw->ref() = new StructurePointerWord(state.HReg());
+        state.heapPush(new StructureWord(m_Name, m_Arity));
         state.setWriteMode();
     }
 
     else if (w->tag() == S_POINTER)
     {
-        state.setReadMode();
+        StructurePointerWord *spw = static_cast<StructurePointerWord *>(w);
+        StructureWord *sw = static_cast<StructureWord*>(state.heapAt(spw->m_HeapAddress));
+        if (sw->m_Functor == m_Name)
+        {
+            state.setReadMode();
+            state.m_StructurePointer = spw->m_HeapAddress + 1;
+            return;
+        }
+        fail(state);
     }
 
     else
