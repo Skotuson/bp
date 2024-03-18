@@ -136,6 +136,12 @@ void WAMState::pldTop(void)
 std::ostream &operator<<(std::ostream &os, const WAMState &state)
 {
     os << state.m_ArgumentRegisters << std::endl;
+    os << "HEAP-BOT" << std::endl;
+    for (const auto &w : state.m_Heap)
+    {
+        os << *w << std::endl;
+    }
+    os << "HEAP-TOP" << std::endl;
     os << "STACK-BOT" << std::endl;
     size_t n = 1;
     for (const auto &cp : state.m_Stack)
@@ -149,7 +155,6 @@ std::ostream &operator<<(std::ostream &os, const WAMState &state)
     n = 1;
     for (const auto &w : state.m_Trail)
     {
-        std::cout << "Trail pos: " << n++ << std::endl;
         os << *w << std::endl;
     }
     os << "TRAIL-TOP";
