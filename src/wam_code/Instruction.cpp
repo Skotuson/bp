@@ -34,6 +34,7 @@ void MarkInstruction::execute(WAMState &state)
                                state.m_ContinuationPointer,
                                state.m_BacktrackRegister,
                                state.TRReg(),
+                               state.HReg(),
                                state.m_ProgramCounter);
     state.stackPush(ncp);
     // Set E and B registers
