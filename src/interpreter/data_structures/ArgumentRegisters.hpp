@@ -1,5 +1,4 @@
-#ifndef ARGUMENT_REGISTERS_H
-#define ARGUMENT_REGISTERS_H
+#pragma once
 
 #include "Word.hpp"
 
@@ -11,6 +10,7 @@ public:
     ArgumentRegisters(void) = default;
     ~ArgumentRegisters(void);
     ArgumentRegisters(const ArgumentRegisters &argReg);
+    ArgumentRegisters &operator=(const ArgumentRegisters &argReg);
 
     void fillRegister(Word *word, size_t reg);
     Word *dereferenceRegister(size_t reg) const;
@@ -20,5 +20,3 @@ public:
 private:
     std::vector<Word *> m_ArgumentRegisters;
 };
-
-#endif

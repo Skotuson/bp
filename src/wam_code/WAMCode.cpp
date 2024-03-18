@@ -34,16 +34,19 @@ WAMCode::~WAMCode(void)
         delete instr;
 }
 
+size_t WAMCode::size() const
+{
+    return m_Program.size();
+}
+
 void WAMCode::addInstructions(const std::vector<Instruction *> &instructions)
 {
-    std::vector<Instruction *> instrCpy;
-    for(auto instr : instructions)
-        instrCpy.push_back(instr->clone());
-    m_Program.insert(m_Program.end(), instrCpy.begin(), instrCpy.end());
+    m_Program.insert(m_Program.end(), instructions.begin(), instructions.end());
 }
 
 void WAMCode::deleteInstruction(size_t idx)
 {
+    delete m_Program[idx];
     m_Program.erase(m_Program.begin() + idx);
 }
 
@@ -70,33 +73,37 @@ void WAMCode::updateJumpInstructions(void)
 
 void WAMCode::merge(const WAMCode &code)
 {
-    addInstructions(code.m_Program);
+    std::vector<Instruction *> instrCpy;
+    for(auto instr : code.m_Program)
+        instrCpy.push_back(instr->clone());
+    addInstructions(instrCpy);
     updateJumpInstructions();
 }
 
-Instruction *WAMCode::getInstruction(size_t pc)
+Instruction *WAMCode::getInstruction(size_t pc) const
 {
     if (pc >= m_Program.size())
         return nullptr;
     return m_Program[pc];
 }
 
+void WAMCode::dumpInstruction(size_t pc, std::ostream &os) const
+{
+    auto it = m_AddressToLabel.find(pc);
+    if (it != m_AddressToLabel.end())
+    {
+        os << it->second << ": ";
+    }
+    // TODO: adjust for the label length
+    os << "\t";
+    os << *getInstruction(pc);
+    os << std::endl;
+}
+
 void WAMCode::dump(std::ostream &os)
 {
-    size_t line = 0;
-    for (const auto &instruction : m_Program)
-    {
-        auto it = m_AddressToLabel.find(line);
-        if (it != m_AddressToLabel.end())
-        {
-            os << it->second << ": ";
-        }
-        // TODO: adjust for the label length
-        os << "\t";
-        instruction->print(os);
-        os << std::endl;
-        line++;
-    }
+    for(size_t i = 0; i < size(); i++)
+        dumpInstruction(i, os);
 }
 
 void WAMCode::addLabel(const Label &label)

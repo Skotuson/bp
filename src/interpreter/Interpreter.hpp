@@ -1,6 +1,6 @@
-#ifndef INTERPRETER_H
-#define INTERPRETER_H
+#pragma once
 
+#include "../Renderer.hpp"
 #include "WAMState.hpp"
 #include "../wam_code/WAMCode.hpp"
 #include "../wam_code/Instruction.hpp"
@@ -16,17 +16,15 @@ using Label = std::string;
 class Interpreter
 {
 public:
-    Interpreter(std::istream &is);
-    Interpreter(const WAMCode &wamCode);
+    Interpreter(const WAMCode &wamCode, const Renderer & renderer);
 
     bool run(void);
 
 private:
-    Instruction * fetch(void);
+    Instruction *fetch(void);
     void execute(Instruction *instr);
 
     WAMState m_State;
     WAMCode m_Program;
+    Renderer m_Renderer;
 };
-
-#endif // INTERPRETER_H

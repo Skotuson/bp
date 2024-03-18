@@ -85,16 +85,16 @@ std::string StructNode::codegen(CompilationContext &cctx)
     std::string code = "";
     if (m_IsGoal)
     {
-        for (const auto &arg : m_Args)
-        {
-            arg->m_IsGoal = true;
-            arg->m_IsArg = true;
-            arg->m_AvailableReg = m_AvailableReg;
-            code += arg->codegen(cctx) + "\n\t";
-            m_AvailableReg = arg->m_AvailableReg;
-        }
         if (!m_IsArg)
         {
+            for (const auto &arg : m_Args)
+            {
+                arg->m_IsGoal = true;
+                arg->m_IsArg = true;
+                arg->m_AvailableReg = m_AvailableReg;
+                code += arg->codegen(cctx) + "\n\t";
+                m_AvailableReg = arg->m_AvailableReg;
+            }
             code += "call " + m_Name;
             cctx.addInstructions({new CallInstruction(m_Name)});
             // Reset available registers after call
@@ -102,7 +102,32 @@ std::string StructNode::codegen(CompilationContext &cctx)
         }
         // Treat structs without arguments as constants (if they are an argument)
         else if (!m_Args.size() && m_IsArg)
+        {
             cctx.addInstructions({new PutConstantInstruction(m_Name, m_AvailableReg++)});
+        }
+        // Allocate space for complex structure buried inside other complex structure
+        else
+        {
+            cctx.addInstructions({new PutStructureInstruction(m_Name, m_AvailableReg++, m_Args.size())});
+            for (const auto &arg : m_Args)
+            {
+                TermNode::TermType type = arg->type();
+                switch (type)
+                {
+                case TermNode::CONST:
+                    cctx.addInstructions({new UnifyConstantInstruction(arg->name())});
+                    break;
+                case TermNode::VAR:
+                    // Note variable if it appears in complex structure
+                    cctx.noteVariable(arg->name());
+                    cctx.addInstructions({new UnifyVariableInstruction(arg->name(), cctx.getVarOffset(arg->name()))});
+                    break;
+                case TermNode::STRUCT:
+                    cctx.allocate()++;
+                    break;
+                }
+            }
+        }
         return code;
     }
 
@@ -113,7 +138,8 @@ std::string StructNode::codegen(CompilationContext &cctx)
         cctx.addInstructions({new GetConstantInstruction(m_Name, m_AvailableReg++)});
         return code;
     }
-    cctx.addInstructions({new GetStructureInstruction(m_Name, m_AvailableReg)});
+
+    cctx.addInstructions({new GetStructureInstruction(m_Name, m_AvailableReg, m_Args.size())});
     code = "get-structure " + m_Name + " A" + std::to_string(m_AvailableReg++);
     for (const auto &arg : m_Args)
     {
@@ -124,7 +150,9 @@ std::string StructNode::codegen(CompilationContext &cctx)
             cctx.addInstructions({new UnifyConstantInstruction(arg->name())});
             break;
         case TermNode::VAR:
-            cctx.addInstructions({new UnifyVariableInstruction(arg->name())});
+            // Note variable if it appears in complex structure
+            cctx.noteVariable(arg->name());
+            cctx.addInstructions({new UnifyVariableInstruction(arg->name(), cctx.getVarOffset(arg->name()))});
             break;
         case TermNode::STRUCT:
             break;
@@ -218,10 +246,13 @@ VarNode::VarNode(const std::string &name)
 
 std::string VarNode::codegen(CompilationContext &cctx)
 {
+    cctx.noteVariable(m_Name);
     if (!m_IsGoal)
-        cctx.addInstructions({new GetVariableInstruction(m_Name, m_AvailableReg)});
+        cctx.addInstructions(
+            {new GetVariableInstruction(m_Name, m_AvailableReg, cctx.getVarOffset(m_Name))});
     else
-        cctx.addInstructions({new PutVariableInstruction(m_Name, m_AvailableReg)});
+        cctx.addInstructions(
+            {new PutVariableInstruction(m_Name, m_AvailableReg, cctx.getVarOffset(m_Name))});
     return (m_IsGoal ? "put " : "get ") + m_Name + " A" + std::to_string(m_AvailableReg++);
 }
 
@@ -304,7 +335,12 @@ std::string ClauseNode::codegen(CompilationContext &cctx)
     code += "\tretry-me-else " + retryLabel + "\n";
     cctx.addInstructions({new RetryMeElseInstruction(retryLabel)});
 
-    cctx.addInstructions({new AllocateInstruction(0)});
+    // TODO: count all variables and complex objects (even nested) and generate the "n" afterwards
+    cctx.allocate() = 0;
+    cctx.resetVariables();
+    AllocateInstruction *alloc = new AllocateInstruction(0);
+    cctx.addInstructions({alloc});
+    size_t allocInstrIdx = cctx.getCode().size() - 1;
 
     size_t currentArgumentRegister = 1;
     for (size_t i = 0; i < m_Args.size(); i++)
@@ -325,6 +361,12 @@ std::string ClauseNode::codegen(CompilationContext &cctx)
         code += "\t" + m_Body[i]->codegen(cctx) + "\n";
         currentArgumentRegister = m_Body[i]->m_AvailableReg;
     }
+
+    // Generate allocate only if N is non-zero
+    if (cctx.allocate())
+        alloc->m_N = cctx.allocate();
+    else
+        cctx.getCode().deleteInstruction(allocInstrIdx);
 
     cctx.addInstructions({new ReturnInstruction()});
     return code + "\treturn\n";

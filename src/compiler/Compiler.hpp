@@ -1,5 +1,4 @@
-#ifndef COMPILER_H
-#define COMPILER_H
+#pragma once
 
 #include <iostream>
 #include <string>
@@ -24,5 +23,3 @@ private:
     std::string m_Code = "";
     WAMCode m_WAMCode;
 };
-
-#endif

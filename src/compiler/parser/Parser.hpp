@@ -1,5 +1,4 @@
-#ifndef PARSER_H
-#define PARSER_H
+#pragma once
 
 #include "../lexer/Lexer.hpp"
 #include "../ast/AST.hpp"
@@ -41,5 +40,3 @@ private:
     Lexer m_Lex;
     ProgramNode *m_ASTRoot;
 };
-
-#endif

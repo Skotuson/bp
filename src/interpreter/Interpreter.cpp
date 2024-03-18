@@ -4,31 +4,9 @@
 
 #include "../compiler/Compiler.hpp"
 
-Interpreter::Interpreter(std::istream &is)
-{
-    // TODO: case when only the bytecode is provided in text form
-    size_t lineNumber = 0;
-    std::string line;
-    while (std::getline(is, line))
-    {
-        // std::cout << line << std::endl;
-        std::istringstream iss(line);
-        std::string tok;
-        while (iss >> tok)
-        {
-            // std::cout << tok << std::endl;
-            //  Token is label
-            if (tok.back() == ':')
-            {
-                tok.pop_back();
-            }
-        }
-        lineNumber++;
-    }
-}
-
-Interpreter::Interpreter(const WAMCode &wamCode)
-    : m_Program(wamCode)
+Interpreter::Interpreter(const WAMCode &wamCode, const Renderer &renderer)
+    : m_Program(wamCode),
+      m_Renderer(renderer)
 {
 }
 
@@ -37,6 +15,8 @@ bool Interpreter::run(void)
     std::cout << "?> ";
     std::string query;
     std::getline(std::cin >> std::ws, query);
+
+    m_Renderer.clearScreen(std::cout);
 
     // TODO: will add as an instruction
     if (query == "halt.")
@@ -50,10 +30,6 @@ bool Interpreter::run(void)
     queryCompiler.compile();
     WAMCode queryCode = queryCompiler.dump();
 
-    // Delete the first three instructions
-    for (size_t i = 0; i < 3; i++)
-        queryCode.deleteInstruction(0);
-    // Pop the backtrack instruction
     queryCode.popInstructions(1);
 
     m_Program.addLabel(queryLabel);
@@ -67,14 +43,41 @@ bool Interpreter::run(void)
     // TODO: handle emptying arg regs after sucessfully completing a goal (multiple goals in conjuction in a query)
     // Maybe delete them from arg reg after sucessfuly unifying/.... (have to check whether possible)
     Instruction *instr;
+    bool skip = true;
     while ((instr = fetch()) && !m_State.m_FailFlag)
     {
+        if (!skip)
+        {
+            std::string com = "";
+            std::getline(std::cin, com);
+
+            if (com == "state")
+                std::cout << m_State << std::endl;
+            if (com == "run")
+                skip = true;
+        }
+
+        m_Renderer.clearScreen(std::cout);
+        m_Renderer.renderCode(std::cout, m_Program, m_State.m_ProgramCounter - 1);
+        std::cout << m_State << std::endl;
+        std::cout << ANSI_RETURN_CURSOR;
+
         execute(instr);
+    }
+
+    m_Renderer.clearScreen(std::cout);
+
+    std::cout << m_State << std::endl;
+
+    if (m_State.m_FailFlag)
+        std::cout << ANSI_COLOR_RED << "false." << ANSI_COLOR_DEFAULT << std::endl;
+    else
+    {
+        std::cout << ANSI_COLOR_GREEN << "true." << ANSI_COLOR_DEFAULT << std::endl;
     }
 
     // Remove the query code
     m_Program.popInstructions(queryCode.m_Program.size());
-    // TODO: add same for Jump
 
     // Reset the WAM
     m_State = WAMState();
@@ -88,8 +91,5 @@ Instruction *Interpreter::fetch(void)
 
 void Interpreter::execute(Instruction *instr)
 {
-    std::cout << "executing ";
-    instr->print(std::cout);
-    std::cout << std::endl;
     instr->execute(m_State);
 }

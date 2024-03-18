@@ -1,5 +1,4 @@
-#ifndef WAMCODE_H
-#define WAMCODE_H
+#pragma once
 
 #include "Instruction.hpp"
 
@@ -17,6 +16,8 @@ struct WAMCode
     WAMCode &operator=(const WAMCode &wamCode);
     ~WAMCode(void);
 
+    size_t size() const;
+
     void addInstructions(const std::vector<Instruction *> &instructions);
     void deleteInstruction(size_t idx);
     void popInstructions(size_t n);
@@ -25,7 +26,8 @@ struct WAMCode
 
     void merge(const WAMCode & code);
 
-    Instruction *getInstruction(size_t pc);
+    Instruction *getInstruction(size_t pc) const;
+    void dumpInstruction(size_t pc, std::ostream &os) const;
     void dump(std::ostream &os);
     void addLabel(const Label &label);
     void removeLabel(const Label &label);
@@ -35,5 +37,3 @@ struct WAMCode
     std::map<Label, size_t> m_LabelToAddress;
     std::vector<Instruction *> m_Program;
 };
-
-#endif // WAMCODE_H

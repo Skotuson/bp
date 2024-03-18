@@ -42,7 +42,30 @@ WAMCode CompilationContext::code()
     return m_GeneratedCode;
 }
 
-WAMCode & CompilationContext::getCode()
+WAMCode &CompilationContext::getCode()
 {
     return m_GeneratedCode;
+}
+
+size_t &CompilationContext::allocate(void)
+{
+    return m_Allocate;
+}
+
+void CompilationContext::noteVariable(const std::string &variable)
+{
+    if (m_Variables.count(variable))
+        return;
+    m_Variables.insert({variable, m_Variables.size()});
+    m_Allocate++;
+}
+
+size_t CompilationContext::getVarOffset(const std::string &variable)
+{
+    return m_Variables[variable];
+}
+
+void CompilationContext::resetVariables(void)
+{
+    m_Variables.clear();
 }

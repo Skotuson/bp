@@ -33,13 +33,13 @@ int main(int argc, const char **argv)
     int i = 0;
     for (; i < argc; i++)
     {
-        if (!strcmp(argv[i], "--filename"))
+        if (!strcmp(argv[i], "--file"))
             break;
     }
 
     if (i >= argc - 1)
     {
-        std::cout << "Missing mandatory --filename parameter" << std::endl;
+        std::cout << "Missing mandatory --file parameter" << std::endl;
         return 1;
     }
 
@@ -54,7 +54,7 @@ int main(int argc, const char **argv)
     Compiler comp(ifs);
     comp.compile();
     
-    Interpreter intp(comp.dump());
+    Interpreter intp(comp.dump(), Renderer());
     
     while(intp.run());
 
