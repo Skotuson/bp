@@ -20,6 +20,9 @@ struct WAMState
     size_t PDLReg(void);
     size_t SPReg(void);
 
+    void setWriteMode(void);
+    void setReadMode(void);
+
     // Heap operations
     void heapPush(Word *word);
     void heapPop(void);
@@ -58,6 +61,6 @@ struct WAMState
     std::vector<Word *> m_PushDownList;
     ArgumentRegisters m_ArgumentRegisters;
 
-    bool m_ModeFlag = false;
+    bool m_ReadMode = false;
     bool m_FailFlag = false;
 };

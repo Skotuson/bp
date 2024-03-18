@@ -33,6 +33,16 @@ size_t WAMState::SPReg(void)
     return m_StructurePointer;
 }
 
+void WAMState::setWriteMode(void)
+{
+    m_ReadMode = false;
+}
+
+void WAMState::setReadMode(void)
+{
+    m_ReadMode = true;
+}
+
 void WAMState::heapPush(Word *word)
 {
     m_Heap.push_back(word);
