@@ -37,7 +37,7 @@ std::ostream &operator<<(std::ostream &os, const ChoicePoint &cp)
   os << "BCE:" << format(cp.m_BCE) << std::endl;
   os << "BB:" << format(cp.m_BB) << std::endl;
   os << "BTR:" << format(cp.m_BTR) << std::endl;
-  os << "BTR:" << format(cp.m_BH) << std::endl;
+  os << "BH:" << format(cp.m_BH) << std::endl;
   os << "FA:" << format(cp.m_FA) << std::endl;
   for (size_t i = 0; i < cp.m_Variables.size(); i++)
   {
