@@ -25,6 +25,16 @@ Word::Word(TAG tag)
 {
 }
 
+TAG Word::tag(void)
+{
+    return m_Tag;
+}
+
+bool Word::compareToConst(ConstantWord *cword)
+{
+    return false;
+}
+
 std::ostream &operator<<(std::ostream &os, const Word &word)
 {
     word.print(os);
@@ -45,11 +55,6 @@ void ConstantWord::print(std::ostream &os) const
 Word *ConstantWord::clone(void)
 {
     return new ConstantWord(m_Value);
-}
-
-TAG ConstantWord::tag(void)
-{
-    return m_Tag;
 }
 
 bool ConstantWord::compareToConst(ConstantWord *cword)
@@ -81,11 +86,6 @@ Word *VariableWord::clone(void)
     return new VariableWord(m_Ref, m_Bound);
 }
 
-TAG VariableWord::tag(void)
-{
-    return m_Tag;
-}
-
 void VariableWord::setRef(Word **ref)
 {
     m_Ref = ref;
@@ -105,4 +105,49 @@ bool VariableWord::compareToConst(ConstantWord *cword)
 {
     // TODO
     return false;
+}
+
+ListWord::ListWord(void)
+    : Word(TAG::LIST)
+{
+}
+
+void ListWord::print(std::ostream &os) const
+{
+    os << "list";
+}
+
+Word *ListWord::clone(void)
+{
+    return new ListWord();
+}
+
+StructurePointerWord::StructurePointerWord(void)
+    : Word(TAG::S_POINTER)
+{
+}
+
+void StructurePointerWord::print(std::ostream &os) const
+{
+    os << "structure-pointer ->";
+}
+
+Word *StructurePointerWord::clone(void)
+{
+    return new StructurePointerWord();
+}
+
+StructureWord::StructureWord(void)
+    : Word(TAG::STRUCTURE)
+{
+}
+
+void StructureWord::print(std::ostream &os) const
+{
+    os << "structure ->";
+}
+
+Word *StructureWord::clone(void) 
+{
+    return new StructureWord();
 }
