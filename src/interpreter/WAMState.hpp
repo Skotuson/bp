@@ -23,6 +23,7 @@ struct WAMState
 
     void setWriteMode(void);
     void setReadMode(void);
+    bool readMode(void);
 
     // Heap operations
     void heapPush(Word *word);

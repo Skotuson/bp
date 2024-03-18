@@ -48,6 +48,11 @@ void WAMState::setReadMode(void)
     m_ReadMode = true;
 }
 
+bool WAMState::readMode(void)
+{
+    return m_ReadMode;
+}
+
 void WAMState::heapPush(Word *word)
 {
     m_Heap.push_back(word);
