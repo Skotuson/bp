@@ -116,7 +116,7 @@ std::string StructNode::codegen(CompilationContext &cctx)
         cctx.addInstructions({new GetConstantInstruction(m_Name, m_AvailableReg++)});
         return code;
     }
-    cctx.addInstructions({new GetStructureInstruction(m_Name, m_AvailableReg)});
+    cctx.addInstructions({new GetStructureInstruction(m_Name, m_AvailableReg, m_Args.size())});
     code = "get-structure " + m_Name + " A" + std::to_string(m_AvailableReg++);
     for (const auto &arg : m_Args)
     {

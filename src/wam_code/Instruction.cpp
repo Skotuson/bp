@@ -244,14 +244,34 @@ void GetConstantInstruction::print(std::ostream &os) const
     os << "get-constant " << m_Name << " A" << m_ArgumentRegister;
 }
 
-GetStructureInstruction::GetStructureInstruction(const std::string &name, size_t argumentRegister)
+GetListInstruction::GetListInstruction(const std::string &name, size_t argumentRegister)
     : GetInstruction(name, argumentRegister)
+{
+}
+
+Instruction *GetListInstruction::clone(void)
+{
+    return new GetListInstruction(m_Name, m_ArgumentRegister);
+}
+
+void GetListInstruction::execute(WAMState &state)
+{
+}
+
+void GetListInstruction::print(std::ostream &os) const
+{
+    os << "get-list A" << m_ArgumentRegister;
+}
+
+GetStructureInstruction::GetStructureInstruction(const std::string &name, size_t argumentRegister, size_t arity)
+    : GetInstruction(name, argumentRegister),
+      m_Arity(arity)
 {
 }
 
 Instruction *GetStructureInstruction::clone(void)
 {
-    return new GetStructureInstruction(m_Name, m_ArgumentRegister);
+    return new GetStructureInstruction(m_Name, m_ArgumentRegister, m_Arity);
 }
 
 void GetStructureInstruction::execute(WAMState &state)
@@ -260,7 +280,7 @@ void GetStructureInstruction::execute(WAMState &state)
 
 void GetStructureInstruction::print(std::ostream &os) const
 {
-    os << "get-structure " << m_Name << " A" << m_ArgumentRegister;
+    os << "get-structure " << m_Name << "/" << m_Arity << " A" << m_ArgumentRegister;
 }
 
 GetVariableInstruction::GetVariableInstruction(const std::string &name,
@@ -466,6 +486,7 @@ void PutStructureInstruction::execute(WAMState &state)
 
 void PutStructureInstruction::print(std::ostream &os) const
 {
+    os << "put-structure " << m_Name << "/" << m_Arity << " A" << m_ArgumentRegister;
 }
 
 size_t m_Arity;

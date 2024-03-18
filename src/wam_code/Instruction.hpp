@@ -98,14 +98,20 @@ struct GetConstantInstruction : public GetInstruction
 
 struct GetListInstruction : public GetInstruction
 {
+    GetListInstruction(const std::string &name, size_t argumentRegister);
+    Instruction *clone(void) override;
+    void execute(WAMState &state) override;
+    void print(std::ostream &os) const override;
 };
 
 struct GetStructureInstruction : public GetInstruction
 {
-    GetStructureInstruction(const std::string &name, size_t argumentRegister);
+    GetStructureInstruction(const std::string &name, size_t argumentRegister, size_t arity);
     Instruction *clone(void) override;
     void execute(WAMState &state) override;
     void print(std::ostream &os) const override;
+
+    size_t m_Arity;
 };
 
 struct GetVariableInstruction : public GetInstruction
