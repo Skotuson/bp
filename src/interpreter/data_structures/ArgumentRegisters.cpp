@@ -10,11 +10,13 @@ ArgumentRegisters::~ArgumentRegisters(void)
 
 ArgumentRegisters::ArgumentRegisters(const ArgumentRegisters &argReg)
 {
-    // TODO: this won't copy possible gaps in registers
     std::vector<Word *> cpy;
     for (const auto &arg : argReg.m_ArgumentRegisters)
     {
-        cpy.push_back(arg->clone());
+        if (arg)
+        {
+            cpy.push_back(arg->clone());
+        }
     }
     m_ArgumentRegisters = cpy;
 }
