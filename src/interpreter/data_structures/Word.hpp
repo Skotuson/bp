@@ -25,6 +25,8 @@ public:
     virtual Word *clone(void) = 0;
     TAG tag(void);
 
+    virtual Word *dereference(void);
+
     virtual bool compareToConst(ConstantWord *cword);
 
     friend std::ostream &operator<<(std::ostream &os, const Word &word);
@@ -58,11 +60,11 @@ public:
     void print(std::ostream &os) const override;
     Word *clone(void) override;
 
+    Word *dereference(void) override;
+
     void setRef(Word **ref);
     Word **ref(void);
     bool bound(void);
-
-    bool compareToConst(ConstantWord *cword) override;
 
 private:
     Word **m_Ref = nullptr;

@@ -30,6 +30,11 @@ TAG Word::tag(void)
     return m_Tag;
 }
 
+Word *Word::dereference(void)
+{
+    return this;
+}
+
 bool Word::compareToConst(ConstantWord *cword)
 {
     return false;
@@ -91,6 +96,19 @@ void VariableWord::setRef(Word **ref)
     m_Ref = ref;
 }
 
+Word *VariableWord::dereference(void)
+{
+    if (m_Bound)
+    {
+        return (*m_Ref)->dereference();
+    }
+
+    else
+    {
+        return this;
+    }
+}
+
 Word **VariableWord::ref(void)
 {
     return m_Ref;
@@ -99,12 +117,6 @@ Word **VariableWord::ref(void)
 bool VariableWord::bound(void)
 {
     return m_Bound;
-}
-
-bool VariableWord::compareToConst(ConstantWord *cword)
-{
-    // TODO
-    return false;
 }
 
 ListWord::ListWord(void)
@@ -150,7 +162,7 @@ void StructureWord::print(std::ostream &os) const
     os << "structure -> " << m_Functor << "/" << m_Arity;
 }
 
-Word *StructureWord::clone(void) 
+Word *StructureWord::clone(void)
 {
     return new StructureWord(m_Functor, m_Arity);
 }
