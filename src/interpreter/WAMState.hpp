@@ -15,11 +15,11 @@ struct WAMState
     ~WAMState(void);
     void fillRegister(Word *word, size_t reg);
 
-    size_t SReg(void);
-    size_t TRReg(void);
-    size_t PDLReg(void);
-    size_t SPReg(void);
-    size_t HReg(void);
+    size_t SReg(void) const;
+    size_t TRReg(void) const;
+    size_t PDLReg(void) const;
+    size_t SPReg(void) const;
+    size_t HReg(void) const;
 
     void setWriteMode(void);
     void setReadMode(void);
