@@ -29,6 +29,7 @@ struct WAMState
     void heapPush(Word *word);
     void heapPop(void);
     Word *heapTop(void);
+    Word *heapAt(size_t offset);
 
     // Choice Point Stack operations
     void stackPush(ChoicePoint *cp);
@@ -49,7 +50,7 @@ struct WAMState
 
     friend std::ostream &operator<<(std::ostream &os, const WAMState &state);
 
-    size_t m_StructurePointer;
+    size_t m_StructurePointer = 0;
 
     size_t m_ProgramCounter = UNSET_REG;
     size_t m_ContinuationPointer = UNSET_REG;

@@ -70,6 +70,11 @@ Word *WAMState::heapTop(void)
     return m_Heap.back();
 }
 
+Word *WAMState::heapAt(size_t offset)
+{
+    return m_Heap[offset];
+}
+
 void WAMState::stackPush(ChoicePoint *cp)
 {
     m_Stack.push_back(cp);
