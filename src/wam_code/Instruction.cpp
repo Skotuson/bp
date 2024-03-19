@@ -292,7 +292,7 @@ void GetStructureInstruction::execute(WAMState &state)
     {
         StructurePointerWord *spw = static_cast<StructurePointerWord *>(w);
         StructureWord *sw = static_cast<StructureWord*>(state.heapAt(spw->m_HeapAddress));
-        if (sw->m_Functor == m_Name)
+        if (sw->m_Functor == m_Name && sw->m_Arity == m_Arity)
         {
             state.setReadMode();
             state.m_StructurePointer = spw->m_HeapAddress + 1;
