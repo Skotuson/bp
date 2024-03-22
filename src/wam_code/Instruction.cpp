@@ -400,6 +400,7 @@ void GetVariableInstruction::execute(WAMState &state)
 
         else if (branch == 7)
         {
+
         }
 
         else if (branch == 8)
@@ -409,6 +410,7 @@ void GetVariableInstruction::execute(WAMState &state)
         // Fail branch
         else
         {
+            fail();
             break;
         }
     }
