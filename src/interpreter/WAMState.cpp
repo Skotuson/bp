@@ -131,16 +131,19 @@ VariableWord *WAMState::trailTop(void)
     return m_Trail[TRReg() - 1];
 }
 
-void WAMState::pdlPush(void)
+void WAMState::pdlPush(const PDLTriple & pdlTriple)
 {
+    m_PushDownList.push_back(pdlTriple);
 }
 
 void WAMState::pdlPop(void)
 {
+    m_PushDownList.pop_back();
 }
 
-void WAMState::pldTop(void)
+PDLTriple WAMState::pdlTop(void)
 {
+    return m_PushDownList[PDLReg() - 1];
 }
 
 std::ostream &operator<<(std::ostream &os, const WAMState &state)

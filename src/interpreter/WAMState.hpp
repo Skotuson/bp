@@ -5,8 +5,11 @@
 #include "data_structures/ArgumentRegisters.hpp"
 
 #include <stack>
+#include <tuple>
 #include <vector>
 #include <cstdlib>
+
+using PDLTriple = std::tuple<size_t, size_t, size_t>;
 
 const size_t UNSET_REG = -1;
 
@@ -44,9 +47,9 @@ struct WAMState
     VariableWord *trailTop(void);
 
     // PDL operations
-    void pdlPush(void);
+    void pdlPush(const PDLTriple & pdlTriple);
     void pdlPop(void);
-    void pldTop(void);
+    PDLTriple pdlTop(void);
 
     friend std::ostream &operator<<(std::ostream &os, const WAMState &state);
 
@@ -61,7 +64,7 @@ struct WAMState
     std::vector<Word *> m_Heap;
     std::vector<VariableWord *> m_Trail;
     std::vector<ChoicePoint *> m_Stack; // Represented as a vector because I need to have a random access available
-    std::vector<Word *> m_PushDownList;
+    std::vector<PDLTriple> m_PushDownList;
     ArgumentRegisters m_ArgumentRegisters;
 
     bool m_ReadMode = false;
