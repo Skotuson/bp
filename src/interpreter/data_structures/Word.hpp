@@ -16,6 +16,7 @@ enum TAG
 std::ostream &operator<<(std::ostream &os, const TAG &tag);
 
 class ConstantWord;
+class StructureWord;
 
 class Word
 {
@@ -28,6 +29,7 @@ public:
     virtual Word *dereference(void);
 
     virtual bool compareToConst(ConstantWord *cword);
+    virtual bool compareToStruct(StructureWord *sword);
 
     friend std::ostream &operator<<(std::ostream &os, const Word &word);
 
@@ -99,6 +101,7 @@ public:
     StructureWord(const std::string &functor, size_t arity);
     void print(std::ostream &os) const override;
     Word *clone(void) override;
+    bool compareToStruct(StructureWord *sword) override;
 
     std::string m_Functor;
     size_t m_Arity;

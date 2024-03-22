@@ -40,6 +40,11 @@ bool Word::compareToConst(ConstantWord *cword)
     return false;
 }
 
+bool Word::compareToStruct(StructureWord *sword)
+{
+    return false;
+}
+
 std::ostream &operator<<(std::ostream &os, const Word &word)
 {
     word.print(os);
@@ -165,4 +170,9 @@ void StructureWord::print(std::ostream &os) const
 Word *StructureWord::clone(void)
 {
     return new StructureWord(m_Functor, m_Arity);
+}
+
+bool StructureWord::compareToStruct(StructureWord *sword)
+{
+    return m_Arity == sword->m_Arity && m_Functor == sword->m_Functor;
 }
