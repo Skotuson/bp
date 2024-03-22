@@ -393,7 +393,7 @@ void GetVariableInstruction::execute(WAMState &state)
             ConstantWord *xc = static_cast<ConstantWord *>(X);
             if (!Y->compareToConst(xc))
             {
-                // TODO: Fail
+                fail(state);
             }
             break;
         }
