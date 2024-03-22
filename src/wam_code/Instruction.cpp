@@ -409,14 +409,16 @@ void GetVariableInstruction::execute(WAMState &state)
         {
             StructurePointerWord *x = static_cast<StructurePointerWord *>(X);
             StructurePointerWord *y = static_cast<StructurePointerWord *>(Y);
-            // TODO: compare functor and arity
-            if(x->m_HeapAddress != y->m_HeapAddress)
+            StructureWord *xs = static_cast<StructureWord*>(state.heapAt(x->m_HeapAddress));
+            StructureWord *ys = static_cast<StructureWord*>(state.heapAt(y->m_HeapAddress));
+            
+            if(!xs->compareToStruct(ys))
             {
                 fail(state);
                 break;
             }
             
-            state.pdlPush({x->m_HeapAddress + 1, y->m_HeapAddress + 1, 0 /*arity*/});
+            state.pdlPush({x->m_HeapAddress + 1, y->m_HeapAddress + 1, xs->m_Arity});
 
             break;
         }
