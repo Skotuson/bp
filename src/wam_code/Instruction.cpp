@@ -46,7 +46,7 @@ void MarkInstruction::execute(WAMState &state)
     state.stackPush(ncp);
     // Set E and B registers
     state.m_BacktrackRegister = state.m_EnvironmentRegister = state.SReg();
-    //std::cout << state << std::endl;
+    // std::cout << state << std::endl;
 }
 
 void MarkInstruction::print(std::ostream &os) const
@@ -196,7 +196,7 @@ void ReturnInstruction::execute(WAMState &state)
         state.m_ProgramCounter = cp->m_BCP;
         state.m_EnvironmentRegister = cp->m_BCE;
     }
-    //std::cout << state << std::endl;
+    // std::cout << state << std::endl;
 }
 
 void ReturnInstruction::print(std::ostream &os) const
@@ -291,7 +291,7 @@ void GetStructureInstruction::execute(WAMState &state)
     else if (w->tag() == S_POINTER)
     {
         StructurePointerWord *spw = static_cast<StructurePointerWord *>(w);
-        StructureWord *sw = static_cast<StructureWord*>(state.heapAt(spw->m_HeapAddress));
+        StructureWord *sw = static_cast<StructureWord *>(state.heapAt(spw->m_HeapAddress));
         if (sw->m_Functor == m_Name && sw->m_Arity == m_Arity)
         {
             state.setReadMode();
@@ -400,17 +400,31 @@ void GetVariableInstruction::execute(WAMState &state)
 
         else if (branch == 7)
         {
-
+            // TODO: lists
+            state.pdlPush({0, 0, 2});
+            break;
         }
 
         else if (branch == 8)
         {
+            StructurePointerWord *x = static_cast<StructurePointerWord *>(X);
+            StructurePointerWord *y = static_cast<StructurePointerWord *>(Y);
+            // TODO: compare functor and arity
+            if(x->m_HeapAddress != y->m_HeapAddress)
+            {
+                fail(state);
+                break;
+            }
+            
+            state.pdlPush({x->m_HeapAddress + 1, y->m_HeapAddress + 1, 0 /*arity*/});
+
+            break;
         }
 
         // Fail branch
         else
         {
-            fail();
+            fail(state);
             break;
         }
     }
