@@ -10,6 +10,128 @@ void Instruction::fail(WAMState &state)
     fail->execute(state);
 }
 
+void Instruction::clearPDL(WAMState &state, Word *X, Word *Y)
+{
+    // Make static for class
+    std::vector<std::vector<size_t>> table = {
+        {1, 1, 1, 1, 1},
+        {2, 3, 5, 5, 5},
+        {2, 4, 6, 0, 0},
+        {2, 4, 0, 7, 0},
+        {2, 4, 0, 0, 8}};
+
+    size_t branch = table[X->tag()][Y->tag()];
+
+    while (42)
+    {
+        // X is a ref, dereference: UNUSED (argReg already dereferences)
+        if (branch == 1)
+        {
+            X = *static_cast<VariableWord *>(X)->ref();
+            continue;
+        }
+
+        // Y is a ref, dereference:
+        else if (branch == 2)
+        {
+            Y = *static_cast<VariableWord *>(Y)->ref();
+            continue;
+        }
+
+        // X and Y are both unbound variables
+        else if (branch == 3)
+        {
+            VariableWord *x = static_cast<VariableWord *>(X);
+            VariableWord *y = static_cast<VariableWord *>(Y);
+            // Trail both X and Y
+            state.trailPush(x);
+            state.trailPush(y);
+            // Bind them together
+            *y->ref() = X;
+        }
+
+        // X is a constant, Y is an unbound variable
+        else if (branch == 4)
+        {
+            VariableWord *vw = static_cast<VariableWord *>(Y);
+            // Trail
+            state.trailPush(vw);
+            *vw->ref() = X->clone();
+        }
+
+        // Y is a constant, X is an unbound variable
+        else if (branch == 5)
+        {
+            VariableWord *vw = static_cast<VariableWord *>(X);
+            // Trail
+            state.trailPush(vw);
+            *vw->ref() = Y->clone();
+        }
+
+        // Both X and Y are constants
+        else if (branch == 6)
+        {
+            ConstantWord *xc = static_cast<ConstantWord *>(X);
+            if (!Y->compareToConst(xc))
+            {
+                fail(state);
+            }
+        }
+
+        else if (branch == 7)
+        {
+            // TODO: lists
+            state.pdlPush({0, 0, 2});
+        }
+
+        else if (branch == 8)
+        {
+            StructurePointerWord *x = static_cast<StructurePointerWord *>(X);
+            StructurePointerWord *y = static_cast<StructurePointerWord *>(Y);
+            StructureWord *xs = static_cast<StructureWord *>(state.heapAt(x->m_HeapAddress));
+            StructureWord *ys = static_cast<StructureWord *>(state.heapAt(y->m_HeapAddress));
+
+            if (!xs->compareToStruct(ys))
+            {
+                fail(state);
+                break;
+            }
+
+            state.pdlPush({x->m_HeapAddress + 1, y->m_HeapAddress + 1, xs->m_Arity});
+        }
+
+        // Fail branch
+        else
+        {
+            fail(state);
+            break;
+        }
+
+        // If PDL is empty, terminate the loop
+        if (state.pdlEmpty())
+        {
+            break;
+        }
+
+        // Get information from the PDL and repeat the loop
+        else
+        {
+            PDLTriple pdlTriple = state.pdlTop();
+            size_t XA = std::get<0>(pdlTriple);
+            size_t YA = std::get<1>(pdlTriple);
+            X = state.heapAt(XA);
+            Y = state.heapAt(YA);
+            size_t N = std::get<2>(pdlTriple) - 1;
+            state.pdlPop();
+
+            if (N)
+            {
+                state.pdlPush({XA + 1, YA + 1, N});
+            }
+        }
+    }
+}
+
 std::ostream &operator<<(std::ostream &os, const Instruction &instr)
 {
     instr.print(os);
@@ -326,128 +448,9 @@ Instruction *GetVariableInstruction::clone(void)
 
 void GetVariableInstruction::execute(WAMState &state)
 {
-    // Make static for class
-    std::vector<std::vector<size_t>> table = {
-        {1, 1, 1, 1, 1},
-        {2, 3, 5, 5, 5},
-        {2, 4, 6, 0, 0},
-        {2, 4, 0, 7, 0},
-        {2, 4, 0, 0, 8}};
-
-    // TODO: placeholder nullptr
     Word *X = state.m_ArgumentRegisters.dereferenceRegister(m_ArgumentRegister),
          *Y = state.stackTop()->m_Variables[m_Offset];
-
-    size_t branch = table[X->tag()][Y->tag()];
-
-    while (42)
-    {
-        // X is a ref, dereference: UNUSED (argReg already dereferences)
-        if (branch == 1)
-        {
-            X = *static_cast<VariableWord *>(X)->ref();
-            continue;
-        }
-
-        // Y is a ref, dereference:
-        else if (branch == 2)
-        {
-            Y = *static_cast<VariableWord *>(Y)->ref();
-            continue;
-        }
-
-        // X and Y are both unbound variables
-        else if (branch == 3)
-        {
-            VariableWord *x = static_cast<VariableWord *>(X);
-            VariableWord *y = static_cast<VariableWord *>(Y);
-            // Trail both X and Y
-            state.trailPush(x);
-            state.trailPush(y);
-            // Bind them together
-            *y->ref() = X;
-        }
-
-        // X is a constant, Y is an unbound variable
-        else if (branch == 4)
-        {
-            VariableWord *vw = static_cast<VariableWord *>(Y);
-            // Trail
-            state.trailPush(vw);
-            *vw->ref() = X->clone();
-        }
-
-        // Y is a constant, X is an unbound variable
-        else if (branch == 5)
-        {
-            VariableWord *vw = static_cast<VariableWord *>(X);
-            // Trail
-            state.trailPush(vw);
-            *vw->ref() = Y->clone();
-        }
-
-        // Both X and Y are constants
-        else if (branch == 6)
-        {
-            ConstantWord *xc = static_cast<ConstantWord *>(X);
-            if (!Y->compareToConst(xc))
-            {
-                fail(state);
-            }
-        }
-
-        else if (branch == 7)
-        {
-            // TODO: lists
-            state.pdlPush({0, 0, 2});
-        }
-
-        else if (branch == 8)
-        {
-            StructurePointerWord *x = static_cast<StructurePointerWord *>(X);
-            StructurePointerWord *y = static_cast<StructurePointerWord *>(Y);
-            StructureWord *xs = static_cast<StructureWord *>(state.heapAt(x->m_HeapAddress));
-            StructureWord *ys = static_cast<StructureWord *>(state.heapAt(y->m_HeapAddress));
-
-            if (!xs->compareToStruct(ys))
-            {
-                fail(state);
-                break;
-            }
-
-            state.pdlPush({x->m_HeapAddress + 1, y->m_HeapAddress + 1, xs->m_Arity});
-        }
-
-        // Fail branch
-        else
-        {
-            fail(state);
-            break;
-        }
-
-        // If PDL is empty, terminate the loop
-        if (state.pdlEmpty())
-        {
-            break;
-        }
-
-        // Get information from the PDL and repeat the loop
-        else
-        {
-            PDLTriple pdlTriple = state.pdlTop();
-            size_t XA = std::get<0>(pdlTriple);
-            size_t YA = std::get<1>(pdlTriple);
-            X = state.heapAt(XA);
-            Y = state.heapAt(YA);
-            size_t N = std::get<2>(pdlTriple) - 1;
-            state.pdlPop();
-            
-            if (N)
-            {
-                state.pdlPush({XA + 1, YA + 1, N});
-            }
-        }
-    }
+    clearPDL(state, X, Y);
 }
 
 void GetVariableInstruction::print(std::ostream &os) const
@@ -633,6 +636,7 @@ void UnifyVariableInstruction::execute(WAMState &state)
 
     Word *sp = state.heapAt(state.SPReg())->dereference();
     // TODO: unify (similiar to getv)
+    clearPDL(w, sp);
     state.m_StructurePointer++;
 }
 

@@ -12,7 +12,8 @@ struct Instruction
     virtual void execute(WAMState &state) = 0;
     virtual void print(std::ostream &os) const = 0;
 
-    void fail(WAMState & state);
+    static void fail(WAMState & state);
+    static void clearPDL(WAMState & state, Word *X, Word *Y);
 
     friend std::ostream &operator<<(std::ostream &os, const Instruction &instr);
 };
