@@ -141,6 +141,11 @@ void WAMState::pdlPop(void)
     m_PushDownList.pop_back();
 }
 
+bool WAMState::pdlEmpty(void)
+{
+    return m_PushDownList.empty();
+}
+
 PDLTriple WAMState::pdlTop(void)
 {
     return m_PushDownList[PDLReg() - 1];

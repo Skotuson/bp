@@ -49,6 +49,7 @@ struct WAMState
     // PDL operations
     void pdlPush(const PDLTriple & pdlTriple);
     void pdlPop(void);
+    bool pdlEmpty(void);
     PDLTriple pdlTop(void);
 
     friend std::ostream &operator<<(std::ostream &os, const WAMState &state);
