@@ -346,12 +346,14 @@ void GetVariableInstruction::execute(WAMState &state)
         if (branch == 1)
         {
             X = *static_cast<VariableWord *>(X)->ref();
+            continue;
         }
 
         // Y is a ref, dereference:
         else if (branch == 2)
         {
             Y = *static_cast<VariableWord *>(Y)->ref();
+            continue;
         }
 
         // X and Y are both unbound variables
@@ -364,7 +366,6 @@ void GetVariableInstruction::execute(WAMState &state)
             state.trailPush(y);
             // Bind them together
             *y->ref() = X;
-            break;
         }
 
         // X is a constant, Y is an unbound variable
@@ -374,7 +375,6 @@ void GetVariableInstruction::execute(WAMState &state)
             // Trail
             state.trailPush(vw);
             *vw->ref() = X->clone();
-            break;
         }
 
         // Y is a constant, X is an unbound variable
@@ -384,7 +384,6 @@ void GetVariableInstruction::execute(WAMState &state)
             // Trail
             state.trailPush(vw);
             *vw->ref() = Y->clone();
-            break;
         }
 
         // Both X and Y are constants
@@ -395,32 +394,28 @@ void GetVariableInstruction::execute(WAMState &state)
             {
                 fail(state);
             }
-            break;
         }
 
         else if (branch == 7)
         {
             // TODO: lists
             state.pdlPush({0, 0, 2});
-            break;
         }
 
         else if (branch == 8)
         {
             StructurePointerWord *x = static_cast<StructurePointerWord *>(X);
             StructurePointerWord *y = static_cast<StructurePointerWord *>(Y);
-            StructureWord *xs = static_cast<StructureWord*>(state.heapAt(x->m_HeapAddress));
-            StructureWord *ys = static_cast<StructureWord*>(state.heapAt(y->m_HeapAddress));
-            
-            if(!xs->compareToStruct(ys))
+            StructureWord *xs = static_cast<StructureWord *>(state.heapAt(x->m_HeapAddress));
+            StructureWord *ys = static_cast<StructureWord *>(state.heapAt(y->m_HeapAddress));
+
+            if (!xs->compareToStruct(ys))
             {
                 fail(state);
                 break;
             }
-            
-            state.pdlPush({x->m_HeapAddress + 1, y->m_HeapAddress + 1, xs->m_Arity});
 
-            break;
+            state.pdlPush({x->m_HeapAddress + 1, y->m_HeapAddress + 1, xs->m_Arity});
         }
 
         // Fail branch
@@ -428,6 +423,29 @@ void GetVariableInstruction::execute(WAMState &state)
         {
             fail(state);
             break;
+        }
+
+        // If PDL is empty, terminate the loop
+        if (state.pdlEmpty())
+        {
+            break;
+        }
+
+        // Get information from the PDL and repeat the loop
+        else
+        {
+            PDLTriple pdlTriple = state.pdlTop();
+            size_t XA = std::get<0>(pdlTriple);
+            size_t YA = std::get<1>(pdlTriple);
+            X = state.heapAt(XA);
+            Y = state.heapAt(YA);
+            size_t N = std::get<2>(pdlTriple) - 1;
+            state.pdlPop();
+            
+            if (N)
+            {
+                state.pdlPush({XA + 1, YA + 1, N});
+            }
         }
     }
 }
