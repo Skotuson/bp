@@ -47,6 +47,9 @@ struct StructNode : public TermNode
     std::string codegen(CompilationContext &cctx) override;
     TermType type() override;
     void print(const std::string &indent = "") override;
+
+    void unify(CompilationContext &cctx);
+
     std::vector<TermNode *> m_Args;
 };
 
