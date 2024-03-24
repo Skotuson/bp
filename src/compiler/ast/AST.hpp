@@ -32,7 +32,8 @@ public:
     {
         CONST,
         VAR,
-        STRUCT
+        STRUCT,
+        LIST
     };
     std::string name();
     virtual TermType type() = 0;
