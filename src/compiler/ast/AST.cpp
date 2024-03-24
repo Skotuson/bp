@@ -1,6 +1,7 @@
 #include "AST.hpp"
 
 #include <iostream>
+#include <queue>
 
 std::string ProgramNode::codegen(CompilationContext &cctx)
 {
@@ -110,31 +111,7 @@ std::string StructNode::codegen(CompilationContext &cctx)
         else
         {
             cctx.addInstructions({new PutStructureInstruction(m_Name, m_AvailableReg++, m_Args.size())});
-            for (const auto &arg : m_Args)
-            {
-                TermNode::TermType type = arg->type();
-                if (type == TermNode::CONST)
-                {
-                    cctx.addInstructions({new UnifyConstantInstruction(arg->name())});
-                }
-                else if (type == TermNode::VAR)
-                {
-                    // Note variable if it appears in complex structure
-                    cctx.noteVariable(arg->name());
-                    cctx.addInstructions({new UnifyVariableInstruction(arg->name(), cctx.getVarOffset(arg->name()))});
-                }
-                else if (type == TermNode::STRUCT)
-                {
-                    // Allocate extra local clause variable
-                    // TODO: non collision naming, add some legit name
-                    std::string tempVariable = "__temp" + std::to_string(cctx.allocate()) + "__";
-                    cctx.noteVariable(tempVariable);
-                    // Instead of unify-xxx (xxx = struct or list), use the unifyv for the created variable
-                    cctx.addInstructions({new UnifyVariableInstruction(tempVariable, cctx.getVarOffset(tempVariable))});
-                    // cctx.allocate()++;
-                    break;
-                }
-            }
+            unify(cctx);
         }
         return code;
     }
@@ -149,25 +126,7 @@ std::string StructNode::codegen(CompilationContext &cctx)
 
     cctx.addInstructions({new GetStructureInstruction(m_Name, m_AvailableReg, m_Args.size())});
     code = "get-structure " + m_Name + " A" + std::to_string(m_AvailableReg++);
-    for (const auto &arg : m_Args)
-    {
-        TermNode::TermType type = arg->type();
-        switch (type)
-        {
-        case TermNode::CONST:
-            cctx.addInstructions({new UnifyConstantInstruction(arg->name())});
-            break;
-        case TermNode::VAR:
-            // Note variable if it appears in complex structure
-            cctx.noteVariable(arg->name());
-            cctx.addInstructions({new UnifyVariableInstruction(arg->name(), cctx.getVarOffset(arg->name()))});
-            break;
-        case TermNode::STRUCT:
-            break;
-        }
-        code += "\n\tunify " + arg->name();
-    }
-
+    unify(cctx);
     return code;
 }
 
@@ -187,6 +146,55 @@ void StructNode::print(const std::string &indent)
             arg->print(indent + " ");
     }
     std::cout << indent << "=======[End StructNode]======" << std::endl;
+}
+
+void StructNode::unify(CompilationContext &cctx)
+{
+    std::queue<std::pair<TermNode *, std::string>> terms;
+    for (const auto &arg : m_Args)
+    {
+        TermNode::TermType type = arg->type();
+        if (type == TermNode::CONST)
+        {
+            cctx.addInstructions({new UnifyConstantInstruction(arg->name())});
+        }
+        else if (type == TermNode::VAR)
+        {
+            // Note variable if it appears in complex structure
+            cctx.noteVariable(arg->name());
+            cctx.addInstructions({new UnifyVariableInstruction(arg->name(), cctx.getVarOffset(arg->name()))});
+        }
+        else
+        {
+            // Allocate extra local clause variable
+            // TODO: non collision naming, add some legit name
+            std::string tempVariable = "__temp" + std::to_string(cctx.allocate()) + "__";
+            cctx.noteVariable(tempVariable);
+            // Instead of unify-xxx (xxx = struct or list), use the unifyv for the created variable
+            cctx.addInstructions({new UnifyVariableInstruction(tempVariable, cctx.getVarOffset(tempVariable))});
+
+            // Add term to queue to be processed after all the "top level" code has been generated
+            terms.push({arg, tempVariable});
+        }
+    }
+    // Top level code has been generated
+    while (!terms.empty())
+    {
+        auto top = terms.front();
+        // Generate putv instruction to load some unneeded arg. register with the contents of the new variable
+        cctx.addInstructions({new PutVariableInstruction(top.second, m_AvailableReg, cctx.getVarOffset(top.second))});
+        if (top.first->type() == TermNode::STRUCT)
+        {
+            StructNode *arg = static_cast<StructNode *>(top.first);
+            arg->m_IsGoal = true;
+            arg->m_IsArg = true;
+            arg->m_AvailableReg = m_AvailableReg + 1;
+            cctx.addInstructions({new GetStructureInstruction(top.second, m_AvailableReg, arg->m_Args.size())});
+            arg->unify(cctx);
+        }
+        m_AvailableReg++;
+        terms.pop();
+    }
 }
 
 ListNode::ListNode(const std::vector<TermNode *> &list, TermNode *tail)
@@ -261,6 +269,7 @@ std::string VarNode::codegen(CompilationContext &cctx)
     else
         cctx.addInstructions(
             {new PutVariableInstruction(m_Name, m_AvailableReg, cctx.getVarOffset(m_Name))});
+    // TODO: beware of the ++ in the unused section when removing the string :)
     return (m_IsGoal ? "put " : "get ") + m_Name + " A" + std::to_string(m_AvailableReg++);
 }
 
