@@ -101,7 +101,8 @@ std::string StructNode::codegen(CompilationContext &cctx)
             m_AvailableReg = 1;
         }
         // Treat structs without arguments as constants (if they are an argument)
-        else if (!m_Args.size() && m_IsArg)
+        // TODO: probably redundant m_IsArg check?
+        else if (!m_Args.size() /*&& m_IsArg*/)
         {
             cctx.addInstructions({new PutConstantInstruction(m_Name, m_AvailableReg++)});
         }
@@ -112,18 +113,25 @@ std::string StructNode::codegen(CompilationContext &cctx)
             for (const auto &arg : m_Args)
             {
                 TermNode::TermType type = arg->type();
-                switch (type)
+                if (type == TermNode::CONST)
                 {
-                case TermNode::CONST:
                     cctx.addInstructions({new UnifyConstantInstruction(arg->name())});
-                    break;
-                case TermNode::VAR:
+                }
+                else if (type == TermNode::VAR)
+                {
                     // Note variable if it appears in complex structure
                     cctx.noteVariable(arg->name());
                     cctx.addInstructions({new UnifyVariableInstruction(arg->name(), cctx.getVarOffset(arg->name()))});
-                    break;
-                case TermNode::STRUCT:
-                    cctx.allocate()++;
+                }
+                else if (type == TermNode::STRUCT)
+                {
+                    // Allocate extra local clause variable
+                    // TODO: non collision naming, add some legit name
+                    std::string tempVariable = "__temp" + std::to_string(cctx.allocate()) + "__";
+                    cctx.noteVariable(tempVariable);
+                    // Instead of unify-xxx (xxx = struct or list), use the unifyv for the created variable
+                    cctx.addInstructions({new UnifyVariableInstruction(tempVariable, cctx.getVarOffset(tempVariable))});
+                    // cctx.allocate()++;
                     break;
                 }
             }
