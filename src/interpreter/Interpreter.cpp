@@ -16,7 +16,8 @@ bool Interpreter::run(void)
     std::string query;
     std::getline(std::cin >> std::ws, query);
 
-    m_Renderer.clearScreen(std::cout);
+    if (m_Renderer.step())
+        m_Renderer.clearScreen(std::cout);
 
     // TODO: will add as an instruction
     if (query == "halt.")
@@ -57,15 +58,19 @@ bool Interpreter::run(void)
                 skip = true;
         }
 
-        m_Renderer.clearScreen(std::cout);
-        m_Renderer.renderCode(std::cout, m_Program, m_State.m_ProgramCounter - 1);
-        std::cout << m_State << std::endl;
-        std::cout << ANSI_RETURN_CURSOR;
+        if (m_Renderer.step())
+        {
+            m_Renderer.clearScreen(std::cout);
+            m_Renderer.renderCode(std::cout, m_Program, m_State.m_ProgramCounter - 1);
+            std::cout << m_State << std::endl;
+            std::cout << ANSI_RETURN_CURSOR;
+        }
 
         execute(instr);
     }
 
-    m_Renderer.clearScreen(std::cout);
+    if (m_Renderer.step())
+        m_Renderer.clearScreen(std::cout);
 
     std::cout << m_State << std::endl;
 
@@ -91,5 +96,6 @@ Instruction *Interpreter::fetch(void)
 
 void Interpreter::execute(Instruction *instr)
 {
+    std::cout << ANSI_COLOR_B_GREEN << *instr << ANSI_COLOR_DEFAULT << std::endl;
     instr->execute(m_State);
 }
