@@ -21,7 +21,7 @@ void Instruction::clearPDL(WAMState &state, Word *X, Word *Y)
         {2, 4, 0, 0, 8}};
 
     size_t branch = table[X->tag()][Y->tag()];
-
+    
     while (42)
     {
         // X is a ref, dereference: UNUSED (argReg already dereferences)
@@ -50,7 +50,7 @@ void Instruction::clearPDL(WAMState &state, Word *X, Word *Y)
             *y->ref() = X;
         }
 
-        // X is a constant, Y is an unbound variable
+        // X is not a variable, Y is an unbound variable
         else if (branch == 4)
         {
             VariableWord *vw = static_cast<VariableWord *>(Y);
@@ -597,16 +597,20 @@ void UnifyConstantInstruction::execute(WAMState &state)
         *vw->ref() = new ConstantWord(m_Name);
     }
 
-    if (w->tag() == CONSTANT)
+    else if (w->tag() == CONSTANT)
     {
         ConstantWord *cw = static_cast<ConstantWord *>(w);
-        if (!cw->compareToConst(cw))
+        std::shared_ptr<ConstantWord> c = std::make_shared<ConstantWord>(m_Name);
+        if (!cw->compareToConst(c.get()))
         {
             fail(state);
         }
     }
 
-    fail(state);
+    else
+    {
+        fail(state);
+    }
 }
 
 void UnifyConstantInstruction::print(std::ostream &os) const
@@ -635,7 +639,7 @@ void UnifyVariableInstruction::execute(WAMState &state)
     }
 
     Word *sp = state.heapAt(state.SPReg())->dereference();
-    // TODO: unify (similiar to getv)
+    // unify (similiar to getv)
     clearPDL(state, w, sp);
     state.m_StructurePointer++;
 }
