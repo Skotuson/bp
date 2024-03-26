@@ -30,20 +30,27 @@ int main(int argc, const char **argv)
     if (context.shouldExit()) // important - query flags (and --exit) rely on the user doing this
         return res;           // propagate the result of the tests
 
+    Renderer renderer;
+    std::ifstream ifs;
+
     int i = 0;
     for (; i < argc; i++)
     {
         if (!strcmp(argv[i], "--file"))
-            break;
-    }
+        {
+            if (i >= argc - 1)
+            {
+                std::cout << "Missing mandatory --file parameter" << std::endl;
+                return 1;
+            }
 
-    if (i >= argc - 1)
-    {
-        std::cout << "Missing mandatory --file parameter" << std::endl;
-        return 1;
+            ifs = std::ifstream(argv[i + 1]);
+        }
+        if (!strcmp(argv[i], "--step"))
+        {
+            renderer.setStepper(true);
+        }
     }
-
-    std::ifstream ifs(argv[i + 1]);
 
     if (!ifs)
     {
@@ -53,10 +60,11 @@ int main(int argc, const char **argv)
 
     Compiler comp(ifs);
     comp.compile();
-    
-    Interpreter intp(comp.dump(), Renderer());
-    
-    while(intp.run());
+
+    Interpreter intp(comp.dump(), renderer);
+
+    while (intp.run())
+        ;
 
     return res;
 }
