@@ -44,22 +44,12 @@ bool Interpreter::run(void)
     // TODO: handle emptying arg regs after sucessfully completing a goal (multiple goals in conjuction in a query)
     // Maybe delete them from arg reg after sucessfuly unifying/.... (have to check whether possible)
     Instruction *instr;
-    bool skip = true;
     while ((instr = fetch()) && !m_State.m_FailFlag)
     {
-        if (!skip)
+        if (m_Renderer.step())
         {
             std::string com = "";
             std::getline(std::cin, com);
-
-            if (com == "state")
-                std::cout << m_State << std::endl;
-            if (com == "run")
-                skip = true;
-        }
-
-        if (m_Renderer.step())
-        {
             m_Renderer.clearScreen(std::cout);
             m_Renderer.renderCode(std::cout, m_Program, m_State.m_ProgramCounter - 1);
             std::cout << m_State << std::endl;
