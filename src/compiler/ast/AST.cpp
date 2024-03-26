@@ -132,6 +132,10 @@ std::string StructNode::codegen(CompilationContext &cctx)
 
 TermNode::TermType StructNode::type()
 {
+    if(m_Args.empty())
+    {
+        return TermNode::CONST;
+    }
     return TermNode::STRUCT;
 }
 
@@ -158,6 +162,7 @@ void StructNode::unify(CompilationContext &cctx)
         {
             cctx.addInstructions({new UnifyConstantInstruction(arg->name())});
         }
+
         else if (type == TermNode::VAR)
         {
             // Note variable if it appears in complex structure
@@ -172,11 +177,12 @@ void StructNode::unify(CompilationContext &cctx)
             cctx.noteVariable(tempVariable);
             // Instead of unify-xxx (xxx = struct or list), use the unifyv for the created variable
             cctx.addInstructions({new UnifyVariableInstruction(tempVariable, cctx.getVarOffset(tempVariable))});
-
+            
             // Add term to queue to be processed after all the "top level" code has been generated
             terms.push({arg, tempVariable});
         }
     }
+
     // Top level code has been generated
     while (!terms.empty())
     {
@@ -189,7 +195,7 @@ void StructNode::unify(CompilationContext &cctx)
             arg->m_IsGoal = true;
             arg->m_IsArg = true;
             arg->m_AvailableReg = m_AvailableReg + 1;
-            cctx.addInstructions({new GetStructureInstruction(top.second, m_AvailableReg, arg->m_Args.size())});
+            cctx.addInstructions({new GetStructureInstruction(arg->name(), m_AvailableReg, arg->m_Args.size())});
             arg->unify(cctx);
         }
         m_AvailableReg++;
@@ -364,7 +370,7 @@ std::string ClauseNode::codegen(CompilationContext &cctx)
     {
         m_Args[i]->m_IsGoal = false;
         m_Args[i]->m_AvailableReg = currentArgumentRegister;
-        // Load the arguments into argument reigsters
+        // Load the arguments into argument registers
         code += "\t" + m_Args[i]->codegen(cctx) + "\n";
         currentArgumentRegister = m_Args[i]->m_AvailableReg;
     }
