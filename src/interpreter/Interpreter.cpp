@@ -86,6 +86,7 @@ Instruction *Interpreter::fetch(void)
 
 void Interpreter::execute(Instruction *instr)
 {
-    std::cout << ANSI_COLOR_B_GREEN << *instr << ANSI_COLOR_DEFAULT << std::endl;
+    if (!m_Renderer.step())
+        std::cout << ANSI_COLOR_B_GREEN << *instr << ANSI_COLOR_DEFAULT << std::endl;
     instr->execute(m_State);
 }
