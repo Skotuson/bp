@@ -24,7 +24,7 @@ public:
     virtual ~Word() = default;
     virtual void print(std::ostream &os) const = 0;
     virtual Word *clone(void) = 0;
-    TAG tag(void);
+    virtual TAG tag(void);
 
     virtual Word *dereference(void);
 
@@ -61,6 +61,7 @@ public:
     VariableWord(Word **ref, bool bound = false);
     void print(std::ostream &os) const override;
     Word *clone(void) override;
+    TAG tag(void) override;
 
     Word *dereference(void) override;
 

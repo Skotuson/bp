@@ -67,6 +67,16 @@ Word *ConstantWord::clone(void)
     return new ConstantWord(m_Value);
 }
 
+TAG VariableWord::tag(void)
+{
+    if(m_Bound)
+    {
+        return TAG::REFERENCE;
+    }
+
+    return TAG::VARIABLE;
+}
+
 bool ConstantWord::compareToConst(ConstantWord *cword)
 {
     return cword->m_Value == m_Value;
