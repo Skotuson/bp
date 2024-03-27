@@ -111,7 +111,7 @@ std::string StructNode::codegen(CompilationContext &cctx)
         else
         {
             cctx.addInstructions({new PutStructureInstruction(m_Name, m_AvailableReg++, m_Args.size())});
-            unify(cctx);
+            unifyRHS(cctx);
         }
         return code;
     }
@@ -126,13 +126,13 @@ std::string StructNode::codegen(CompilationContext &cctx)
 
     cctx.addInstructions({new GetStructureInstruction(m_Name, m_AvailableReg, m_Args.size())});
     code = "get-structure " + m_Name + " A" + std::to_string(m_AvailableReg++);
-    unify(cctx);
+    unifyHead(cctx);
     return code;
 }
 
 TermNode::TermType StructNode::type()
 {
-    if(m_Args.empty())
+    if (m_Args.empty())
     {
         return TermNode::CONST;
     }
@@ -152,7 +152,7 @@ void StructNode::print(const std::string &indent)
     std::cout << indent << "=======[End StructNode]======" << std::endl;
 }
 
-void StructNode::unify(CompilationContext &cctx)
+void StructNode::unifyHead(CompilationContext &cctx)
 {
     std::queue<std::pair<TermNode *, std::string>> terms;
     for (const auto &arg : m_Args)
@@ -177,7 +177,7 @@ void StructNode::unify(CompilationContext &cctx)
             cctx.noteVariable(tempVariable);
             // Instead of unify-xxx (xxx = struct or list), use the unifyv for the created variable
             cctx.addInstructions({new UnifyVariableInstruction(tempVariable, cctx.getVarOffset(tempVariable))});
-            
+
             // Add term to queue to be processed after all the "top level" code has been generated
             terms.push({arg, tempVariable});
         }
@@ -196,11 +196,15 @@ void StructNode::unify(CompilationContext &cctx)
             arg->m_IsArg = true;
             arg->m_AvailableReg = m_AvailableReg + 1;
             cctx.addInstructions({new GetStructureInstruction(arg->name(), m_AvailableReg, arg->m_Args.size())});
-            arg->unify(cctx);
+            arg->unifyHead(cctx);
         }
         m_AvailableReg++;
         terms.pop();
     }
+}
+
+void StructNode::unifyRHS(CompilationContext &cctx)
+{
 }
 
 ListNode::ListNode(const std::vector<TermNode *> &list, TermNode *tail)

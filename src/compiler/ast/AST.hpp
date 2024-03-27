@@ -39,6 +39,9 @@ public:
     virtual TermType type() = 0;
 };
 
+struct StructNode;
+using NestedPair = std::pair<StructNode *, size_t>;
+
 struct StructNode : public TermNode
 {
     StructNode(const std::string &name,
@@ -48,9 +51,14 @@ struct StructNode : public TermNode
     TermType type() override;
     void print(const std::string &indent = "") override;
 
-    void unify(CompilationContext &cctx);
+    void unifyHead(CompilationContext &cctx);
+    void unifyRHS(CompilationContext &cctx);
 
     std::vector<TermNode *> m_Args;
+
+    // Used when generating code for nested complex stuctures on the RHS of a goal
+    bool m_HasComplexTerms = false;
+    std::vector<NestedPair> m_Complex;
 };
 
 struct ListNode : public TermNode
