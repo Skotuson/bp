@@ -73,6 +73,15 @@ StructNode::StructNode(const std::string &name, std::vector<TermNode *> args)
     : TermNode(name),
       m_Args(args)
 {
+    
+    for (const auto &arg : m_Args)
+    {
+        if (arg->type() == STRUCT)
+        {
+
+            m_Complex.insert({this, 0});
+        }
+    }
 }
 
 StructNode::~StructNode(void)

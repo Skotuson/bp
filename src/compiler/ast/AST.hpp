@@ -40,7 +40,6 @@ public:
 };
 
 struct StructNode;
-using NestedPair = std::pair<StructNode *, size_t>;
 
 struct StructNode : public TermNode
 {
@@ -57,8 +56,8 @@ struct StructNode : public TermNode
     std::vector<TermNode *> m_Args;
 
     // Used when generating code for nested complex stuctures on the RHS of a goal
-    bool m_HasComplexTerms = false;
-    std::vector<NestedPair> m_Complex;
+    // Use m_Complex size() to determine whether has any complex object
+    std::map<StructNode *, size_t> m_Complex;
 };
 
 struct ListNode : public TermNode
