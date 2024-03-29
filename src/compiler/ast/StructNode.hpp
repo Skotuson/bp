@@ -14,6 +14,7 @@ struct StructNode : public TermNode
     TermType type() override;
     void print(const std::string &indent = "") override;
 
+    size_t arity(void);
     void unifyHead(CompilationContext &cctx);
     void unifyRHS(CompilationContext &cctx);
     bool hasNestedComplex(void);

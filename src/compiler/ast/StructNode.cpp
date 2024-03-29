@@ -1,6 +1,7 @@
 #include "StructNode.hpp"
 
 #include <queue>
+#include <algorithm>
 
 StructNode::StructNode(const std::string &name, std::vector<TermNode *> args)
     : TermNode(name),
@@ -104,6 +105,11 @@ void StructNode::print(const std::string &indent)
     std::cout << indent << "=======[End StructNode]======" << std::endl;
 }
 
+size_t StructNode::arity(void)
+{
+    return m_Args.size();
+}
+
 void StructNode::unifyHead(CompilationContext &cctx)
 {
     std::queue<std::pair<TermNode *, std::string>> terms;
@@ -176,6 +182,52 @@ void StructNode::unifyRHS(CompilationContext &cctx)
         }
     }
 
+    // hasNestedComplex()
+    else
+    {
+        std::vector<StructNode *> nested;
+        std::map<StructNode *, std::string> processedComplex;
+        for (const auto &c : m_Complex)
+        {
+            nested.push_back(c.first);
+        }
+
+        // Sort the nested structures from the most nested to the least nested
+        std::sort(nested.begin(), nested.end(), [&](StructNode *&a, StructNode *&b)
+                  { return m_Complex[a] > m_Complex[b]; });
+
+        // (a) Take the most deeply nested such component
+        for (const auto &n : nested)
+        {
+            // (b) Select a currently unsued argument register Au - the m_AvailableReg show the next available register
+            // (c) Generate an instruction sequence as in the prior step (put-list or put-structure), but target the result to Au
+            cctx.addInstruction(new PutStructureInstruction(n->name(), m_AvailableReg, n->arity()));
+            for (const auto &arg : n->m_Args)
+            {
+                if (type == TermNode::CONST)
+                {
+                    cctx.addInstructions({new UnifyConstantInstruction(arg->name())});
+                }
+
+                else if (type == TermNode::VAR)
+                {
+                    // Note variable if it appears in complex structure
+                    cctx.noteVariable(arg->name());
+                    cctx.addInstructions({new UnifyVariableInstruction(arg->name(), cctx.getVarOffset(arg->name()))});
+                }
+
+                else if (type == TermNode::STRUCT)
+                {
+                    
+                }
+            }
+
+            // (d) Generate a getv to place Au in a specially allocated clause variable (as was done for nested objects in the clause head)
+            cctx.addInstruction();
+            // (e) Repeat the above process for the next most neste component, expect that for components that refer to nested structures that have already been processed
+            // Use a unifyv instructio nwith the offset of the clause variable into which they were compiled eariler:
+        }
+    }
 }
 
 bool StructNode::hasNestedComplex(void)
