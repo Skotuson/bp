@@ -1,7 +1,9 @@
 #pragma once
 
 #include "../lexer/Lexer.hpp"
-#include "../ast/AST.hpp"
+#include "../ast/ListNode.hpp"
+#include "../ast/StructNode.hpp"
+#include "../ast/ProgramNode.hpp"
 
 class Parser
 {

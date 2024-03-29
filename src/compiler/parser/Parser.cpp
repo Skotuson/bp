@@ -1,5 +1,8 @@
 #include "Parser.hpp"
 
+#include "../ast/ConstNode.hpp"
+#include "../ast/VarNode.hpp"
+
 bool Parser::parse(void)
 {
     m_Lex.get();

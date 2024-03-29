@@ -1,7 +1,5 @@
 #include "Compiler.hpp"
 
-#include "ast/AST.hpp"
-
 Compiler::Compiler(std::istream &is)
     : m_Parser(Lexer(is))
 {
