@@ -157,6 +157,25 @@ void StructNode::unifyHead(CompilationContext &cctx)
 
 void StructNode::unifyRHS(CompilationContext &cctx)
 {
+    if (!hasNestedComplex())
+    {
+        for (const auto &arg : m_Args)
+        {
+            TermNode::TermType type = arg->type();
+            if (type == TermNode::CONST)
+            {
+                cctx.addInstructions({new UnifyConstantInstruction(arg->name())});
+            }
+
+            else if (type == TermNode::VAR)
+            {
+                // Note variable if it appears in complex structure
+                cctx.noteVariable(arg->name());
+                cctx.addInstructions({new UnifyVariableInstruction(arg->name(), cctx.getVarOffset(arg->name()))});
+            }
+        }
+    }
+
 }
 
 bool StructNode::hasNestedComplex(void)
