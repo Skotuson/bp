@@ -58,7 +58,6 @@ std::string StructNode::codegen(CompilationContext &cctx)
         // Allocate space for complex structure buried inside other complex structure
         else
         {
-            //cctx.addInstructions({new PutStructureInstruction(m_Name, m_AvailableReg++, m_Args.size())});
             unifyRHS(cctx);
         }
         return code;
@@ -234,6 +233,8 @@ void StructNode::unifyRHS(CompilationContext &cctx)
             // (e) Repeat the above process for the next most neste component, expect that for components that refer to nested structures that have already been processed
         }
     }
+    // TODO: check struct head compilation whether the arg reg is assigned correctly
+    m_AvailableReg++;
 }
 
 bool StructNode::hasNestedComplex(void)
