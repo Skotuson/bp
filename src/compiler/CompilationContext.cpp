@@ -22,6 +22,11 @@ TableEntry *CompilationContext::get(const std::string &symbol)
     return nullptr;
 }
 
+void CompilationContext::addInstruction(Instruction *instr)
+{
+    m_GeneratedCode.addInstructions({instr});
+}
+
 void CompilationContext::addInstructions(const std::vector<Instruction *> &instructions)
 {
     m_GeneratedCode.addInstructions(instructions);

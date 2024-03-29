@@ -28,6 +28,7 @@ public:
     void add(const std::string &symbol,
              TableEntry *entry);
     TableEntry *get(const std::string &symbol);
+    void addInstruction(Instruction *instr);
     void addInstructions(const std::vector<Instruction *> &instructions);
     void addLabel(const Label &label);
     size_t getLabelAddress(const Label &label);
