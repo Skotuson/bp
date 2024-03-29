@@ -57,7 +57,7 @@ std::string StructNode::codegen(CompilationContext &cctx)
         // Allocate space for complex structure buried inside other complex structure
         else
         {
-            cctx.addInstructions({new PutStructureInstruction(m_Name, m_AvailableReg++, m_Args.size())});
+            //cctx.addInstructions({new PutStructureInstruction(m_Name, m_AvailableReg++, m_Args.size())});
             unifyRHS(cctx);
         }
         return code;
@@ -186,7 +186,7 @@ void StructNode::unifyRHS(CompilationContext &cctx)
     else
     {
         std::vector<StructNode *> nested;
-        std::map<StructNode *, std::string> processedComplex;
+        std::map<Node *, std::string> processedComplex;
         for (const auto &c : m_Complex)
         {
             nested.push_back(c.first);
@@ -204,28 +204,33 @@ void StructNode::unifyRHS(CompilationContext &cctx)
             cctx.addInstruction(new PutStructureInstruction(n->name(), m_AvailableReg, n->arity()));
             for (const auto &arg : n->m_Args)
             {
+                TermType type = arg->type();
                 if (type == TermNode::CONST)
                 {
-                    cctx.addInstructions({new UnifyConstantInstruction(arg->name())});
+                    cctx.addInstruction(new UnifyConstantInstruction(arg->name()));
                 }
 
                 else if (type == TermNode::VAR)
                 {
                     // Note variable if it appears in complex structure
                     cctx.noteVariable(arg->name());
-                    cctx.addInstructions({new UnifyVariableInstruction(arg->name(), cctx.getVarOffset(arg->name()))});
+                    cctx.addInstruction(new UnifyVariableInstruction(arg->name(), cctx.getVarOffset(arg->name())));
                 }
 
                 else if (type == TermNode::STRUCT)
                 {
-                    
+                    // Use a unifyv instructionwith the offset of the clause variable into which they were compiled earlier:
+                    std::string var = processedComplex[arg];
+                    cctx.addInstruction(new UnifyVariableInstruction(var, cctx.getVarOffset(var)));
                 }
             }
-
             // (d) Generate a getv to place Au in a specially allocated clause variable (as was done for nested objects in the clause head)
-            cctx.addInstruction();
+            // TODO: non collision naming, add some legit name, make a function to remove duplicity
+            std::string tempVariable = "__temp" + std::to_string(cctx.allocate()) + "__";
+            cctx.noteVariable(tempVariable);
+            cctx.addInstruction(new GetVariableInstruction(tempVariable, m_AvailableReg, cctx.getVarOffset(tempVariable)));
+            processedComplex.insert({n, tempVariable});
             // (e) Repeat the above process for the next most neste component, expect that for components that refer to nested structures that have already been processed
-            // Use a unifyv instructio nwith the offset of the clause variable into which they were compiled eariler:
         }
     }
 }
