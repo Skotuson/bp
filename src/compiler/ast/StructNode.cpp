@@ -18,9 +18,10 @@ StructNode::StructNode(const std::string &name, std::vector<TermNode *> args)
             {
                 m_Complex.insert({structureNode, depth + 1});
             }
-            m_Complex.insert({sn, 0});
+            //m_Complex.insert({sn, 0});
         }
     }
+    m_Complex.insert({this, 0});
 }
 
 StructNode::~StructNode(void)
