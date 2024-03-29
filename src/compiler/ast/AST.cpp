@@ -73,7 +73,7 @@ StructNode::StructNode(const std::string &name, std::vector<TermNode *> args)
     : TermNode(name),
       m_Args(args)
 {
-    
+
     for (const auto &arg : m_Args)
     {
         if (arg->type() == STRUCT)
@@ -214,6 +214,11 @@ void StructNode::unifyHead(CompilationContext &cctx)
 
 void StructNode::unifyRHS(CompilationContext &cctx)
 {
+}
+
+bool StructNode::hasNestedComplex(void)
+{
+    return m_Complex.size();
 }
 
 ListNode::ListNode(const std::vector<TermNode *> &list, TermNode *tail)

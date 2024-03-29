@@ -52,6 +52,7 @@ struct StructNode : public TermNode
 
     void unifyHead(CompilationContext &cctx);
     void unifyRHS(CompilationContext &cctx);
+    bool hasNestedComplex(void);
 
     std::vector<TermNode *> m_Args;
 
