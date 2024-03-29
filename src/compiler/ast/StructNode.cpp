@@ -49,8 +49,7 @@ std::string StructNode::codegen(CompilationContext &cctx)
             m_AvailableReg = 1;
         }
         // Treat structs without arguments as constants (if they are an argument)
-        // TODO: probably redundant m_IsArg check?
-        else if (!m_Args.size() /*&& m_IsArg*/)
+        else if (!m_Args.size())
         {
             cctx.addInstructions({new PutConstantInstruction(m_Name, m_AvailableReg++)});
         }
