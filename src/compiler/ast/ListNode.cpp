@@ -38,7 +38,7 @@ std::string ListNode::codegen(CompilationContext &cctx)
 
 TermNode::TermType ListNode::type()
 {
-    return TermNode::STRUCT;
+    return TermNode::LIST;
 }
 
 void ListNode::print(const std::string &indent)
