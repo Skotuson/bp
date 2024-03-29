@@ -6,13 +6,18 @@ StructNode::StructNode(const std::string &name, std::vector<TermNode *> args)
     : TermNode(name),
       m_Args(args)
 {
-
     for (const auto &arg : m_Args)
     {
         if (arg->type() == STRUCT)
         {
-
-            m_Complex.insert({this, 0});
+            StructNode *sn = static_cast<StructNode *>(arg);
+            NestedPairing p = sn->getNestedComplex();
+            // Get the information about more nested terms, increase their nested depth by one
+            for (const auto &[structureNode, depth] : p)
+            {
+                m_Complex.insert({structureNode, depth + 1});
+            }
+            m_Complex.insert({sn, 0});
         }
     }
 }
@@ -91,6 +96,12 @@ void StructNode::print(const std::string &indent)
         for (const auto &arg : m_Args)
             arg->print(indent + " ");
     }
+
+    for (const auto &[strct, depth] : m_Complex)
+    {
+        std::cout << indent << strct->name() << " " << depth << std::endl;
+    }
+
     std::cout << indent << "=======[End StructNode]======" << std::endl;
 }
 
@@ -152,4 +163,9 @@ void StructNode::unifyRHS(CompilationContext &cctx)
 bool StructNode::hasNestedComplex(void)
 {
     return m_Complex.size();
+}
+
+NestedPairing StructNode::getNestedComplex(void)
+{
+    return m_Complex;
 }
