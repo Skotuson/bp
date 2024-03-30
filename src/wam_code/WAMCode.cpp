@@ -2,7 +2,8 @@
 
 WAMCode::WAMCode(const WAMCode &wamCode)
     : m_AddressToLabel(wamCode.m_AddressToLabel),
-      m_LabelToAddress(wamCode.m_LabelToAddress)
+      m_LabelToAddress(wamCode.m_LabelToAddress),
+      m_Variables(wamCode.m_Variables)
 {
     for (Instruction *instr : wamCode.m_Program)
     {
@@ -19,6 +20,7 @@ WAMCode &WAMCode::operator=(const WAMCode &wamCode)
 
     m_AddressToLabel = wamCode.m_AddressToLabel;
     m_LabelToAddress = wamCode.m_LabelToAddress;
+    m_Variables = wamCode.m_Variables;
 
     for (Instruction *instr : wamCode.m_Program)
     {
@@ -74,7 +76,7 @@ void WAMCode::updateJumpInstructions(void)
 void WAMCode::merge(const WAMCode &code)
 {
     std::vector<Instruction *> instrCpy;
-    for(auto instr : code.m_Program)
+    for (auto instr : code.m_Program)
         instrCpy.push_back(instr->clone());
     addInstructions(instrCpy);
     updateJumpInstructions();
@@ -102,11 +104,11 @@ void WAMCode::dumpInstruction(size_t pc, std::ostream &os) const
 
 void WAMCode::dump(std::ostream &os)
 {
-    for(size_t i = 0; i < size(); i++)
+    for (size_t i = 0; i < size(); i++)
         dumpInstruction(i, os);
 }
 
-void WAMCode::addVariable(const Variable & v)
+void WAMCode::addVariable(const Variable &v)
 {
     m_Variables.push_back(v);
 }
