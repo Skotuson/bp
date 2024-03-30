@@ -21,7 +21,7 @@ void Instruction::clearPDL(WAMState &state, Word *X, Word *Y)
         {2, 4, 0, 0, 8}};
 
     size_t branch = table[X->tag()][Y->tag()];
-    
+
     while (42)
     {
         // X is a ref, dereference: UNUSED (argReg already dereferences)
@@ -235,6 +235,13 @@ void FailInstruction::execute(WAMState &state)
     {
         // Reload arg registers
         state.m_ArgumentRegisters = cp->m_ArgumentRegisters;
+        
+        // Reset heap top
+        while (state.HReg() != cp->m_BH)
+        {
+            state.heapPop();
+        }
+
         while (state.TRReg() != cp->m_BTR)
         {
             VariableWord *popped = state.trailTop();
