@@ -24,7 +24,7 @@ void Instruction::clearPDL(WAMState &state, Word *X, Word *Y)
 
     while (42)
     {
-        // X is a ref, dereference: UNUSED (argReg already dereferences)
+        // X is a ref, dereference:
         if (branch == 1)
         {
             X = *static_cast<VariableWord *>(X)->ref();
