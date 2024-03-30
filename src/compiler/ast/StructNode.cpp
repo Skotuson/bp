@@ -18,7 +18,7 @@ StructNode::StructNode(const std::string &name, std::vector<TermNode *> args)
             {
                 m_Complex.insert({structureNode, depth + 1});
             }
-            //m_Complex.insert({sn, 0});
+            // m_Complex.insert({sn, 0});
         }
     }
     m_Complex.insert({this, 0});
@@ -46,19 +46,20 @@ std::string StructNode::codegen(CompilationContext &cctx)
                 m_AvailableReg = arg->m_AvailableReg;
             }
             code += "call " + m_Name;
-            cctx.addInstructions({new CallInstruction(m_Name)});
+            cctx.addInstruction(new CallInstruction(m_Name));
             // Reset available registers after call
             m_AvailableReg = 1;
         }
         // Treat structs without arguments as constants (if they are an argument)
         else if (!m_Args.size())
         {
-            cctx.addInstructions({new PutConstantInstruction(m_Name, m_AvailableReg++)});
+            cctx.addInstruction(new PutConstantInstruction(m_Name, m_AvailableReg++));
         }
         // Allocate space for complex structure buried inside other complex structure
         else
         {
             unifyRHS(cctx);
+            m_AvailableReg++;
         }
         return code;
     }
@@ -72,8 +73,8 @@ std::string StructNode::codegen(CompilationContext &cctx)
     }
 
     cctx.addInstructions({new GetStructureInstruction(m_Name, m_AvailableReg, m_Args.size())});
-    code = "get-structure " + m_Name + " A" + std::to_string(m_AvailableReg++);
     unifyHead(cctx);
+    m_AvailableReg++;
     return code;
 }
 
@@ -152,11 +153,11 @@ void StructNode::unifyHead(CompilationContext &cctx)
             StructNode *arg = static_cast<StructNode *>(top.first);
             arg->m_IsGoal = true;
             arg->m_IsArg = true;
-            arg->m_AvailableReg = m_AvailableReg + 1;
+            arg->m_AvailableReg = m_AvailableReg;
             cctx.addInstructions({new GetStructureInstruction(arg->name(), m_AvailableReg, arg->m_Args.size())});
             arg->unifyHead(cctx);
         }
-        m_AvailableReg++;
+        // m_AvailableReg++;
         terms.pop();
     }
 }
@@ -233,8 +234,6 @@ void StructNode::unifyRHS(CompilationContext &cctx)
             // (e) Repeat the above process for the next most neste component, expect that for components that refer to nested structures that have already been processed
         }
     }
-    // TODO: check struct head compilation whether the arg reg is assigned correctly
-    m_AvailableReg++;
 }
 
 bool StructNode::hasNestedComplex(void)
