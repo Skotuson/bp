@@ -106,6 +106,16 @@ void WAMCode::dump(std::ostream &os)
         dumpInstruction(i, os);
 }
 
+void WAMCode::addVariable(const Variable & v)
+{
+    m_Variables.push_back(v);
+}
+
+std::vector<Variable> WAMCode::getVariables(void)
+{
+    return m_Variables;
+}
+
 void WAMCode::addLabel(const Label &label)
 {
     m_AddressToLabel.insert({m_Program.size(), label});
