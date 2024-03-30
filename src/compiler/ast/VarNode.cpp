@@ -12,8 +12,11 @@ std::string VarNode::codegen(CompilationContext &cctx)
         cctx.addInstructions(
             {new GetVariableInstruction(m_Name, m_AvailableReg, cctx.getVarOffset(m_Name))});
     else
-        cctx.addInstructions(
-            {new PutVariableInstruction(m_Name, m_AvailableReg, cctx.getVarOffset(m_Name))});
+    {
+        cctx.getCode().addVariable(m_Name);
+        cctx.addInstruction(
+            new PutVariableInstruction(m_Name, m_AvailableReg, cctx.getVarOffset(m_Name)));
+    }
     // TODO: beware of the ++ in the unused section when removing the string :)
     return (m_IsGoal ? "put " : "get ") + m_Name + " A" + std::to_string(m_AvailableReg++);
 }
