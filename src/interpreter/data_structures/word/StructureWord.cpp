@@ -29,6 +29,10 @@ std::string StructureWord::toString(void)
     std::string str = m_Functor + "(";
     for(size_t i = 0; i < m_Arity; i++)
     {
+        if(i)
+        {
+            str += ",";
+        }
         str += m_HeapRef[m_Offset + i + 1]->toString();
     }
     str += ")";
