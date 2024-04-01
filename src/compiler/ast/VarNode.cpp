@@ -13,7 +13,7 @@ std::string VarNode::codegen(CompilationContext &cctx)
             {new GetVariableInstruction(m_Name, m_AvailableReg, cctx.getVarOffset(m_Name))});
     else
     {
-        cctx.getCode().addVariable(m_Name);
+        cctx.addVariable(m_Name);
         cctx.addInstruction(
             new PutVariableInstruction(m_Name, m_AvailableReg, cctx.getVarOffset(m_Name)));
     }
