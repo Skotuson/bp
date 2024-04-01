@@ -8,7 +8,7 @@
 #include <ostream>
 
 using Label = std::string;
-using Variable = std::string;
+using Variable = std::pair<std::string, size_t>;
 
 struct WAMCode
 {
