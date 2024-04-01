@@ -47,7 +47,8 @@ void Instruction::clearPDL(WAMState &state, Word *X, Word *Y)
             state.trailPush(x);
             state.trailPush(y);
             // Bind them together
-            *y->ref() = X;
+            //*y->ref() = X;
+            y->bind(X);
         }
 
         // X is not a variable, Y is an unbound variable
@@ -56,7 +57,8 @@ void Instruction::clearPDL(WAMState &state, Word *X, Word *Y)
             VariableWord *vw = static_cast<VariableWord *>(Y);
             // Trail
             state.trailPush(vw);
-            *vw->ref() = X->clone();
+            //*vw->ref() = X->clone();
+            vw->bind(X->clone());
         }
 
         // Y is a constant, X is an unbound variable
@@ -65,7 +67,8 @@ void Instruction::clearPDL(WAMState &state, Word *X, Word *Y)
             VariableWord *vw = static_cast<VariableWord *>(X);
             // Trail
             state.trailPush(vw);
-            *vw->ref() = Y->clone();
+            //*vw->ref() = Y->clone();
+            vw->bind(Y->clone());
         }
 
         // Both X and Y are constants
@@ -245,9 +248,9 @@ void FailInstruction::execute(WAMState &state)
         while (state.TRReg() != cp->m_BTR)
         {
             VariableWord *popped = state.trailTop();
+            popped->unbind();
             *popped->ref() = popped->clone();
             state.trailPop();
-            // TODO
         }
         state.m_ProgramCounter = cp->m_FA;
     }
@@ -361,7 +364,8 @@ void GetConstantInstruction::execute(WAMState &state)
         VariableWord *vw = static_cast<VariableWord *>(rcpy);
         state.trailPush(vw); // Trail
         // TODO add bind(Word**w) method?
-        *vw->ref() = cword;
+        //*vw->ref() = cword;
+        vw->bind(cword);
     }
     else if (!reg || !reg->compareToConst(cword))
     {
@@ -412,7 +416,8 @@ void GetStructureInstruction::execute(WAMState &state)
     {
         VariableWord *vw = static_cast<VariableWord *>(w);
         state.trailPush(vw);
-        *vw->ref() = new StructurePointerWord(state.HReg(), state.m_Heap);
+        //*vw->ref() = new StructurePointerWord(state.HReg(), state.m_Heap);
+        vw->bind(new StructurePointerWord(state.HReg(), state.m_Heap));
         state.heapPush(new StructureWord(m_Name, m_Arity, state.m_Heap, state.HReg()));
         state.setWriteMode();
     }
@@ -638,7 +643,7 @@ Instruction *UnifyVariableInstruction::clone(void)
 
 void UnifyVariableInstruction::execute(WAMState &state)
 {
-    Word *w = state.getChoicePoint(state.m_EnvironmentRegister)->m_Variables[m_Offset];
+    Word *w = state.getChoicePoint(state.m_EnvironmentRegister)->m_Variables[m_Offset]->dereference();
     if (!state.readMode())
     {
         state.heapPush(w->clone());
