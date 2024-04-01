@@ -131,7 +131,7 @@ VariableWord *WAMState::trailTop(void)
     return m_Trail[TRReg() - 1];
 }
 
-void WAMState::pdlPush(const PDLTriple & pdlTriple)
+void WAMState::pdlPush(const PDLTriple &pdlTriple)
 {
     m_PushDownList.push_back(pdlTriple);
 }
@@ -149,6 +149,30 @@ bool WAMState::pdlEmpty(void)
 PDLTriple WAMState::pdlTop(void)
 {
     return m_PushDownList[PDLReg() - 1];
+}
+
+std::string WAMState::variableToString(size_t choicePoint, size_t offset)
+{
+    auto cp = getChoicePoint(choicePoint);
+    std::string var = "";
+
+    Word *w = cp->m_Variables[offset];
+    if (w->tag() == CONSTANT)
+    {
+        return static_cast<ConstantWord*>(w)->value();
+    }
+    else if (w->tag() == VARIABLE)
+    {
+    }
+    else if (w->tag() == REFERENCE)
+    {
+    }
+    else if (w->tag() == TAG::S_POINTER)
+    {
+        auto sp = static_cast<StructurePointerWord*>(w);
+    }
+
+    return var;
 }
 
 std::ostream &operator<<(std::ostream &os, const WAMState &state)

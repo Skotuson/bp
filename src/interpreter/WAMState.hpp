@@ -47,10 +47,12 @@ struct WAMState
     VariableWord *trailTop(void);
 
     // PDL operations
-    void pdlPush(const PDLTriple & pdlTriple);
+    void pdlPush(const PDLTriple &pdlTriple);
     void pdlPop(void);
     bool pdlEmpty(void);
     PDLTriple pdlTop(void);
+
+    std::string variableToString(size_t choicePoint, size_t offset);
 
     friend std::ostream &operator<<(std::ostream &os, const WAMState &state);
 
