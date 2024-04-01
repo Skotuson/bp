@@ -133,5 +133,10 @@ void WAMCode::removeLabel(const Label &label)
 
 size_t WAMCode::getLabelAddress(const Label &label)
 {
+    if (!m_LabelToAddress.count(label))
+    {
+        return BAD_ADDRESS;
+    }
+
     return m_LabelToAddress[label];
 }

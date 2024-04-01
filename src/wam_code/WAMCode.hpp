@@ -10,6 +10,8 @@
 using Label = std::string;
 using Variable = std::pair<std::string, size_t>;
 
+const size_t BAD_ADDRESS = -1;
+
 struct WAMCode
 {
     WAMCode(void) = default;
