@@ -45,6 +45,13 @@ bool Interpreter::run(void)
 
     m_Program.dump(std::cout);
 
+    size_t start = m_Program.getLabelAddress(queryLabel);
+
+    if (start == BAD_ADDRESS)
+    {
+        m_State.m_FailFlag = true;
+    }
+
     m_State.m_ProgramCounter = m_Program.getLabelAddress(queryLabel);
 
     // TODO: handle emptying arg regs after sucessfully completing a goal (multiple goals in conjuction in a query)
