@@ -67,6 +67,11 @@ Word *ConstantWord::clone(void)
     return new ConstantWord(m_Value);
 }
 
+std::string ConstantWord::value(void)
+{
+    return m_Value;
+}
+
 TAG VariableWord::tag(void)
 {
     if(m_Bound)

@@ -44,6 +44,8 @@ public:
     ConstantWord(const std::string &value);
     void print(std::ostream &os) const override;
     Word *clone(void) override;
+    
+    std::string value(void);
 
     bool compareToConst(ConstantWord *cword) override;
 
