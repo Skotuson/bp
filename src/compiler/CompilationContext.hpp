@@ -35,6 +35,8 @@ public:
     WAMCode code(void);
     WAMCode &getCode(void);
 
+    void addVariable(const std::string &variable);
+
     size_t &allocate(void);
     void noteVariable(const std::string &variable);
     size_t getVarOffset(const std::string &variable);
