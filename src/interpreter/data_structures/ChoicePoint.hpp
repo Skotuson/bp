@@ -1,7 +1,7 @@
 #pragma once
 
 #include "ArgumentRegisters.hpp"
-#include "Word.hpp"
+#include "word/Word.hpp"
 #include <vector>
 
 struct ChoicePoint

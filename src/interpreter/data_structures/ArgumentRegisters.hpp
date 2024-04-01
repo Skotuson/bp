@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Word.hpp"
+#include "word/Word.hpp"
 
 #include <vector>
 

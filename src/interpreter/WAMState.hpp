@@ -1,8 +1,12 @@
 #pragma once
 
-#include "data_structures/Word.hpp"
+#include "data_structures/word/Word.hpp"
 #include "data_structures/ChoicePoint.hpp"
+#include "data_structures/word/ConstantWord.hpp"
+#include "data_structures/word/VariableWord.hpp"
 #include "data_structures/ArgumentRegisters.hpp"
+#include "data_structures/word/StructureWord.hpp"
+#include "data_structures/word/StructurePointerWord.hpp"
 
 #include <stack>
 #include <tuple>
