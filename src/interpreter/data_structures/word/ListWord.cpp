@@ -14,3 +14,8 @@ Word *ListWord::clone(void)
 {
     return new ListWord();
 }
+
+std::string ListWord::toString(void)
+{
+    return "";
+}
