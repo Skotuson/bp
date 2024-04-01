@@ -6,11 +6,16 @@ std::string ProgramNode::codegen(CompilationContext &cctx)
     // Initialize the symbol table
     for (const auto &clause : m_Clauses)
     {
+        // Encode arity into the name to handle arity mismatch
         auto entry = cctx.get(clause->m_Head);
         if (!entry)
+        {
             cctx.add(clause->m_Head, new TableEntry(clause->m_Head));
+        }
         else
+        {
             entry->m_Clauses++;
+        }
     }
 
     for (const auto &clause : m_Clauses)
