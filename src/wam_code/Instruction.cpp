@@ -412,8 +412,8 @@ void GetStructureInstruction::execute(WAMState &state)
     {
         VariableWord *vw = static_cast<VariableWord *>(w);
         state.trailPush(vw);
-        *vw->ref() = new StructurePointerWord(state.HReg());
-        state.heapPush(new StructureWord(m_Name, m_Arity));
+        *vw->ref() = new StructurePointerWord(state.HReg(), state.m_Heap);
+        state.heapPush(new StructureWord(m_Name, m_Arity, state.m_Heap, state.HReg()));
         state.setWriteMode();
     }
 
@@ -557,8 +557,8 @@ Instruction *PutStructureInstruction::clone(void)
 
 void PutStructureInstruction::execute(WAMState &state)
 {
-    state.fillRegister(new StructurePointerWord(state.HReg()), m_ArgumentRegister);
-    state.heapPush(new StructureWord(m_Name, m_Arity));
+    state.fillRegister(new StructurePointerWord(state.HReg(), state.m_Heap), m_ArgumentRegister);
+    state.heapPush(new StructureWord(m_Name, m_Arity, state.m_Heap, state.HReg()));
     state.setWriteMode();
 }
 
