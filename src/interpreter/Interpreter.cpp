@@ -31,6 +31,12 @@ bool Interpreter::run(void)
     queryCompiler.compile();
     WAMCode queryCode = queryCompiler.dump();
 
+    std::vector<Variable> variables = queryCode.getVariables();
+    // for(const auto &v : variables)
+    //{
+    //     std::cout << v.first << " = " << v.second << std::endl;
+    // }
+
     queryCode.popInstructions(1);
 
     m_Program.addLabel(queryLabel);
@@ -69,6 +75,10 @@ bool Interpreter::run(void)
     else
     {
         std::cout << ANSI_COLOR_GREEN << "true." << ANSI_COLOR_DEFAULT << std::endl;
+        for (const auto &v : variables)
+        {
+            std::cout << v.first << " = " << m_State.variableToString(0, v.second) << std::endl;
+        }
     }
 
     // Remove the query code
