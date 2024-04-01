@@ -42,7 +42,6 @@ std::string ClauseNode::codegen(CompilationContext &cctx)
     cctx.addInstructions({new RetryMeElseInstruction(retryLabel)});
 
     // TODO: count all variables and complex objects (even nested) and generate the "n" afterwards
-    cctx.allocate() = 0;
     cctx.resetVariables();
     AllocateInstruction *alloc = new AllocateInstruction(0);
     cctx.addInstructions({alloc});

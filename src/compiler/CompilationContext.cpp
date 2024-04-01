@@ -78,4 +78,5 @@ size_t CompilationContext::getVarOffset(const std::string &variable)
 void CompilationContext::resetVariables(void)
 {
     m_Variables.clear();
+    m_Allocate = 0;
 }
