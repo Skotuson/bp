@@ -16,6 +16,11 @@ Word *ConstantWord::clone(void)
     return new ConstantWord(m_Value);
 }
 
+std::string ConstantWord::toString(void)
+{
+    return m_Value;
+}
+
 std::string ConstantWord::value(void)
 {
     return m_Value;
