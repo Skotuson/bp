@@ -17,6 +17,8 @@ public:
 
     Word *dereference(void) override;
 
+    void bind(Word * w);
+    void unbind(void);
     void setRef(Word **ref);
     Word **ref(void);
     bool bound(void);

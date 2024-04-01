@@ -24,6 +24,11 @@ Word *VariableWord::clone(void)
     return new VariableWord(m_Ref, m_Bound);
 }
 
+std::string VariableWord::toString(void)
+{
+    return dereference()->toString();
+}
+
 TAG VariableWord::tag(void)
 {
     if (m_Bound)
@@ -34,6 +39,17 @@ TAG VariableWord::tag(void)
     return TAG::VARIABLE;
 }
 
+void VariableWord::bind(Word *w)
+{
+    *ref() = w;
+    m_Bound = true;
+}
+
+void VariableWord::unbind(void)
+{
+    m_Bound = false;
+}
+
 void VariableWord::setRef(Word **ref)
 {
     m_Ref = ref;
@@ -41,15 +57,16 @@ void VariableWord::setRef(Word **ref)
 
 Word *VariableWord::dereference(void)
 {
-    if (m_Bound)
-    {
-        return (*m_Ref)->dereference();
-    }
-
-    else
-    {
-        return this;
-    }
+    return (*m_Ref);
+    // if (m_Bound)
+    //{
+    //     return (*m_Ref)->dereference();
+    // }
+    //
+    // else
+    //{
+    //    return this;
+    //}
 }
 
 Word **VariableWord::ref(void)
