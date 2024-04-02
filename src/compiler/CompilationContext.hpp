@@ -37,7 +37,7 @@ public:
 
     void addVariable(const std::string &variable);
 
-    size_t &allocate(void);
+    size_t allocate(void);
     void noteVariable(const std::string &variable);
     size_t getVarOffset(const std::string &variable);
     void resetVariables(void);
@@ -47,6 +47,5 @@ private:
     WAMCode m_GeneratedCode;
 
     // Used in Clause-Level compilation
-    size_t m_Allocate = 0;
     std::map<std::string, size_t> m_Variables;
 };

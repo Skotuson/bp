@@ -57,9 +57,9 @@ void CompilationContext::addVariable(const std::string &variable)
     m_GeneratedCode.addVariable({variable, getVarOffset(variable)});
 }
 
-size_t &CompilationContext::allocate(void)
+size_t CompilationContext::allocate(void)
 {
-    return m_Allocate;
+    return m_Variables.size();
 }
 
 void CompilationContext::noteVariable(const std::string &variable)
@@ -67,7 +67,6 @@ void CompilationContext::noteVariable(const std::string &variable)
     if (m_Variables.count(variable))
         return;
     m_Variables.insert({variable, m_Variables.size()});
-    m_Allocate++;
 }
 
 size_t CompilationContext::getVarOffset(const std::string &variable)
@@ -78,5 +77,4 @@ size_t CompilationContext::getVarOffset(const std::string &variable)
 void CompilationContext::resetVariables(void)
 {
     m_Variables.clear();
-    m_Allocate = 0;
 }
