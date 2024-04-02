@@ -63,7 +63,7 @@ size_t CompilationContext::allocate(void)
 }
 
 void CompilationContext::noteVariable(const std::string &variable)
-{
+{ 
     if (m_Variables.count(variable))
         return;
     m_Variables.insert({variable, m_Variables.size()});

@@ -125,8 +125,8 @@ void StructNode::unifyHead(CompilationContext &cctx)
         else if (type == TermNode::VAR)
         {
             // Note variable if it appears in complex structure
-            cctx.addVariable(arg->name());
             cctx.noteVariable(arg->name());
+            cctx.addVariable(arg->name());
             cctx.addInstructions({new UnifyVariableInstruction(arg->name(), cctx.getVarOffset(arg->name()))});
         }
         else
@@ -177,9 +177,9 @@ void StructNode::unifyRHS(CompilationContext &cctx)
 
             else if (type == TermNode::VAR)
             {
-                cctx.addVariable(arg->name());
                 // Note variable if it appears in complex structure
                 cctx.noteVariable(arg->name());
+                cctx.addVariable(arg->name());
                 cctx.addInstructions({new UnifyVariableInstruction(arg->name(), cctx.getVarOffset(arg->name()))});
             }
         }
@@ -215,9 +215,9 @@ void StructNode::unifyRHS(CompilationContext &cctx)
 
                 else if (type == TermNode::VAR)
                 {
-                    cctx.addVariable(arg->name());
                     // Note variable if it appears in complex structure
                     cctx.noteVariable(arg->name());
+                    cctx.addVariable(arg->name());
                     cctx.addInstruction(new UnifyVariableInstruction(arg->name(), cctx.getVarOffset(arg->name())));
                 }
 
