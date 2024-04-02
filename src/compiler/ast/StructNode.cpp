@@ -234,7 +234,7 @@ void StructNode::unifyRHS(CompilationContext &cctx)
             cctx.noteVariable(tempVariable);
             cctx.addInstruction(new GetVariableInstruction(tempVariable, m_AvailableReg, cctx.getVarOffset(tempVariable)));
             processedComplex.insert({n, tempVariable});
-            // (e) Repeat the above process for the next most neste component, expect that for components that refer to nested structures that have already been processed
+            // (e) Repeat the above process for the next most nested component, expect that for components that refer to nested structures that have already been processed
         }
     }
 }
