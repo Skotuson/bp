@@ -32,10 +32,6 @@ bool Interpreter::run(void)
     WAMCode queryCode = queryCompiler.dump();
 
     std::vector<Variable> variables = queryCode.getVariables();
-    // for(const auto &v : variables)
-    //{
-    //     std::cout << v.first << " = " << v.second << std::endl;
-    // }
 
     queryCode.popInstructions(1);
 
