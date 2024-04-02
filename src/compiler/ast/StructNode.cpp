@@ -45,8 +45,8 @@ std::string StructNode::codegen(CompilationContext &cctx)
                 code += arg->codegen(cctx) + "\n\t";
                 m_AvailableReg = arg->m_AvailableReg;
             }
-            code += "call " + m_Name;
-            cctx.addInstruction(new CallInstruction(m_Name));
+            std::string callName = m_Name + "/" + std::to_string(m_Args.size());
+            cctx.addInstruction(new CallInstruction(callName));
             // Reset available registers after call
             m_AvailableReg = 1;
         }

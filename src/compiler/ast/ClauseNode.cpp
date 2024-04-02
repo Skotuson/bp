@@ -3,8 +3,8 @@
 ClauseNode::ClauseNode(const std::string &head,
                        std::vector<TermNode *> args,
                        std::vector<GoalNode *> body)
-    : // m_Head(head + "/" + std::to_string(args.size())),
-      m_Head(head),
+    : m_Head(head + "/" + std::to_string(args.size())),
+      // m_Head(head),
       m_Args(args),
       m_Body(body)
 {
