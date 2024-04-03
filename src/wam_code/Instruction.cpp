@@ -20,10 +20,9 @@ void Instruction::clearPDL(WAMState &state, Word *X, Word *Y)
         {2, 4, 0, 7, 0},
         {2, 4, 0, 0, 8}};
 
-    size_t branch = table[X->tag()][Y->tag()];
-
     while (42)
     {
+        size_t branch = table[X->tag()][Y->tag()];
         // X is a ref, dereference:
         if (branch == 1)
         {
@@ -238,7 +237,7 @@ void FailInstruction::execute(WAMState &state)
     {
         // Reload arg registers
         state.m_ArgumentRegisters = cp->m_ArgumentRegisters;
-        
+
         // Reset heap top
         while (state.HReg() != cp->m_BH)
         {
@@ -545,7 +544,7 @@ void PutListInstruction::execute(WAMState &state)
 
 void PutListInstruction::print(std::ostream &os) const
 {
-    std::cout << "put-list A" << m_ArgumentRegister;
+    os << "put-list A" << m_ArgumentRegister;
 }
 
 PutStructureInstruction::PutStructureInstruction(const std::string &name, size_t argumentRegister, size_t arity)
