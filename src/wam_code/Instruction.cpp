@@ -41,8 +41,8 @@ void Instruction::clearPDL(WAMState &state, Word *X, Word *Y)
         // X and Y are both unbound variables
         else if (branch == 3)
         {
-            VariableWord *x = static_cast<VariableWord *>(X);
-            VariableWord *y = static_cast<VariableWord *>(Y);
+            VariableWord *x = static_cast<VariableWord *>(X->clone());
+            VariableWord *y = static_cast<VariableWord *>(Y->clone());
             // Trail both X and Y
             state.trailPush(x);
             state.trailPush(y);
@@ -54,7 +54,7 @@ void Instruction::clearPDL(WAMState &state, Word *X, Word *Y)
         // X is not a variable, Y is an unbound variable
         else if (branch == 4)
         {
-            VariableWord *vw = static_cast<VariableWord *>(Y);
+            VariableWord *vw = static_cast<VariableWord *>(Y->clone());
             // Trail
             state.trailPush(vw);
             //*vw->ref() = X->clone();
@@ -64,7 +64,7 @@ void Instruction::clearPDL(WAMState &state, Word *X, Word *Y)
         // Y is a constant, X is an unbound variable
         else if (branch == 5)
         {
-            VariableWord *vw = static_cast<VariableWord *>(X);
+            VariableWord *vw = static_cast<VariableWord *>(X->clone());
             // Trail
             state.trailPush(vw);
             //*vw->ref() = Y->clone();
@@ -360,8 +360,7 @@ void GetConstantInstruction::execute(WAMState &state)
     ConstantWord *cword = new ConstantWord(m_Name);
     if (reg && reg->tag() == TAG::VARIABLE)
     {
-        Word *rcpy = reg->clone();
-        VariableWord *vw = static_cast<VariableWord *>(rcpy);
+        VariableWord *vw = static_cast<VariableWord *>(reg->clone());
         state.trailPush(vw); // Trail
         // TODO add bind(Word**w) method?
         //*vw->ref() = cword;
@@ -414,7 +413,7 @@ void GetStructureInstruction::execute(WAMState &state)
     Word *w = state.m_ArgumentRegisters.dereferenceRegister(m_ArgumentRegister);
     if (w->tag() == VARIABLE)
     {
-        VariableWord *vw = static_cast<VariableWord *>(w);
+        VariableWord *vw = static_cast<VariableWord *>(w->clone());
         state.trailPush(vw);
         //*vw->ref() = new StructurePointerWord(state.HReg(), state.m_Heap);
         vw->bind(new StructurePointerWord(state.HReg(), state.m_Heap));
@@ -604,7 +603,7 @@ void UnifyConstantInstruction::execute(WAMState &state)
 
     if (w->tag() == VARIABLE)
     {
-        VariableWord *vw = static_cast<VariableWord *>(w);
+        VariableWord *vw = static_cast<VariableWord *>(w->clone());
         state.trailPush(vw);
         *vw->ref() = new ConstantWord(m_Name);
     }
