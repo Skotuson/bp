@@ -25,8 +25,8 @@ private:
     //--------RECURSIVE DESCENT METHODS--------//
     void Start(void);
     void Next(void);
-    ClauseNode *Predicates(void);
-    ClauseNode *Pred(const std::string &head);
+    std::shared_ptr<ClauseNode> Predicates(void);
+    std::shared_ptr<ClauseNode> Pred(const std::string &head);
     std::vector<GoalNode *> Predicate(void);
     std::vector<GoalNode *> Body(void);
     StructNode *BodyLower(void);

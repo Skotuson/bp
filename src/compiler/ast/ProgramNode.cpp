@@ -35,12 +35,6 @@ std::string ProgramNode::codegen(CompilationContext &cctx)
     return code;
 }
 
-ProgramNode::~ProgramNode(void)
-{
-    for (ClauseNode *clause : m_Clauses)
-        delete clause;
-}
-
 void ProgramNode::print(const std::string &indent)
 {
     std::cout << indent << "=======[Start ProgramNode]======" << std::endl;

@@ -2,10 +2,11 @@
 
 #include "ClauseNode.hpp"
 
+#include <memory>
+
 struct ProgramNode : public Node
 {
-    ~ProgramNode(void) override;
     virtual std::string codegen(CompilationContext &cctx);
     void print(const std::string &indent = "") override;
-    std::vector<ClauseNode *> m_Clauses;
+    std::vector<std::shared_ptr<ClauseNode>> m_Clauses;
 };
