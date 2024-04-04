@@ -85,7 +85,9 @@ void WAMCode::merge(const WAMCode &code)
 Instruction *WAMCode::getInstruction(size_t pc) const
 {
     if (pc >= m_Program.size())
+    {   
         return nullptr;
+    }
     return m_Program[pc];
 }
 
