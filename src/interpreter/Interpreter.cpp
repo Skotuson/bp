@@ -41,13 +41,6 @@ bool Interpreter::run(void)
 
     m_Program.dump(std::cout);
 
-    size_t start = m_Program.getLabelAddress(queryLabel);
-
-    if (start == BAD_ADDRESS)
-    {
-        m_State.m_FailFlag = true;
-    }
-
     m_State.m_ProgramCounter = m_Program.getLabelAddress(queryLabel);
 
     // TODO: handle emptying arg regs after sucessfully completing a goal (multiple goals in conjuction in a query)
@@ -74,7 +67,9 @@ bool Interpreter::run(void)
     std::cout << m_State << std::endl;
 
     if (m_State.m_FailFlag)
+    {
         std::cout << ANSI_COLOR_RED << "false." << ANSI_COLOR_DEFAULT << std::endl;
+    }
     else
     {
         std::cout << ANSI_COLOR_GREEN << "true." << ANSI_COLOR_DEFAULT << std::endl;
@@ -94,6 +89,11 @@ bool Interpreter::run(void)
 
 Instruction *Interpreter::fetch(void)
 {
+    // if (m_State.m_ProgramCounter == BAD_ADDRESS)
+    //{
+    //     m_State.m_FailFlag = true;
+    //     return nullptr;
+    // }
     return m_Program.getInstruction(m_State.m_ProgramCounter++);
 }
 
