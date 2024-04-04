@@ -10,6 +10,7 @@
 
 #include <stack>
 #include <tuple>
+#include <memory>
 #include <vector>
 #include <cstdlib>
 
@@ -39,11 +40,11 @@ struct WAMState
     Word *heapAt(size_t offset);
 
     // Choice Point Stack operations
-    void stackPush(ChoicePoint *cp);
+    void stackPush(std::shared_ptr<ChoicePoint> cp);
     void stackPop(void);
     bool stackEmpty(void);
-    ChoicePoint *stackTop(void);
-    ChoicePoint *getChoicePoint(size_t address);
+    std::shared_ptr<ChoicePoint> stackTop(void);
+    std::shared_ptr<ChoicePoint> getChoicePoint(size_t address);
 
     // Trail operations
     void trailPush(VariableWord *word);
@@ -70,7 +71,7 @@ struct WAMState
 
     std::vector<Word *> m_Heap;
     std::vector<VariableWord *> m_Trail;
-    std::vector<ChoicePoint *> m_Stack; // Represented as a vector because I need to have a random access available
+    std::vector<std::shared_ptr<ChoicePoint>> m_Stack; // Represented as a vector because I need to have a random access available
     std::vector<PDLTriple> m_PushDownList;
     ArgumentRegisters m_ArgumentRegisters;
 

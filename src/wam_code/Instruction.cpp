@@ -160,13 +160,13 @@ void BranchInstruction::setAddress(size_t address)
 
 void MarkInstruction::execute(WAMState &state)
 {
-    auto ncp = new ChoicePoint(state.m_ArgumentRegisters,
-                               state.m_EnvironmentRegister,
-                               state.m_ContinuationPointer,
-                               state.m_BacktrackRegister,
-                               state.TRReg(),
-                               state.HReg(),
-                               state.m_ProgramCounter);
+    auto ncp = std::make_shared<ChoicePoint>(state.m_ArgumentRegisters,
+                                             state.m_EnvironmentRegister,
+                                             state.m_ContinuationPointer,
+                                             state.m_BacktrackRegister,
+                                             state.TRReg(),
+                                             state.HReg(),
+                                             state.m_ProgramCounter);
     state.stackPush(ncp);
     // Set E and B registers
     state.m_BacktrackRegister = state.m_EnvironmentRegister = state.SReg();
@@ -190,7 +190,7 @@ Instruction *RetryMeElseInstruction::clone(void)
 
 void RetryMeElseInstruction::execute(WAMState &state)
 {
-    ChoicePoint *cp = state.stackTop();
+    std::shared_ptr<ChoicePoint> cp = state.stackTop();
     if (cp)
     {
         cp->m_FA = m_Address;
@@ -209,7 +209,7 @@ Instruction *BacktrackInstruction::clone(void)
 
 void BacktrackInstruction::execute(WAMState &state)
 {
-    ChoicePoint *cp = state.getChoicePoint(state.m_BacktrackRegister);
+    std::shared_ptr<ChoicePoint> cp = state.getChoicePoint(state.m_BacktrackRegister);
     if (cp)
     {
         state.m_BacktrackRegister = cp->m_BB;
@@ -232,7 +232,7 @@ Instruction *FailInstruction::clone(void)
 
 void FailInstruction::execute(WAMState &state)
 {
-    ChoicePoint *cp = state.getChoicePoint(state.m_BacktrackRegister);
+    std::shared_ptr<ChoicePoint> cp = state.getChoicePoint(state.m_BacktrackRegister);
     if (cp)
     {
         // Reload arg registers
@@ -276,7 +276,7 @@ Instruction *AllocateInstruction::clone(void)
 
 void AllocateInstruction::execute(WAMState &state)
 {
-    ChoicePoint *cp = state.stackTop();
+    std::shared_ptr<ChoicePoint> cp = state.stackTop();
     // Pre-Alloc space
     cp->m_Variables.resize(m_N, nullptr);
     for (size_t i = 0; i < m_N; i++)
@@ -321,7 +321,7 @@ Instruction *ReturnInstruction::clone(void)
 
 void ReturnInstruction::execute(WAMState &state)
 {
-    ChoicePoint *cp = state.getChoicePoint(state.m_EnvironmentRegister);
+    std::shared_ptr<ChoicePoint> cp = state.getChoicePoint(state.m_EnvironmentRegister);
     if (cp)
     {
         state.m_ProgramCounter = cp->m_BCP;
@@ -511,7 +511,7 @@ Instruction *PutVariableInstruction::clone(void)
 
 void PutVariableInstruction::execute(WAMState &state)
 {
-    ChoicePoint *cp = state.getChoicePoint(state.m_EnvironmentRegister);
+    std::shared_ptr<ChoicePoint> cp = state.getChoicePoint(state.m_EnvironmentRegister);
     Word *word = cp->m_Variables[m_Offset]->dereference();
     if (word->tag() == TAG::VARIABLE)
     {
