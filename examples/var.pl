@@ -6,6 +6,8 @@ bigger(whale, elephant).
 reversed(X,Y) :- bigger(Y,X).
 
 id(A,A).
+id(A,A,A).
+id(A,A,A,A).
 
 is_bigger(X, Y) :- bigger(X, Y).
 is_bigger(X, Y) :-
