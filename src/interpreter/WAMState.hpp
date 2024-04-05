@@ -8,6 +8,7 @@
 #include "data_structures/word/StructureWord.hpp"
 #include "data_structures/word/StructurePointerWord.hpp"
 
+#include <map>
 #include <stack>
 #include <tuple>
 #include <memory>
@@ -74,6 +75,8 @@ struct WAMState
     std::vector<std::shared_ptr<ChoicePoint>> m_Stack; // Represented as a vector because I need to have a random access available
     std::vector<PDLTriple> m_PushDownList;
     ArgumentRegisters m_ArgumentRegisters;
+
+    std::map<size_t, std::string> m_QueryVariables;
 
     bool m_ReadMode = false;
     bool m_FailFlag = false;
