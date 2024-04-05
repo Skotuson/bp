@@ -9,13 +9,13 @@ std::string VarNode::codegen(CompilationContext &cctx)
 {
     cctx.noteVariable(m_Name);
     if (!m_IsGoal)
-        cctx.addInstructions(
-            {new GetVariableInstruction(m_Name, m_AvailableReg, cctx.getVarOffset(m_Name))});
+        cctx.addInstruction(
+            std::make_shared<GetVariableInstruction>(m_Name, m_AvailableReg, cctx.getVarOffset(m_Name)));
     else
     {
         cctx.addVariable(m_Name);
         cctx.addInstruction(
-            new PutVariableInstruction(m_Name, m_AvailableReg, cctx.getVarOffset(m_Name)));
+            std::make_shared<PutVariableInstruction>(m_Name, m_AvailableReg, cctx.getVarOffset(m_Name)));
     }
     // TODO: beware of the ++ in the unused section when removing the string :)
     return (m_IsGoal ? "put " : "get ") + m_Name + " A" + std::to_string(m_AvailableReg++);

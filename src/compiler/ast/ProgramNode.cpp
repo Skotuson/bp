@@ -28,7 +28,7 @@ std::string ProgramNode::codegen(CompilationContext &cctx)
     // Generate the "quit" label
     code += "\nquit: backtrack\n";
     cctx.addLabel("quit");
-    cctx.addInstructions({new BacktrackInstruction()});
+    cctx.addInstruction(std::make_shared<BacktrackInstruction>());
 
     cctx.getCode().updateJumpInstructions();
 

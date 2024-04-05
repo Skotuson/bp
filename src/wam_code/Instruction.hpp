@@ -7,13 +7,13 @@
 
 struct Instruction
 {
-    virtual Instruction *clone(void) = 0;
+    virtual std::shared_ptr<Instruction> clone(void) = 0;
     virtual ~Instruction(void) = default;
     virtual void execute(WAMState &state) = 0;
     virtual void print(std::ostream &os) const = 0;
 
-    static void fail(WAMState & state);
-    static void clearPDL(WAMState & state, Word *X, Word *Y);
+    static void fail(WAMState &state);
+    static void clearPDL(WAMState &state, Word *X, Word *Y);
 
     friend std::ostream &operator<<(std::ostream &os, const Instruction &instr);
 };
@@ -30,7 +30,7 @@ struct BranchInstruction : public Instruction
 // Indexing instructions
 struct MarkInstruction : public Instruction
 {
-    Instruction *clone(void) override;
+    std::shared_ptr<Instruction> clone(void) override;
     void execute(WAMState &state) override;
     void print(std::ostream &os) const override;
 };
@@ -38,21 +38,21 @@ struct MarkInstruction : public Instruction
 struct RetryMeElseInstruction : public BranchInstruction
 {
     RetryMeElseInstruction(const std::string &label, size_t address = 0);
-    Instruction *clone(void) override;
+    std::shared_ptr<Instruction> clone(void) override;
     void execute(WAMState &state) override;
     void print(std::ostream &os) const override;
 };
 
 struct BacktrackInstruction : public Instruction
 {
-    Instruction *clone(void) override;
+    std::shared_ptr<Instruction> clone(void) override;
     void execute(WAMState &state) override;
     void print(std::ostream &os) const override;
 };
 
 struct FailInstruction : public Instruction
 {
-    Instruction *clone(void) override;
+    std::shared_ptr<Instruction> clone(void) override;
     void execute(WAMState &state) override;
     void print(std::ostream &os) const override;
 };
@@ -61,7 +61,7 @@ struct FailInstruction : public Instruction
 struct AllocateInstruction : public Instruction
 {
     AllocateInstruction(size_t n);
-    Instruction *clone(void) override;
+    std::shared_ptr<Instruction> clone(void) override;
     void execute(WAMState &state) override;
     void print(std::ostream &os) const override;
     size_t m_N;
@@ -70,14 +70,14 @@ struct AllocateInstruction : public Instruction
 struct CallInstruction : public BranchInstruction
 {
     CallInstruction(const std::string &label, size_t address = 0);
-    Instruction *clone(void) override;
+    std::shared_ptr<Instruction> clone(void) override;
     void execute(WAMState &state) override;
     void print(std::ostream &os) const override;
 };
 
 struct ReturnInstruction : public Instruction
 {
-    Instruction *clone(void) override;
+    std::shared_ptr<Instruction> clone(void) override;
     void execute(WAMState &state) override;
     void print(std::ostream &os) const override;
 };
@@ -94,7 +94,7 @@ protected:
 struct GetConstantInstruction : public GetInstruction
 {
     GetConstantInstruction(const std::string &name, size_t argumentRegister);
-    Instruction *clone(void) override;
+    std::shared_ptr<Instruction> clone(void) override;
     void execute(WAMState &state) override;
     void print(std::ostream &os) const override;
 };
@@ -102,7 +102,7 @@ struct GetConstantInstruction : public GetInstruction
 struct GetListInstruction : public GetInstruction
 {
     GetListInstruction(const std::string &name, size_t argumentRegister);
-    Instruction *clone(void) override;
+    std::shared_ptr<Instruction> clone(void) override;
     void execute(WAMState &state) override;
     void print(std::ostream &os) const override;
 };
@@ -110,7 +110,7 @@ struct GetListInstruction : public GetInstruction
 struct GetStructureInstruction : public GetInstruction
 {
     GetStructureInstruction(const std::string &name, size_t argumentRegister, size_t arity);
-    Instruction *clone(void) override;
+    std::shared_ptr<Instruction> clone(void) override;
     void execute(WAMState &state) override;
     void print(std::ostream &os) const override;
 
@@ -120,7 +120,7 @@ struct GetStructureInstruction : public GetInstruction
 struct GetVariableInstruction : public GetInstruction
 {
     GetVariableInstruction(const std::string &name, size_t argumentRegister, size_t offset);
-    Instruction *clone(void) override;
+    std::shared_ptr<Instruction> clone(void) override;
     void execute(WAMState &state) override;
     void print(std::ostream &os) const override;
 
@@ -137,7 +137,7 @@ protected:
 struct PutConstantInstruction : public PutInstruction
 {
     PutConstantInstruction(const std::string &name, size_t argumentRegister);
-    Instruction *clone(void) override;
+    std::shared_ptr<Instruction> clone(void) override;
     void execute(WAMState &state) override;
     void print(std::ostream &os) const override;
 };
@@ -145,7 +145,7 @@ struct PutConstantInstruction : public PutInstruction
 struct PutVariableInstruction : public PutInstruction
 {
     PutVariableInstruction(const std::string &name, size_t argumentRegister, size_t offset);
-    Instruction *clone(void) override;
+    std::shared_ptr<Instruction> clone(void) override;
     void execute(WAMState &state) override;
     void print(std::ostream &os) const override;
 
@@ -155,7 +155,7 @@ struct PutVariableInstruction : public PutInstruction
 struct PutListInstruction : public PutInstruction
 {
     PutListInstruction(const std::string &name, size_t ArgumentRegister);
-    Instruction *clone(void) override;
+    std::shared_ptr<Instruction> clone(void) override;
     void execute(WAMState &state) override;
     void print(std::ostream &os) const override;
 };
@@ -163,7 +163,7 @@ struct PutListInstruction : public PutInstruction
 struct PutStructureInstruction : public PutInstruction
 {
     PutStructureInstruction(const std::string &name, size_t argumentRegister, size_t arity);
-    Instruction *clone(void) override;
+    std::shared_ptr<Instruction> clone(void) override;
     void execute(WAMState &state) override;
     void print(std::ostream &os) const override;
 
@@ -182,7 +182,7 @@ protected:
 struct UnifyConstantInstruction : public UnifyInstruction
 {
     UnifyConstantInstruction(const std::string &name);
-    Instruction *clone(void) override;
+    std::shared_ptr<Instruction> clone(void) override;
     void execute(WAMState &state) override;
     void print(std::ostream &os) const override;
 };
@@ -190,7 +190,7 @@ struct UnifyConstantInstruction : public UnifyInstruction
 struct UnifyVariableInstruction : public UnifyInstruction
 {
     UnifyVariableInstruction(const std::string &name, size_t offset);
-    Instruction *clone(void) override;
+    std::shared_ptr<Instruction> clone(void) override;
     void execute(WAMState &state) override;
     void print(std::ostream &os) const override;
 

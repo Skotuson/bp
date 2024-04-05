@@ -22,12 +22,12 @@ TableEntry *CompilationContext::get(const std::string &symbol)
     return nullptr;
 }
 
-void CompilationContext::addInstruction(Instruction *instr)
+void CompilationContext::addInstruction(std::shared_ptr<Instruction> instr)
 {
-    m_GeneratedCode.addInstructions({instr});
+    m_GeneratedCode.addInstructions({instr});   
 }
 
-void CompilationContext::addInstructions(const std::vector<Instruction *> &instructions)
+void CompilationContext::addInstructions(const std::vector<std::shared_ptr<Instruction>> &instructions)
 {
     m_GeneratedCode.addInstructions(instructions);
 }
@@ -63,7 +63,7 @@ size_t CompilationContext::allocate(void)
 }
 
 void CompilationContext::noteVariable(const std::string &variable)
-{ 
+{
     if (m_Variables.count(variable))
         return;
     m_Variables.insert({variable, m_Variables.size()});

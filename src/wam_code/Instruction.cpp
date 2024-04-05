@@ -142,9 +142,9 @@ std::ostream &operator<<(std::ostream &os, const Instruction &instr)
 
 // Indexing Instructions
 
-Instruction *MarkInstruction::clone(void)
+std::shared_ptr<Instruction> MarkInstruction::clone(void)
 {
-    return new MarkInstruction();
+    return std::make_shared<MarkInstruction>();
 }
 
 BranchInstruction::BranchInstruction(const std::string &label, size_t address)
@@ -183,9 +183,9 @@ RetryMeElseInstruction::RetryMeElseInstruction(const std::string &label, size_t 
 {
 }
 
-Instruction *RetryMeElseInstruction::clone(void)
+std::shared_ptr<Instruction>RetryMeElseInstruction::clone(void)
 {
-    return new RetryMeElseInstruction(m_Label, m_Address);
+    return std::make_shared<RetryMeElseInstruction>(m_Label, m_Address);
 }
 
 void RetryMeElseInstruction::execute(WAMState &state)
@@ -202,9 +202,9 @@ void RetryMeElseInstruction::print(std::ostream &os) const
     os << "retry-me-else " << m_Label << "[" << m_Address << "]";
 }
 
-Instruction *BacktrackInstruction::clone(void)
+std::shared_ptr<Instruction>BacktrackInstruction::clone(void)
 {
-    return new BacktrackInstruction();
+    return std::make_shared<BacktrackInstruction>();
 }
 
 void BacktrackInstruction::execute(WAMState &state)
@@ -225,9 +225,9 @@ void BacktrackInstruction::print(std::ostream &os) const
     os << "backtrack";
 }
 
-Instruction *FailInstruction::clone(void)
+std::shared_ptr<Instruction>FailInstruction::clone(void)
 {
-    return new FailInstruction();
+    return std::make_shared<FailInstruction>();
 }
 
 void FailInstruction::execute(WAMState &state)
@@ -269,9 +269,9 @@ AllocateInstruction::AllocateInstruction(size_t n)
 {
 }
 
-Instruction *AllocateInstruction::clone(void)
+std::shared_ptr<Instruction>AllocateInstruction::clone(void)
 {
-    return new AllocateInstruction(m_N);
+    return std::make_shared<AllocateInstruction>(m_N);
 }
 
 void AllocateInstruction::execute(WAMState &state)
@@ -304,9 +304,9 @@ CallInstruction::CallInstruction(const std::string &label, size_t address)
 {
 }
 
-Instruction *CallInstruction::clone(void)
+std::shared_ptr<Instruction>CallInstruction::clone(void)
 {
-    return new CallInstruction(m_Label, m_Address);
+    return std::make_shared<CallInstruction>(m_Label, m_Address);
 }
 
 void CallInstruction::execute(WAMState &state)
@@ -321,9 +321,9 @@ void CallInstruction::print(std::ostream &os) const
     os << "call " + m_Label << "[" << m_Address << "]";
 }
 
-Instruction *ReturnInstruction::clone(void)
+std::shared_ptr<Instruction>ReturnInstruction::clone(void)
 {
-    return new ReturnInstruction();
+    return std::make_shared<ReturnInstruction>();
 }
 
 void ReturnInstruction::execute(WAMState &state)
@@ -355,9 +355,9 @@ GetConstantInstruction::GetConstantInstruction(const std::string &name, size_t a
 {
 }
 
-Instruction *GetConstantInstruction::clone(void)
+std::shared_ptr<Instruction>GetConstantInstruction::clone(void)
 {
-    return new GetConstantInstruction(m_Name, m_ArgumentRegister);
+    return std::make_shared<GetConstantInstruction>(m_Name, m_ArgumentRegister);
 }
 
 void GetConstantInstruction::execute(WAMState &state)
@@ -389,9 +389,9 @@ GetListInstruction::GetListInstruction(const std::string &name, size_t argumentR
 {
 }
 
-Instruction *GetListInstruction::clone(void)
+std::shared_ptr<Instruction>GetListInstruction::clone(void)
 {
-    return new GetListInstruction(m_Name, m_ArgumentRegister);
+    return std::make_shared<GetListInstruction>(m_Name, m_ArgumentRegister);
 }
 
 void GetListInstruction::execute(WAMState &state)
@@ -409,9 +409,9 @@ GetStructureInstruction::GetStructureInstruction(const std::string &name, size_t
 {
 }
 
-Instruction *GetStructureInstruction::clone(void)
+std::shared_ptr<Instruction>GetStructureInstruction::clone(void)
 {
-    return new GetStructureInstruction(m_Name, m_ArgumentRegister, m_Arity);
+    return std::make_shared<GetStructureInstruction>(m_Name, m_ArgumentRegister, m_Arity);
 }
 
 void GetStructureInstruction::execute(WAMState &state)
@@ -458,9 +458,9 @@ GetVariableInstruction::GetVariableInstruction(const std::string &name,
 {
 }
 
-Instruction *GetVariableInstruction::clone(void)
+std::shared_ptr<Instruction>GetVariableInstruction::clone(void)
 {
-    return new GetVariableInstruction(m_Name, m_ArgumentRegister, m_Offset);
+    return std::make_shared<GetVariableInstruction>(m_Name, m_ArgumentRegister, m_Offset);
 }
 
 void GetVariableInstruction::execute(WAMState &state)
@@ -489,9 +489,9 @@ PutConstantInstruction::PutConstantInstruction(const std::string &name, size_t a
 {
 }
 
-Instruction *PutConstantInstruction::clone(void)
+std::shared_ptr<Instruction>PutConstantInstruction::clone(void)
 {
-    return new PutConstantInstruction(m_Name, m_ArgumentRegister);
+    return std::make_shared<PutConstantInstruction>(m_Name, m_ArgumentRegister);
 }
 
 void PutConstantInstruction::execute(WAMState &state)
@@ -511,9 +511,9 @@ PutVariableInstruction::PutVariableInstruction(const std::string &name,
 {
 }
 
-Instruction *PutVariableInstruction::clone(void)
+std::shared_ptr<Instruction>PutVariableInstruction::clone(void)
 {
-    return new PutVariableInstruction(m_Name, m_ArgumentRegister, m_Offset);
+    return std::make_shared<PutVariableInstruction>(m_Name, m_ArgumentRegister, m_Offset);
 }
 
 void PutVariableInstruction::execute(WAMState &state)
@@ -522,7 +522,7 @@ void PutVariableInstruction::execute(WAMState &state)
     Word *word = cp->m_Variables[m_Offset]->dereference();
     if (word->tag() == TAG::VARIABLE)
     {
-        VariableWord * vw = static_cast<VariableWord*>(word->clone());
+        VariableWord *vw = static_cast<VariableWord *>(word->clone());
         vw->setRef(&cp->m_Variables[m_Offset]);
         vw->bind();
         state.fillRegister(vw, m_ArgumentRegister);
@@ -543,9 +543,9 @@ PutListInstruction::PutListInstruction(const std::string &name, size_t ArgumentR
 {
 }
 
-Instruction *PutListInstruction::clone(void)
+std::shared_ptr<Instruction>PutListInstruction::clone(void)
 {
-    return new PutListInstruction(m_Name, m_ArgumentRegister);
+    return std::make_shared<PutListInstruction>(m_Name, m_ArgumentRegister);
 }
 
 void PutListInstruction::execute(WAMState &state)
@@ -563,9 +563,9 @@ PutStructureInstruction::PutStructureInstruction(const std::string &name, size_t
 {
 }
 
-Instruction *PutStructureInstruction::clone(void)
+std::shared_ptr<Instruction>PutStructureInstruction::clone(void)
 {
-    return new PutStructureInstruction(m_Name, m_ArgumentRegister, m_Arity);
+    return std::make_shared<PutStructureInstruction>(m_Name, m_ArgumentRegister, m_Arity);
 }
 
 void PutStructureInstruction::execute(WAMState &state)
@@ -594,9 +594,9 @@ UnifyConstantInstruction::UnifyConstantInstruction(const std::string &name)
 {
 }
 
-Instruction *UnifyConstantInstruction::clone(void)
+std::shared_ptr<Instruction>UnifyConstantInstruction::clone(void)
 {
-    return new UnifyConstantInstruction(m_Name);
+    return std::make_shared<UnifyConstantInstruction>(m_Name);
 }
 
 void UnifyConstantInstruction::execute(WAMState &state)
@@ -644,9 +644,9 @@ UnifyVariableInstruction::UnifyVariableInstruction(const std::string &name, size
 {
 }
 
-Instruction *UnifyVariableInstruction::clone(void)
+std::shared_ptr<Instruction>UnifyVariableInstruction::clone(void)
 {
-    return new UnifyVariableInstruction(m_Name, m_Offset);
+    return std::make_shared<UnifyVariableInstruction>(m_Name, m_Offset);
 }
 
 void UnifyVariableInstruction::execute(WAMState &state)

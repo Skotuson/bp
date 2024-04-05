@@ -45,7 +45,7 @@ bool Interpreter::run(void)
 
     // TODO: handle emptying arg regs after sucessfully completing a goal (multiple goals in conjuction in a query)
     // Code as a different clause (different arity, e.g. bigger/1 and bigger/0)
-    Instruction *instr;
+    std::shared_ptr<Instruction> instr;
     while ((instr = fetch()) && !m_State.m_FailFlag)
     {
         if (m_Renderer.step())
@@ -92,7 +92,7 @@ bool Interpreter::run(void)
     return true;
 }
 
-Instruction *Interpreter::fetch(void)
+std::shared_ptr<Instruction> Interpreter::fetch(void)
 {
     // if (m_State.m_ProgramCounter == BAD_ADDRESS)
     //{
@@ -102,7 +102,7 @@ Instruction *Interpreter::fetch(void)
     return m_Program.getInstruction(m_State.m_ProgramCounter++);
 }
 
-void Interpreter::execute(Instruction *instr)
+void Interpreter::execute(std::shared_ptr<Instruction> instr)
 {
     if (!m_Renderer.step())
         std::cout << ANSI_COLOR_B_GREEN << *instr << ANSI_COLOR_DEFAULT << std::endl;

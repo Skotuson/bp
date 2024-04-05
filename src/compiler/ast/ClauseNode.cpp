@@ -26,7 +26,7 @@ std::string ClauseNode::codegen(CompilationContext &cctx)
     if (!entry->m_Generated)
     {
         cctx.addLabel(m_Head);
-        cctx.addInstructions({new MarkInstruction()});
+        cctx.addInstruction(std::make_shared<MarkInstruction>());
         code += m_Head + ":\tmark\n";
     }
     else
@@ -39,12 +39,12 @@ std::string ClauseNode::codegen(CompilationContext &cctx)
     ++entry->m_Generated;
     std::string retryLabel = entry->m_Generated == entry->m_Clauses ? "quit" : m_Head + std::to_string(entry->m_Generated);
     code += "\tretry-me-else " + retryLabel + "\n";
-    cctx.addInstructions({new RetryMeElseInstruction(retryLabel)});
+    cctx.addInstruction(std::make_shared<RetryMeElseInstruction>(retryLabel));
 
     // TODO: count all variables and complex objects (even nested) and generate the "n" afterwards
     cctx.resetVariables();
-    AllocateInstruction *alloc = new AllocateInstruction(0);
-    cctx.addInstructions({alloc});
+    std::shared_ptr<AllocateInstruction> alloc = std::make_shared<AllocateInstruction>(0);
+    cctx.addInstruction(alloc);
     size_t allocInstrIdx = cctx.getCode().size() - 1;
 
     size_t currentArgumentRegister = 1;
@@ -73,7 +73,7 @@ std::string ClauseNode::codegen(CompilationContext &cctx)
     else
         cctx.getCode().deleteInstruction(allocInstrIdx);
 
-    cctx.addInstructions({new ReturnInstruction()});
+    cctx.addInstruction(std::make_shared<ReturnInstruction>());
     return code + "\treturn\n";
 }
 

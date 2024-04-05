@@ -5,7 +5,7 @@ WAMCode::WAMCode(const WAMCode &wamCode)
       m_LabelToAddress(wamCode.m_LabelToAddress),
       m_Variables(wamCode.m_Variables)
 {
-    for (Instruction *instr : wamCode.m_Program)
+    for (const auto &instr : wamCode.m_Program)
     {
         m_Program.push_back(instr->clone());
     }
@@ -22,7 +22,7 @@ WAMCode &WAMCode::operator=(const WAMCode &wamCode)
     m_LabelToAddress = wamCode.m_LabelToAddress;
     m_Variables = wamCode.m_Variables;
 
-    for (Instruction *instr : wamCode.m_Program)
+    for (const auto &instr : wamCode.m_Program)
     {
         m_Program.push_back(instr->clone());
     }
@@ -30,25 +30,18 @@ WAMCode &WAMCode::operator=(const WAMCode &wamCode)
     return *this;
 }
 
-WAMCode::~WAMCode(void)
-{
-    for (Instruction *instr : m_Program)
-        delete instr;
-}
-
 size_t WAMCode::size() const
 {
     return m_Program.size();
 }
 
-void WAMCode::addInstructions(const std::vector<Instruction *> &instructions)
+void WAMCode::addInstructions(const std::vector<std::shared_ptr<Instruction>> &instructions)
 {
     m_Program.insert(m_Program.end(), instructions.begin(), instructions.end());
 }
 
 void WAMCode::deleteInstruction(size_t idx)
 {
-    delete m_Program[idx];
     m_Program.erase(m_Program.begin() + idx);
 }
 
@@ -56,16 +49,15 @@ void WAMCode::popInstructions(size_t n)
 {
     while (n--)
     {
-        delete m_Program.back();
         m_Program.pop_back();
     }
 }
 
 void WAMCode::updateJumpInstructions(void)
 {
-    for (Instruction *instr : m_Program)
+    for (const auto &instr : m_Program)
     {
-        BranchInstruction *jump = dynamic_cast<BranchInstruction *>(instr);
+        BranchInstruction *jump = dynamic_cast<BranchInstruction *>(instr.get());
         if (jump)
         {
             jump->setAddress(getLabelAddress(jump->m_Label));
@@ -75,17 +67,17 @@ void WAMCode::updateJumpInstructions(void)
 
 void WAMCode::merge(const WAMCode &code)
 {
-    std::vector<Instruction *> instrCpy;
-    for (auto instr : code.m_Program)
+    std::vector<std::shared_ptr<Instruction>> instrCpy;
+    for (const auto &instr : code.m_Program)
         instrCpy.push_back(instr->clone());
     addInstructions(instrCpy);
     updateJumpInstructions();
 }
 
-Instruction *WAMCode::getInstruction(size_t pc) const
+std::shared_ptr<Instruction> WAMCode::getInstruction(size_t pc) const
 {
     if (pc >= m_Program.size())
-    {   
+    {
         return nullptr;
     }
     return m_Program[pc];
