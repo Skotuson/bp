@@ -32,6 +32,7 @@ TAG Word::tag(void)
 
 std::shared_ptr<Word> Word::dereference(void)
 {
+    // TODO: not sure about this yet, shouldn't be a problem though
     return clone();
 }
 
