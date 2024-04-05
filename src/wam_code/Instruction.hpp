@@ -13,7 +13,7 @@ struct Instruction
     virtual void print(std::ostream &os) const = 0;
 
     static void fail(WAMState &state);
-    static void clearPDL(WAMState &state, Word *X, Word *Y);
+    static void clearPDL(WAMState &state, std::shared_ptr<Word> X, std::shared_ptr<Word> Y);
 
     friend std::ostream &operator<<(std::ostream &os, const Instruction &instr);
 };

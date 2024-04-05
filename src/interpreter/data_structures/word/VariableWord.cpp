@@ -1,6 +1,6 @@
 #include "VariableWord.hpp"
 
-VariableWord::VariableWord(Word **ref, std::string name, bool bound)
+VariableWord::VariableWord(std::shared_ptr<Word> *ref, std::string name, bool bound)
     : Word(TAG::VARIABLE),
       m_Ref(ref),
       m_Name(name),
@@ -20,9 +20,9 @@ void VariableWord::print(std::ostream &os) const
     }
 }
 
-Word *VariableWord::clone(void)
+std::shared_ptr<Word> VariableWord::clone(void)
 {
-    return new VariableWord(m_Ref, m_Name, m_Bound);
+    return std::make_shared<VariableWord>(m_Ref, m_Name, m_Bound);
 }
 
 std::string VariableWord::toString(void)
@@ -31,7 +31,7 @@ std::string VariableWord::toString(void)
     {
         return dereference()->toString();
     }
-    VariableWord *vw = static_cast<VariableWord *>(dereference());
+    std::shared_ptr<VariableWord> vw = std::static_pointer_cast<VariableWord>(dereference());
     if (ref() != vw->ref())
     {
         return dereference()->toString();
@@ -54,7 +54,7 @@ void VariableWord::bind(void)
     m_Bound = true;
 }
 
-void VariableWord::bind(Word *w)
+void VariableWord::bind(std::shared_ptr<Word> w)
 {
     *ref() = w;
     m_Bound = true;
@@ -65,26 +65,17 @@ void VariableWord::unbind(void)
     m_Bound = false;
 }
 
-void VariableWord::setRef(Word **ref)
+void VariableWord::setRef(std::shared_ptr<Word> *ref)
 {
     m_Ref = ref;
 }
 
-Word *VariableWord::dereference(void)
+std::shared_ptr<Word> VariableWord::dereference(void)
 {
-    return (*m_Ref);
-    // if (m_Bound)
-    //{
-    //     return (*m_Ref)->dereference();
-    // }
-    //
-    // else
-    //{
-    //    return this;
-    //}
+    return std::shared_ptr<Word>(*m_Ref);
 }
 
-Word **VariableWord::ref(void)
+std::shared_ptr<Word> *VariableWord::ref(void)
 {
     return m_Ref;
 }

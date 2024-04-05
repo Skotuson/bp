@@ -10,7 +10,7 @@ void Instruction::fail(WAMState &state)
     fail->execute(state);
 }
 
-void Instruction::clearPDL(WAMState &state, Word *X, Word *Y)
+void Instruction::clearPDL(WAMState &state, std::shared_ptr<Word> X, std::shared_ptr<Word> Y)
 {
     // Make static for class
     std::vector<std::vector<size_t>> table = {
@@ -26,22 +26,24 @@ void Instruction::clearPDL(WAMState &state, Word *X, Word *Y)
         // X is a ref, dereference:
         if (branch == 1)
         {
-            X = *static_cast<VariableWord *>(X)->ref();
+            X = X->dereference();
+            // X = *static_cast<VariableWord *>(X)->ref();
             continue;
         }
 
         // Y is a ref, dereference:
         else if (branch == 2)
         {
-            Y = *static_cast<VariableWord *>(Y)->ref();
+            Y = Y->dereference();
+            // Y = *static_cast<VariableWord *>(Y)->ref();
             continue;
         }
 
         // X and Y are both unbound variables
         else if (branch == 3)
         {
-            VariableWord *x = static_cast<VariableWord *>(X->clone());
-            VariableWord *y = static_cast<VariableWord *>(Y->clone());
+            std::shared_ptr<VariableWord> x = std::static_pointer_cast<VariableWord>(X->clone());
+            std::shared_ptr<VariableWord> y = std::static_pointer_cast<VariableWord>(Y->clone());
             // Trail both X and Y
             state.trailPush(x);
             state.trailPush(y);
@@ -53,7 +55,7 @@ void Instruction::clearPDL(WAMState &state, Word *X, Word *Y)
         // X is not a variable, Y is an unbound variable
         else if (branch == 4)
         {
-            VariableWord *vw = static_cast<VariableWord *>(Y->clone());
+            std::shared_ptr<VariableWord> vw = std::static_pointer_cast<VariableWord>(Y->clone());
             // Trail
             state.trailPush(vw);
             //*vw->ref() = X->clone();
@@ -63,7 +65,7 @@ void Instruction::clearPDL(WAMState &state, Word *X, Word *Y)
         // Y is a constant, X is an unbound variable
         else if (branch == 5)
         {
-            VariableWord *vw = static_cast<VariableWord *>(X->clone());
+            std::shared_ptr<VariableWord> vw = std::static_pointer_cast<VariableWord>(X->clone());
             // Trail
             state.trailPush(vw);
             //*vw->ref() = Y->clone();
@@ -73,7 +75,7 @@ void Instruction::clearPDL(WAMState &state, Word *X, Word *Y)
         // Both X and Y are constants
         else if (branch == 6)
         {
-            ConstantWord *xc = static_cast<ConstantWord *>(X);
+            std::shared_ptr<ConstantWord> xc = std::static_pointer_cast<ConstantWord>(X);
             if (!Y->compareToConst(xc))
             {
                 fail(state);
@@ -88,10 +90,10 @@ void Instruction::clearPDL(WAMState &state, Word *X, Word *Y)
 
         else if (branch == 8)
         {
-            StructurePointerWord *x = static_cast<StructurePointerWord *>(X);
-            StructurePointerWord *y = static_cast<StructurePointerWord *>(Y);
-            StructureWord *xs = static_cast<StructureWord *>(state.heapAt(x->m_HeapAddress));
-            StructureWord *ys = static_cast<StructureWord *>(state.heapAt(y->m_HeapAddress));
+            std::shared_ptr<StructurePointerWord> x = std::static_pointer_cast<StructurePointerWord>(X);
+            std::shared_ptr<StructurePointerWord> y = std::static_pointer_cast<StructurePointerWord>(Y);
+            std::shared_ptr<StructureWord> xs = std::static_pointer_cast<StructureWord>(state.heapAt(x->m_HeapAddress));
+            std::shared_ptr<StructureWord> ys = std::static_pointer_cast<StructureWord>(state.heapAt(y->m_HeapAddress));
 
             if (!xs->compareToStruct(ys))
             {
@@ -183,7 +185,7 @@ RetryMeElseInstruction::RetryMeElseInstruction(const std::string &label, size_t 
 {
 }
 
-std::shared_ptr<Instruction>RetryMeElseInstruction::clone(void)
+std::shared_ptr<Instruction> RetryMeElseInstruction::clone(void)
 {
     return std::make_shared<RetryMeElseInstruction>(m_Label, m_Address);
 }
@@ -202,7 +204,7 @@ void RetryMeElseInstruction::print(std::ostream &os) const
     os << "retry-me-else " << m_Label << "[" << m_Address << "]";
 }
 
-std::shared_ptr<Instruction>BacktrackInstruction::clone(void)
+std::shared_ptr<Instruction> BacktrackInstruction::clone(void)
 {
     return std::make_shared<BacktrackInstruction>();
 }
@@ -225,7 +227,7 @@ void BacktrackInstruction::print(std::ostream &os) const
     os << "backtrack";
 }
 
-std::shared_ptr<Instruction>FailInstruction::clone(void)
+std::shared_ptr<Instruction> FailInstruction::clone(void)
 {
     return std::make_shared<FailInstruction>();
 }
@@ -246,7 +248,7 @@ void FailInstruction::execute(WAMState &state)
 
         while (state.TRReg() != cp->m_BTR)
         {
-            VariableWord *popped = state.trailTop();
+            std::shared_ptr<VariableWord> popped = state.trailTop();
             popped->unbind();
             *popped->ref() = popped->clone();
             state.trailPop();
@@ -269,7 +271,7 @@ AllocateInstruction::AllocateInstruction(size_t n)
 {
 }
 
-std::shared_ptr<Instruction>AllocateInstruction::clone(void)
+std::shared_ptr<Instruction> AllocateInstruction::clone(void)
 {
     return std::make_shared<AllocateInstruction>(m_N);
 }
@@ -283,11 +285,11 @@ void AllocateInstruction::execute(WAMState &state)
     {
         if (state.m_QueryVariables.count(i))
         {
-            cp->m_Variables[i] = new VariableWord(&cp->m_Variables[i], state.m_QueryVariables[i]);
+            cp->m_Variables[i] = std::make_shared<VariableWord>(&cp->m_Variables[i], state.m_QueryVariables[i]);
         }
         else
         {
-            cp->m_Variables[i] = new VariableWord(&cp->m_Variables[i]);
+            cp->m_Variables[i] = std::make_shared<VariableWord>(&cp->m_Variables[i]);
         }
     }
 
@@ -304,7 +306,7 @@ CallInstruction::CallInstruction(const std::string &label, size_t address)
 {
 }
 
-std::shared_ptr<Instruction>CallInstruction::clone(void)
+std::shared_ptr<Instruction> CallInstruction::clone(void)
 {
     return std::make_shared<CallInstruction>(m_Label, m_Address);
 }
@@ -321,7 +323,7 @@ void CallInstruction::print(std::ostream &os) const
     os << "call " + m_Label << "[" << m_Address << "]";
 }
 
-std::shared_ptr<Instruction>ReturnInstruction::clone(void)
+std::shared_ptr<Instruction> ReturnInstruction::clone(void)
 {
     return std::make_shared<ReturnInstruction>();
 }
@@ -355,27 +357,25 @@ GetConstantInstruction::GetConstantInstruction(const std::string &name, size_t a
 {
 }
 
-std::shared_ptr<Instruction>GetConstantInstruction::clone(void)
+std::shared_ptr<Instruction> GetConstantInstruction::clone(void)
 {
     return std::make_shared<GetConstantInstruction>(m_Name, m_ArgumentRegister);
 }
 
 void GetConstantInstruction::execute(WAMState &state)
 {
-    Word *reg = state.m_ArgumentRegisters.dereferenceRegister(m_ArgumentRegister);
-    ConstantWord *cword = new ConstantWord(m_Name);
+    std::shared_ptr<Word> reg = state.m_ArgumentRegisters.dereferenceRegister(m_ArgumentRegister);
+    std::shared_ptr<ConstantWord> cword = std::make_shared<ConstantWord>(m_Name);
     if (reg && reg->tag() == TAG::VARIABLE)
     {
-        VariableWord *vw = static_cast<VariableWord *>(reg->clone());
+        std::shared_ptr<VariableWord> vw = std::static_pointer_cast<VariableWord>(reg->clone());
         state.trailPush(vw); // Trail
-        // TODO add bind(Word**w) method?
         //*vw->ref() = cword;
         vw->bind(cword);
     }
     else if (!reg || !reg->compareToConst(cword))
     {
         fail(state);
-        delete cword;
     }
 }
 
@@ -389,7 +389,7 @@ GetListInstruction::GetListInstruction(const std::string &name, size_t argumentR
 {
 }
 
-std::shared_ptr<Instruction>GetListInstruction::clone(void)
+std::shared_ptr<Instruction> GetListInstruction::clone(void)
 {
     return std::make_shared<GetListInstruction>(m_Name, m_ArgumentRegister);
 }
@@ -409,28 +409,28 @@ GetStructureInstruction::GetStructureInstruction(const std::string &name, size_t
 {
 }
 
-std::shared_ptr<Instruction>GetStructureInstruction::clone(void)
+std::shared_ptr<Instruction> GetStructureInstruction::clone(void)
 {
     return std::make_shared<GetStructureInstruction>(m_Name, m_ArgumentRegister, m_Arity);
 }
 
 void GetStructureInstruction::execute(WAMState &state)
 {
-    Word *w = state.m_ArgumentRegisters.dereferenceRegister(m_ArgumentRegister);
+    std::shared_ptr<Word> w = state.m_ArgumentRegisters.dereferenceRegister(m_ArgumentRegister);
     if (w->tag() == VARIABLE)
     {
-        VariableWord *vw = static_cast<VariableWord *>(w->clone());
+        std::shared_ptr<VariableWord> vw = std::static_pointer_cast<VariableWord>(w->clone());
         state.trailPush(vw);
         //*vw->ref() = new StructurePointerWord(state.HReg(), state.m_Heap);
-        vw->bind(new StructurePointerWord(state.HReg(), state.m_Heap));
-        state.heapPush(new StructureWord(m_Name, m_Arity, state.m_Heap, state.HReg()));
+        vw->bind(std::make_shared<StructurePointerWord>(state.HReg(), state.m_Heap));
+        state.heapPush(std::make_shared<StructureWord>(m_Name, m_Arity, state.m_Heap, state.HReg()));
         state.setWriteMode();
     }
 
     else if (w->tag() == S_POINTER)
     {
-        StructurePointerWord *spw = static_cast<StructurePointerWord *>(w);
-        StructureWord *sw = static_cast<StructureWord *>(state.heapAt(spw->m_HeapAddress));
+        std::shared_ptr<StructurePointerWord> spw = std::static_pointer_cast<StructurePointerWord>(w);
+        std::shared_ptr<StructureWord> sw = std::static_pointer_cast<StructureWord>(state.heapAt(spw->m_HeapAddress));
         if (sw->m_Functor == m_Name && sw->m_Arity == m_Arity)
         {
             state.setReadMode();
@@ -458,15 +458,15 @@ GetVariableInstruction::GetVariableInstruction(const std::string &name,
 {
 }
 
-std::shared_ptr<Instruction>GetVariableInstruction::clone(void)
+std::shared_ptr<Instruction> GetVariableInstruction::clone(void)
 {
     return std::make_shared<GetVariableInstruction>(m_Name, m_ArgumentRegister, m_Offset);
 }
 
 void GetVariableInstruction::execute(WAMState &state)
 {
-    Word *X = state.m_ArgumentRegisters.dereferenceRegister(m_ArgumentRegister),
-         *Y = state.stackTop()->m_Variables[m_Offset];
+    std::shared_ptr<Word> X = state.m_ArgumentRegisters.dereferenceRegister(m_ArgumentRegister),
+                          Y = state.stackTop()->m_Variables[m_Offset];
     clearPDL(state, X, Y);
 }
 
@@ -489,14 +489,14 @@ PutConstantInstruction::PutConstantInstruction(const std::string &name, size_t a
 {
 }
 
-std::shared_ptr<Instruction>PutConstantInstruction::clone(void)
+std::shared_ptr<Instruction> PutConstantInstruction::clone(void)
 {
     return std::make_shared<PutConstantInstruction>(m_Name, m_ArgumentRegister);
 }
 
 void PutConstantInstruction::execute(WAMState &state)
 {
-    state.fillRegister(new ConstantWord(m_Name), m_ArgumentRegister);
+    state.fillRegister(std::make_shared<ConstantWord>(m_Name), m_ArgumentRegister);
 }
 
 void PutConstantInstruction::print(std::ostream &os) const
@@ -511,7 +511,7 @@ PutVariableInstruction::PutVariableInstruction(const std::string &name,
 {
 }
 
-std::shared_ptr<Instruction>PutVariableInstruction::clone(void)
+std::shared_ptr<Instruction> PutVariableInstruction::clone(void)
 {
     return std::make_shared<PutVariableInstruction>(m_Name, m_ArgumentRegister, m_Offset);
 }
@@ -519,10 +519,10 @@ std::shared_ptr<Instruction>PutVariableInstruction::clone(void)
 void PutVariableInstruction::execute(WAMState &state)
 {
     std::shared_ptr<ChoicePoint> cp = state.getChoicePoint(state.m_EnvironmentRegister);
-    Word *word = cp->m_Variables[m_Offset]->dereference();
+    std::shared_ptr<Word> word = cp->m_Variables[m_Offset]->dereference();
     if (word->tag() == TAG::VARIABLE)
     {
-        VariableWord *vw = static_cast<VariableWord *>(word->clone());
+        std::shared_ptr<VariableWord> vw = std::static_pointer_cast<VariableWord>(word->clone());
         vw->setRef(&cp->m_Variables[m_Offset]);
         vw->bind();
         state.fillRegister(vw, m_ArgumentRegister);
@@ -543,7 +543,7 @@ PutListInstruction::PutListInstruction(const std::string &name, size_t ArgumentR
 {
 }
 
-std::shared_ptr<Instruction>PutListInstruction::clone(void)
+std::shared_ptr<Instruction> PutListInstruction::clone(void)
 {
     return std::make_shared<PutListInstruction>(m_Name, m_ArgumentRegister);
 }
@@ -563,15 +563,15 @@ PutStructureInstruction::PutStructureInstruction(const std::string &name, size_t
 {
 }
 
-std::shared_ptr<Instruction>PutStructureInstruction::clone(void)
+std::shared_ptr<Instruction> PutStructureInstruction::clone(void)
 {
     return std::make_shared<PutStructureInstruction>(m_Name, m_ArgumentRegister, m_Arity);
 }
 
 void PutStructureInstruction::execute(WAMState &state)
 {
-    state.fillRegister(new StructurePointerWord(state.HReg(), state.m_Heap), m_ArgumentRegister);
-    state.heapPush(new StructureWord(m_Name, m_Arity, state.m_Heap, state.HReg()));
+    state.fillRegister(std::make_shared<StructurePointerWord>(state.HReg(), state.m_Heap), m_ArgumentRegister);
+    state.heapPush(std::make_shared<StructureWord>(m_Name, m_Arity, state.m_Heap, state.HReg()));
     state.setWriteMode();
 }
 
@@ -594,7 +594,7 @@ UnifyConstantInstruction::UnifyConstantInstruction(const std::string &name)
 {
 }
 
-std::shared_ptr<Instruction>UnifyConstantInstruction::clone(void)
+std::shared_ptr<Instruction> UnifyConstantInstruction::clone(void)
 {
     return std::make_shared<UnifyConstantInstruction>(m_Name);
 }
@@ -603,25 +603,27 @@ void UnifyConstantInstruction::execute(WAMState &state)
 {
     if (!state.readMode())
     {
-        state.heapPush(new ConstantWord(m_Name));
+        state.heapPush(std::make_shared<ConstantWord>(m_Name));
         return;
     }
 
-    Word *w = state.heapAt(state.SPReg())->dereference();
+    std::shared_ptr<Word> w = state.heapAt(state.SPReg())->dereference();
     state.m_StructurePointer++;
 
     if (w->tag() == VARIABLE)
     {
-        VariableWord *vw = static_cast<VariableWord *>(w->clone());
+        std::shared_ptr<VariableWord> vw = std::static_pointer_cast<VariableWord>(w->clone());
         state.trailPush(vw);
-        *vw->ref() = new ConstantWord(m_Name);
+        // TODO: check
+        vw->bind(std::make_shared<ConstantWord>(m_Name));
+        //*vw->ref() = std::make_shared<ConstantWord>(m_Name);
     }
 
     else if (w->tag() == CONSTANT)
     {
-        ConstantWord *cw = static_cast<ConstantWord *>(w);
+        std::shared_ptr<ConstantWord> cw = std::static_pointer_cast<ConstantWord>(w);
         std::shared_ptr<ConstantWord> c = std::make_shared<ConstantWord>(m_Name);
-        if (!cw->compareToConst(c.get()))
+        if (!cw->compareToConst(c))
         {
             fail(state);
         }
@@ -644,21 +646,21 @@ UnifyVariableInstruction::UnifyVariableInstruction(const std::string &name, size
 {
 }
 
-std::shared_ptr<Instruction>UnifyVariableInstruction::clone(void)
+std::shared_ptr<Instruction> UnifyVariableInstruction::clone(void)
 {
     return std::make_shared<UnifyVariableInstruction>(m_Name, m_Offset);
 }
 
 void UnifyVariableInstruction::execute(WAMState &state)
 {
-    Word *w = state.getChoicePoint(state.m_EnvironmentRegister)->m_Variables[m_Offset]->dereference();
+    std::shared_ptr<Word> w = state.getChoicePoint(state.m_EnvironmentRegister)->m_Variables[m_Offset]->dereference();
     if (!state.readMode())
     {
         state.heapPush(w->clone());
         return;
     }
 
-    Word *sp = state.heapAt(state.SPReg())->dereference();
+    std::shared_ptr<Word> sp = state.heapAt(state.SPReg())->dereference();
     // unify (similiar to getv)
     clearPDL(state, w, sp);
     state.m_StructurePointer++;

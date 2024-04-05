@@ -14,14 +14,6 @@ ChoicePoint::ChoicePoint(const ArgumentRegisters &argReg, size_t bce, size_t bcp
 {
 }
 
-ChoicePoint::~ChoicePoint(void)
-{
-  for (auto var : m_Variables)
-  {
-    delete var;
-  }
-}
-
 std::ostream &operator<<(std::ostream &os, const ChoicePoint &cp)
 {
   auto format = [](size_t n)

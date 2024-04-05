@@ -21,8 +21,7 @@ const size_t UNSET_REG = -1;
 
 struct WAMState
 {
-    ~WAMState(void);
-    void fillRegister(Word *word, size_t reg);
+    void fillRegister(std::shared_ptr<Word> word, size_t reg);
 
     size_t SReg(void) const;
     size_t TRReg(void) const;
@@ -35,10 +34,10 @@ struct WAMState
     bool readMode(void) const;
 
     // Heap operations
-    void heapPush(Word *word);
+    void heapPush(std::shared_ptr<Word> word);
     void heapPop(void);
-    Word *heapTop(void);
-    Word *heapAt(size_t offset);
+    std::shared_ptr<Word> heapTop(void);
+    std::shared_ptr<Word> heapAt(size_t offset);
 
     // Choice Point Stack operations
     void stackPush(std::shared_ptr<ChoicePoint> cp);
@@ -48,9 +47,9 @@ struct WAMState
     std::shared_ptr<ChoicePoint> getChoicePoint(size_t address);
 
     // Trail operations
-    void trailPush(VariableWord *word);
+    void trailPush(std::shared_ptr<VariableWord> word);
     void trailPop(void);
-    VariableWord *trailTop(void);
+    std::shared_ptr<VariableWord> trailTop(void);
 
     // PDL operations
     void pdlPush(const PDLTriple &pdlTriple);
@@ -70,8 +69,8 @@ struct WAMState
     size_t m_BacktrackRegister = UNSET_REG;
     size_t m_EnvironmentRegister = UNSET_REG;
 
-    std::vector<Word *> m_Heap;
-    std::vector<VariableWord *> m_Trail;
+    std::vector<std::shared_ptr<Word>> m_Heap;
+    std::vector<std::shared_ptr<VariableWord>> m_Trail;
     std::vector<std::shared_ptr<ChoicePoint>> m_Stack; // Represented as a vector because I need to have a random access available
     std::vector<PDLTriple> m_PushDownList;
     ArgumentRegisters m_ArgumentRegisters;

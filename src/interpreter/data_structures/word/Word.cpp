@@ -30,17 +30,17 @@ TAG Word::tag(void)
     return m_Tag;
 }
 
-Word *Word::dereference(void)
+std::shared_ptr<Word> Word::dereference(void)
 {
-    return this;
+    return clone();
 }
 
-bool Word::compareToConst(ConstantWord *cword)
+bool Word::compareToConst(std::shared_ptr<ConstantWord> cword)
 {
     return false;
 }
 
-bool Word::compareToStruct(StructureWord *sword)
+bool Word::compareToStruct(std::shared_ptr<StructureWord> sword)
 {
     return false;
 }
