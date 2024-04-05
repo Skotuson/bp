@@ -112,10 +112,10 @@ void WAMCode::dump(std::ostream &os)
 
 void WAMCode::addVariable(const Variable &v)
 {
-    m_Variables.push_back(v);
+    m_Variables.insert(v);
 }
 
-std::vector<Variable> WAMCode::getVariables(void)
+std::map<size_t, std::string> WAMCode::getVariables(void)
 {
     return m_Variables;
 }

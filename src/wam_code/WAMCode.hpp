@@ -8,7 +8,7 @@
 #include <ostream>
 
 using Label = std::string;
-using Variable = std::pair<std::string, size_t>;
+using Variable = std::pair<size_t, std::string>;
 
 const size_t BAD_ADDRESS = -1;
 
@@ -35,7 +35,7 @@ struct WAMCode
     void dump(std::ostream &os);
 
     void addVariable(const Variable &v);
-    std::vector<Variable> getVariables(void);
+    std::map<size_t, std::string> getVariables(void);
 
     void addLabel(const Label &label);
     void removeLabel(const Label &label);
@@ -44,5 +44,5 @@ struct WAMCode
     std::map<size_t, Label> m_AddressToLabel;
     std::map<Label, size_t> m_LabelToAddress;
     std::vector<Instruction *> m_Program;
-    std::vector<Variable> m_Variables;
+    std::map<size_t, std::string> m_Variables;
 };
