@@ -281,7 +281,14 @@ void AllocateInstruction::execute(WAMState &state)
     cp->m_Variables.resize(m_N, nullptr);
     for (size_t i = 0; i < m_N; i++)
     {
-        cp->m_Variables[i] = new VariableWord(&cp->m_Variables[i]);
+        if (state.m_QueryVariables.count(i))
+        {
+            cp->m_Variables[i] = new VariableWord(&cp->m_Variables[i], state.m_QueryVariables[i]);
+        }
+        else
+        {
+            cp->m_Variables[i] = new VariableWord(&cp->m_Variables[i]);
+        }
     }
 
     state.m_EnvironmentRegister = state.m_BacktrackRegister;
@@ -515,7 +522,10 @@ void PutVariableInstruction::execute(WAMState &state)
     Word *word = cp->m_Variables[m_Offset]->dereference();
     if (word->tag() == TAG::VARIABLE)
     {
-        state.fillRegister(new VariableWord(&cp->m_Variables[m_Offset], true), m_ArgumentRegister);
+        VariableWord * vw = static_cast<VariableWord*>(word->clone());
+        vw->setRef(&cp->m_Variables[m_Offset]);
+        vw->bind();
+        state.fillRegister(vw, m_ArgumentRegister);
     }
     else
         state.fillRegister(word->clone(), m_ArgumentRegister);
