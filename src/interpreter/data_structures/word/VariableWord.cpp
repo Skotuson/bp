@@ -1,8 +1,9 @@
 #include "VariableWord.hpp"
 
-VariableWord::VariableWord(Word **ref, bool bound)
+VariableWord::VariableWord(Word **ref, std::string name, bool bound)
     : Word(TAG::VARIABLE),
       m_Ref(ref),
+      m_Name(name),
       m_Bound(bound)
 {
 }
@@ -21,12 +22,21 @@ void VariableWord::print(std::ostream &os) const
 
 Word *VariableWord::clone(void)
 {
-    return new VariableWord(m_Ref, m_Bound);
+    return new VariableWord(m_Ref, m_Name, m_Bound);
 }
 
 std::string VariableWord::toString(void)
 {
-    return dereference()->toString();
+    if (dereference()->tag() != VARIABLE)
+    {
+        return dereference()->toString();
+    }
+    VariableWord *vw = static_cast<VariableWord *>(dereference());
+    if (ref() != vw->ref())
+    {
+        return dereference()->toString();
+    }
+    return m_Name;
 }
 
 TAG VariableWord::tag(void)
@@ -37,6 +47,11 @@ TAG VariableWord::tag(void)
     }
 
     return TAG::VARIABLE;
+}
+
+void VariableWord::bind(void)
+{
+    m_Bound = true;
 }
 
 void VariableWord::bind(Word *w)
