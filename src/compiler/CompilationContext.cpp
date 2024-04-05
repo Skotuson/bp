@@ -54,7 +54,7 @@ WAMCode &CompilationContext::getCode()
 
 void CompilationContext::addVariable(const std::string &variable)
 {
-    m_GeneratedCode.addVariable({variable, getVarOffset(variable)});
+    m_GeneratedCode.addVariable({getVarOffset(variable), variable});
 }
 
 size_t CompilationContext::allocate(void)
