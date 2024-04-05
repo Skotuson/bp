@@ -31,7 +31,7 @@ bool Interpreter::run(void)
     queryCompiler.compile();
     WAMCode queryCode = queryCompiler.dump();
 
-    std::vector<Variable> variables = queryCode.getVariables();
+    m_State.m_QueryVariables = queryCode.getVariables();
 
     queryCode.popInstructions(1);
 
@@ -73,9 +73,14 @@ bool Interpreter::run(void)
     else
     {
         std::cout << ANSI_COLOR_GREEN << "true." << ANSI_COLOR_DEFAULT << std::endl;
-        for (const auto &v : variables)
+        for (const auto &v : m_State.m_QueryVariables)
         {
-            std::cout << v.first << " = " << m_State.variableToString(0, v.second) << std::endl;
+            std::string value = m_State.variableToString(0, v.first);
+            // TODO: ugly hack probably
+            if (v.second != value)
+            {
+                std::cout << v.second << " = " << value << std::endl;
+            }
         }
     }
 
