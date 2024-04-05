@@ -22,7 +22,7 @@ public:
     void unbind(void);
     void setRef(std::shared_ptr<Word> *ref);
     std::shared_ptr<Word> *ref(void);
-    bool bound(void);
+    bool bound(void) const;
 
 private:
     std::shared_ptr<Word> *m_Ref;

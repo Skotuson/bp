@@ -10,7 +10,7 @@ VariableWord::VariableWord(std::shared_ptr<Word> *ref, std::string name, bool bo
 
 void VariableWord::print(std::ostream &os) const
 {
-    if (m_Bound)
+    if (bound())
     {
         os << "reference -> " << m_Ref << "[" << **m_Ref << "]";
     }
@@ -80,7 +80,7 @@ std::shared_ptr<Word> *VariableWord::ref(void)
     return m_Ref;
 }
 
-bool VariableWord::bound(void)
+bool VariableWord::bound(void) const
 {
     return m_Bound;
 }
