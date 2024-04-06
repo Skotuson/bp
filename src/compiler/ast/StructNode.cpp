@@ -4,7 +4,7 @@
 #include <algorithm>
 
 StructNode::StructNode(const std::string &name, std::vector<TermNode *> args)
-    : TermNode(name),
+    : ComplexNode(name),
       m_Args(args)
 {
     for (const auto &arg : m_Args)
@@ -14,12 +14,13 @@ StructNode::StructNode(const std::string &name, std::vector<TermNode *> args)
             StructNode *sn = static_cast<StructNode *>(arg);
             NestedPairing p = sn->getNestedComplex();
             // Get the information about more nested terms, increase their nested depth by one
-            for (const auto &[structureNode, depth] : p)
+            for (const auto &[complexNode, depth] : p)
             {
-                m_Complex.insert({structureNode, depth + 1});
+                m_Complex.insert({complexNode, depth + 1});
             }
             // m_Complex.insert({sn, 0});
         }
+        /*TODO: arg->type() == list*/
     }
     m_Complex.insert({this, 0});
 }
@@ -167,6 +168,7 @@ void StructNode::unifyRHS(CompilationContext &cctx)
 {
     if (!hasNestedComplex())
     {
+        cctx.addInstruction(std::make_shared<PutStructureInstruction>(name(), m_AvailableReg, arity()));
         for (const auto &arg : m_Args)
         {
             TermNode::TermType type = arg->type();
@@ -185,49 +187,26 @@ void StructNode::unifyRHS(CompilationContext &cctx)
         }
     }
 
-    // hasNestedComplex()
-    else
+    else // hasNestedComplex()
     {
-        std::vector<StructNode *> nested;
-        std::map<Node *, std::string> processedComplex;
+        std::vector<ComplexNode *> nested;
+        ProcessedComplex processedComplex;
         for (const auto &c : m_Complex)
         {
             nested.push_back(c.first);
         }
 
         // Sort the nested structures from the most nested to the least nested
-        std::sort(nested.begin(), nested.end(), [&](StructNode *&a, StructNode *&b)
+        std::sort(nested.begin(), nested.end(), [&](ComplexNode *&a, ComplexNode *&b)
                   { return m_Complex[a] > m_Complex[b]; });
 
         // (a) Take the most deeply nested such component
         for (const auto &n : nested)
         {
-            // (b) Select a currently unsued argument register Au - the m_AvailableReg show the next available register
+            // (b) Select a currently unsued argument register Au - the m_AvailableReg variable is the next available register
+            n->m_AvailableReg = m_AvailableReg;
             // (c) Generate an instruction sequence as in the prior step (put-list or put-structure), but target the result to Au
-            cctx.addInstruction(std::make_shared<PutStructureInstruction>(n->name(), m_AvailableReg, n->arity()));
-            for (const auto &arg : n->m_Args)
-            {
-                TermType type = arg->type();
-                if (type == TermNode::CONST)
-                {
-                    cctx.addInstruction(std::make_shared<UnifyConstantInstruction>(arg->name()));
-                }
-
-                else if (type == TermNode::VAR)
-                {
-                    // Note variable if it appears in complex structure
-                    cctx.noteVariable(arg->name());
-                    cctx.addVariable(arg->name());
-                    cctx.addInstruction(std::make_shared<UnifyVariableInstruction>(arg->name(), cctx.getVarOffset(arg->name())));
-                }
-
-                else if (type == TermNode::STRUCT)
-                {
-                    // Use a unifyv instructionwith the offset of the clause variable into which they were compiled earlier:
-                    std::string var = processedComplex[arg];
-                    cctx.addInstruction(std::make_shared<UnifyVariableInstruction>(var, cctx.getVarOffset(var)));
-                }
-            }
+            n->unifyArguments(cctx, processedComplex);
             // (d) Generate a getv to place Au in a specially allocated clause variable (as was done for nested objects in the clause head)
             // TODO: non collision naming, add some legit name, make a function to remove duplicity
             std::string tempVariable = "__temp" + std::to_string(cctx.allocate()) + "__";
@@ -239,12 +218,31 @@ void StructNode::unifyRHS(CompilationContext &cctx)
     }
 }
 
-bool StructNode::hasNestedComplex(void)
+void StructNode::unifyArguments(CompilationContext &cctx, ProcessedComplex &processedComplex)
 {
-    return m_Complex.size();
-}
+    // (c) Generate an instruction sequence as in the prior step (put-list or put-structure), but target the result to Au
+    cctx.addInstruction(std::make_shared<PutStructureInstruction>(name(), m_AvailableReg, arity()));
+    for (const auto &arg : m_Args)
+    {
+        TermType type = arg->type();
+        if (type == TermNode::CONST)
+        {
+            cctx.addInstruction(std::make_shared<UnifyConstantInstruction>(arg->name()));
+        }
 
-NestedPairing StructNode::getNestedComplex(void)
-{
-    return m_Complex;
+        else if (type == TermNode::VAR)
+        {
+            // Note variable if it appears in complex structure
+            cctx.noteVariable(arg->name());
+            cctx.addVariable(arg->name());
+            cctx.addInstruction(std::make_shared<UnifyVariableInstruction>(arg->name(), cctx.getVarOffset(arg->name())));
+        }
+
+        else if (type == TermNode::STRUCT)
+        {
+            // Use a unifyv instruction with the offset of the clause variable into which they were compiled earlier:
+            std::string var = processedComplex[arg];
+            cctx.addInstruction(std::make_shared<UnifyVariableInstruction>(var, cctx.getVarOffset(var)));
+        }
+    }
 }

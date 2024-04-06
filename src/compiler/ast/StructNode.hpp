@@ -1,11 +1,8 @@
 #pragma once
 
-#include "TermNode.hpp"
+#include "ComplexNode.hpp"
 
-struct StructNode;
-using NestedPairing = std::map<StructNode *, size_t>;
-
-struct StructNode : public TermNode
+struct StructNode : public ComplexNode
 {
     StructNode(const std::string &name,
                std::vector<TermNode *> args = std::vector<TermNode *>());
@@ -14,13 +11,11 @@ struct StructNode : public TermNode
     TermType type() override;
     void print(const std::string &indent = "") override;
 
-    size_t arity(void);
-    void unifyHead(CompilationContext &cctx);
-    void unifyRHS(CompilationContext &cctx);
-    bool hasNestedComplex(void);
-    NestedPairing getNestedComplex(void);
+    size_t arity(void) override;
 
+    void unifyHead(CompilationContext &cctx) override;
+    void unifyRHS(CompilationContext &cctx) override;
+    void unifyArguments(CompilationContext &cctx, ProcessedComplex &processedComplex) override;
+    
     std::vector<TermNode *> m_Args;
-    // Used when generating code for nested complex stuctures on the RHS of a goal
-    NestedPairing m_Complex;
 };
