@@ -1,7 +1,7 @@
 #include "ListNode.hpp"
 
 ListNode::ListNode(const std::vector<TermNode *> &list, TermNode *tail)
-    : TermNode(".")
+    : ComplexNode(".")
 {
     if (tail)
     {
@@ -56,4 +56,21 @@ void ListNode::print(const std::string &indent)
         m_Tail->print(indent + " ");
     }
     std::cout << indent << "=======[End ListNode]======" << std::endl;
+}
+
+size_t ListNode::arity(void)
+{
+    return m_Head.size() + 1;
+}
+
+void ListNode::unifyHead(CompilationContext &cctx)
+{
+}
+
+void ListNode::unifyRHS(CompilationContext &cctx)
+{
+}
+
+void ListNode::unifyArguments(CompilationContext &cctx, ProcessedComplex &processedComplex)
+{
 }

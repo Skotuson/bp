@@ -1,8 +1,8 @@
 #pragma once
 
-#include "TermNode.hpp"
+#include "ComplexNode.hpp"
 
-struct ListNode : public TermNode
+struct ListNode : public ComplexNode
 {
     ListNode(const std::vector<TermNode *> &head,
              TermNode *tail = nullptr);
@@ -10,6 +10,12 @@ struct ListNode : public TermNode
     std::string codegen(CompilationContext &cctx) override;
     TermType type() override;
     void print(const std::string &indent = "") override;
+
+    size_t arity(void) override;
+
+    void unifyHead(CompilationContext &cctx);
+    void unifyRHS(CompilationContext &cctx);
+    void unifyArguments(CompilationContext &cctx, ProcessedComplex &processedComplex);
 
     std::vector<TermNode *> m_Head;
     TermNode *m_Tail = nullptr;
