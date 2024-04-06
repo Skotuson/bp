@@ -6,17 +6,12 @@
 bool Parser::parse(void)
 {
     m_Lex.get();
-    m_ASTRoot = new ProgramNode();
+    m_ASTRoot = std::make_shared<ProgramNode>();
     Start();
     return true;
 }
 
-Parser::~Parser(void)
-{
-    delete m_ASTRoot;
-}
-
-ProgramNode *Parser::getAST(void)
+std::shared_ptr<ProgramNode> Parser::getAST(void)
 {
     return m_ASTRoot;
 }

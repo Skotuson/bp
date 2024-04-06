@@ -13,11 +13,9 @@ public:
     {
     }
 
-    ~Parser(void);
-
     bool parse(void);
 
-    ProgramNode *getAST(void);
+    std::shared_ptr<ProgramNode> getAST(void);
 
     void printAST(void);
 
@@ -40,5 +38,5 @@ private:
     TermNode *TermLower(void);
     //-------------CLASS VARIABLES-------------//
     Lexer m_Lex;
-    ProgramNode *m_ASTRoot;
+    std::shared_ptr<ProgramNode> m_ASTRoot;
 };
