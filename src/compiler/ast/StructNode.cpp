@@ -18,7 +18,6 @@ StructNode::StructNode(const std::string &name, std::vector<TermNode *> args)
             {
                 m_Complex.insert({complexNode, depth + 1});
             }
-            // m_Complex.insert({sn, 0});
         }
         /*TODO: arg->type() == list*/
     }
