@@ -570,6 +570,8 @@ std::shared_ptr<Instruction> PutListInstruction::clone(void)
 
 void PutListInstruction::execute(WAMState &state)
 {
+    state.fillRegister(std::make_shared<ListWord>(state.HReg()), m_ArgumentRegister);
+    state.setWriteMode();
 }
 
 void PutListInstruction::print(std::ostream &os) const
