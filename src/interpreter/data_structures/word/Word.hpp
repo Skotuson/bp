@@ -1,10 +1,11 @@
 #pragma once
 
 #include <string>
+#include <memory>
 #include <iostream>
 
-//#include "ConstantWord.hpp"
-//#include "StructureWord.hpp"
+// #include "ConstantWord.hpp"
+// #include "StructureWord.hpp"
 
 enum TAG
 {
@@ -26,14 +27,14 @@ class Word
 public:
     virtual ~Word() = default;
     virtual void print(std::ostream &os) const = 0;
-    virtual Word *clone(void) = 0;
+    virtual std::shared_ptr<Word> clone(void) = 0;
     virtual std::string toString(void) = 0;
     virtual TAG tag(void);
 
-    virtual Word *dereference(void);
+    virtual std::shared_ptr<Word> dereference(void);
 
-    virtual bool compareToConst(ConstantWord *cword);
-    virtual bool compareToStruct(StructureWord *sword);
+    virtual bool compareToConst(std::shared_ptr<ConstantWord> cword);
+    virtual bool compareToStruct(std::shared_ptr<StructureWord> sword);
 
     friend std::ostream &operator<<(std::ostream &os, const Word &word);
 

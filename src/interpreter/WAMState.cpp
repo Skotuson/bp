@@ -1,12 +1,6 @@
 #include "WAMState.hpp"
 
-WAMState::~WAMState(void)
-{
-    for (auto word : m_Trail)
-        delete word;
-}
-
-void WAMState::fillRegister(Word *word, size_t reg)
+void WAMState::fillRegister(std::shared_ptr<Word> word, size_t reg)
 {
     m_ArgumentRegisters.fillRegister(word, reg);
 }
@@ -51,24 +45,22 @@ bool WAMState::readMode(void) const
     return m_ReadMode;
 }
 
-void WAMState::heapPush(Word *word)
+void WAMState::heapPush(std::shared_ptr<Word> word)
 {
     m_Heap.push_back(word);
 }
 
 void WAMState::heapPop(void)
 {
-    Word *top = m_Heap.back();
     m_Heap.pop_back();
-    delete top;
 }
 
-Word *WAMState::heapTop(void)
+std::shared_ptr<Word> WAMState::heapTop(void)
 {
     return m_Heap.back();
 }
 
-Word *WAMState::heapAt(size_t offset)
+std::shared_ptr<Word> WAMState::heapAt(size_t offset)
 {
     return m_Heap[offset];
 }
@@ -111,19 +103,17 @@ std::shared_ptr<ChoicePoint> WAMState::getChoicePoint(size_t address)
     return nullptr;
 }
 
-void WAMState::trailPush(VariableWord *word)
+void WAMState::trailPush(std::shared_ptr<VariableWord> word)
 {
     m_Trail.push_back(word);
 }
 
 void WAMState::trailPop(void)
 {
-    Word *word = trailTop();
     m_Trail.pop_back();
-    delete word;
 }
 
-VariableWord *WAMState::trailTop(void)
+std::shared_ptr<VariableWord> WAMState::trailTop(void)
 {
     return m_Trail[TRReg() - 1];
 }

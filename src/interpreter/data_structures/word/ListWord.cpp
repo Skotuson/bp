@@ -10,9 +10,9 @@ void ListWord::print(std::ostream &os) const
     os << "list";
 }
 
-Word *ListWord::clone(void)
+std::shared_ptr<Word> ListWord::clone(void)
 {
-    return new ListWord();
+    return std::make_shared<ListWord>();
 }
 
 std::string ListWord::toString(void)

@@ -11,9 +11,9 @@ void ConstantWord::print(std::ostream &os) const
     os << "constant -> " << m_Value;
 }
 
-Word *ConstantWord::clone(void)
+std::shared_ptr<Word> ConstantWord::clone(void)
 {
-    return new ConstantWord(m_Value);
+    return std::make_shared<ConstantWord>(m_Value);
 }
 
 std::string ConstantWord::toString(void)
@@ -26,7 +26,7 @@ std::string ConstantWord::value(void)
     return m_Value;
 }
 
-bool ConstantWord::compareToConst(ConstantWord *cword)
+bool ConstantWord::compareToConst(std::shared_ptr<ConstantWord> cword)
 {
     return cword->m_Value == m_Value;
 }
