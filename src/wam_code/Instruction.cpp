@@ -1,5 +1,7 @@
 #include "Instruction.hpp"
 
+#include "../interpreter/data_structures/word/ListWord.hpp"
+
 #include <iostream>
 #include <cassert>
 #include <memory>
@@ -396,6 +398,23 @@ std::shared_ptr<Instruction> GetListInstruction::clone(void)
 
 void GetListInstruction::execute(WAMState &state)
 {
+    std::shared_ptr<Word> w = state.m_ArgumentRegisters.dereferenceRegister(m_ArgumentRegister);
+    if (w->tag() == VARIABLE)
+    {
+        std::shared_ptr<VariableWord> vw = std::static_pointer_cast<VariableWord>(w->clone());
+        state.trailPush(vw);
+        vw->bind(std::make_shared<ListWord>());
+        state.setWriteMode();
+    }
+    else if (w->tag() == LIST)
+    {
+        
+        state.setReadMode();
+    }
+    else
+    {
+        fail(state);
+    }
 }
 
 void GetListInstruction::print(std::ostream &os) const
