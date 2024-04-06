@@ -403,12 +403,13 @@ void GetListInstruction::execute(WAMState &state)
     {
         std::shared_ptr<VariableWord> vw = std::static_pointer_cast<VariableWord>(w->clone());
         state.trailPush(vw);
-        vw->bind(std::make_shared<ListWord>());
+        vw->bind(std::make_shared<ListWord>(state.HReg()));
         state.setWriteMode();
     }
     else if (w->tag() == LIST)
     {
-        
+        std::shared_ptr<ListWord> lw = std::static_pointer_cast<ListWord>(w);
+        state.m_StructurePointer = lw->m_HeapAddress;
         state.setReadMode();
     }
     else
