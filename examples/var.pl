@@ -9,6 +9,8 @@ id(A,A).
 id(A,A,A).
 id(A,A,A,A).
 
+foo(foo(X),foo(Y)).
+
 is_bigger(X, Y) :- bigger(X, Y).
 is_bigger(X, Y) :-
     bigger(X, Z),
