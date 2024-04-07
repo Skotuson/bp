@@ -27,11 +27,24 @@ ListNode::~ListNode(void)
 std::string ListNode::codegen(CompilationContext &cctx)
 {
     std::string code = "";
-    // TODO: decide how to represent empty list
     if (m_Head.empty())
-        return "get empty-list";
+    {
+        if (!m_IsGoal)
+        {
+            cctx.addInstruction(std::make_shared<GetConstantInstruction>("[]", m_AvailableReg++));
+        }
+        else
+        {
+            cctx.addInstruction(std::make_shared<PutConstantInstruction>("[]", m_AvailableReg++));
+        }
+        return code;
+    }
 
-    code += "get-list A" + std::to_string(m_AvailableReg++);
+    if (m_IsGoal)
+    {
+                
+        return code;
+    }
 
     return code;
 }
