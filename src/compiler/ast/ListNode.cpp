@@ -42,9 +42,14 @@ void ListNode::codegen(CompilationContext &cctx)
 
     if (m_IsGoal)
     {
-                
+        unifyRHS(cctx);
+        m_AvailableReg++;
         return;
     }
+
+    cctx.addInstruction(std::make_shared<GetListInstruction>(m_Name, m_AvailableReg));
+    unifyHead(cctx);
+    m_AvailableReg++;
 }
 
 TermNode::TermType ListNode::type()
