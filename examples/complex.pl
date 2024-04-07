@@ -1,2 +1,1 @@
-clause(t(s(h(1,2),g(3,4)),9,mary)).
-clause2(s(h(1,2),g(3,4)),9,mary).
+c(f(70,X,roy),[mike|Y],[1,2,3],g([[1|2]|h(X)],9,mary)).
