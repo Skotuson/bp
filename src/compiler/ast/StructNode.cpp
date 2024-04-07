@@ -146,15 +146,18 @@ void StructNode::unifyHead(CompilationContext &cctx)
         // Generate putv instruction to load some unneeded arg. register with the contents of the new variable
         cctx.addInstruction(std::make_shared<PutVariableInstruction>(top.second, m_AvailableReg, cctx.getVarOffset(top.second)));
         auto arg = top.first;
-        if (top.first->type() == TermNode::STRUCT)
+        arg->m_IsGoal = true;
+        arg->m_IsArg = true;
+        arg->m_AvailableReg = m_AvailableReg;
+        if (arg->type() == STRUCT)
         {
-            // StructNode *arg = static_cast<StructNode *>(top.first);
-            arg->m_IsGoal = true;
-            arg->m_IsArg = true;
-            arg->m_AvailableReg = m_AvailableReg;
             cctx.addInstruction(std::make_shared<GetStructureInstruction>(arg->name(), m_AvailableReg, arg->arity()));
-            arg->unifyHead(cctx);
         }
+        else if (arg->type() == LIST)
+        {
+            cctx.addInstruction(std::make_shared<GetListInstruction>(arg->name(), m_AvailableReg));
+        }
+        arg->unifyHead(cctx);
         terms.pop();
     }
 }
