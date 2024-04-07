@@ -113,7 +113,7 @@ size_t StructNode::arity(void)
 
 void StructNode::unifyHead(CompilationContext &cctx)
 {
-    std::queue<std::pair<TermNode *, std::string>> terms;
+    std::queue<std::pair<ComplexNode *, std::string>> terms;
     for (const auto &arg : m_Args)
     {
         TermNode::TermType type = arg->type();
@@ -139,7 +139,7 @@ void StructNode::unifyHead(CompilationContext &cctx)
             cctx.addInstruction(std::make_shared<UnifyVariableInstruction>(tempVariable, cctx.getVarOffset(tempVariable)));
 
             // Add term to queue to be processed after all the "top level" code has been generated
-            terms.push({arg, tempVariable});
+            terms.push({static_cast<ComplexNode*>(arg), tempVariable});
         }
     }
 
@@ -149,16 +149,16 @@ void StructNode::unifyHead(CompilationContext &cctx)
         auto top = terms.front();
         // Generate putv instruction to load some unneeded arg. register with the contents of the new variable
         cctx.addInstruction(std::make_shared<PutVariableInstruction>(top.second, m_AvailableReg, cctx.getVarOffset(top.second)));
+        auto arg = top.first;
         if (top.first->type() == TermNode::STRUCT)
         {
-            StructNode *arg = static_cast<StructNode *>(top.first);
+            //StructNode *arg = static_cast<StructNode *>(top.first);
             arg->m_IsGoal = true;
             arg->m_IsArg = true;
             arg->m_AvailableReg = m_AvailableReg;
-            cctx.addInstruction(std::make_shared<GetStructureInstruction>(arg->name(), m_AvailableReg, arg->m_Args.size()));
+            cctx.addInstruction(std::make_shared<GetStructureInstruction>(arg->name(), m_AvailableReg, arg->arity()));
             arg->unifyHead(cctx);
         }
-        // m_AvailableReg++;
         terms.pop();
     }
 }
