@@ -233,7 +233,7 @@ ListNode *Parser::ListInner(void)
         return new ListNode(list);
     case TOK_ATOM_LOWER:
     case TOK_CONST:
-    case TOK_LPAR:
+    case TOK_LSPAR:
     case TOK_VAR:
         list = Terms();
         // Cons is nullptr if the list is not being decomposed into [H|T]
