@@ -51,7 +51,7 @@ std::string StructNode::codegen(CompilationContext &cctx)
             m_AvailableReg = 1;
         }
         // Treat structs without arguments as constants (if they are an argument)
-        else if (!m_Args.size())
+        else if (m_Args.empty())
         {
             cctx.addInstruction(std::make_shared<PutConstantInstruction>(m_Name, m_AvailableReg++));
         }
