@@ -9,17 +9,16 @@ StructNode::StructNode(const std::string &name, std::vector<TermNode *> args)
 {
     for (const auto &arg : m_Args)
     {
-        if (arg->type() == STRUCT)
+        if (arg->type() == STRUCT || arg->type() == LIST)
         {
-            StructNode *sn = static_cast<StructNode *>(arg);
-            NestedPairing p = sn->getNestedComplex();
+            ComplexNode *cn = static_cast<ComplexNode *>(arg);
+            NestedPairing p = cn->getNestedComplex();
             // Get the information about more nested terms, increase their nested depth by one
             for (const auto &[complexNode, depth] : p)
             {
                 m_Complex.insert({complexNode, depth + 1});
             }
         }
-        /*TODO: arg->type() == list*/
     }
     m_Complex.insert({this, 0});
 }
