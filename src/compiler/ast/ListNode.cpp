@@ -19,13 +19,33 @@ ListNode::ListNode(const std::vector<TermNode *> &list, TermNode *tail)
             m_Tail = new ListNode({list.begin() + 1, list.end()});
         }
     }
+
+    if (type() == LIST)
+    {
+        std::vector<TermNode*> args = m_Head;
+        m_Head.push_back(tail);
+        for (const auto &arg : args)
+        {
+            if (arg->type() == STRUCT || arg->type() == LIST)
+            {
+                ComplexNode *cn = static_cast<ComplexNode *>(arg);
+                NestedPairing p = cn->getNestedComplex();
+                // Get the information about more nested terms, increase their nested depth by one
+                for (const auto &[complexNode, depth] : p)
+                {
+                    m_Complex.insert({complexNode, depth + 1});
+                }
+            }
+        }
+        m_Complex.insert({this, 0});
+    }
 }
 
 ListNode::~ListNode(void)
 {
-    for (TermNode *el : m_Head)
-        delete el;
-    delete m_Tail;
+    //for (TermNode *el : m_Head)
+    //    delete el;
+    //delete m_Tail;
 }
 
 void ListNode::codegen(CompilationContext &cctx)
@@ -58,7 +78,11 @@ void ListNode::codegen(CompilationContext &cctx)
 
 TermNode::TermType ListNode::type()
 {
-    return TermNode::LIST;
+    if (m_Head.empty())
+    {
+        return CONST;
+    }
+    return LIST;
 }
 
 void ListNode::print(const std::string &indent)
