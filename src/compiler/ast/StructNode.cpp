@@ -89,7 +89,7 @@ TermNode::TermType StructNode::type()
 void StructNode::print(const std::string &indent)
 {
     std::cout << indent << "=======[Start StructNode]======" << std::endl;
-    std::cout << indent << "[m_Name] => " << m_Name << std::endl;
+    std::cout << indent << "[m_Name] => " << m_Name << "/" << arity() << std::endl;
     if (!m_Args.empty())
     {
         std::cout << indent << "[m_Args] => " << std::endl;
@@ -97,10 +97,10 @@ void StructNode::print(const std::string &indent)
             arg->print(indent + " ");
     }
 
-    for (const auto &[strct, depth] : m_Complex)
-    {
-        std::cout << indent << strct->name() << " " << depth << std::endl;
-    }
+    //for (const auto &[strct, depth] : m_Complex)
+    //{
+    //    std::cout << indent << strct->name() << " " << depth << std::endl;
+    //}
 
     std::cout << indent << "=======[End StructNode]======" << std::endl;
 }
@@ -236,7 +236,7 @@ void StructNode::unifyArguments(CompilationContext &cctx, ProcessedComplex &proc
             cctx.addInstruction(std::make_shared<UnifyVariableInstruction>(arg->name(), cctx.getVarOffset(arg->name())));
         }
 
-        else if (type == TermNode::STRUCT)
+        else
         {
             // Use a unifyv instruction with the offset of the clause variable into which they were compiled earlier:
             std::string var = processedComplex[arg];

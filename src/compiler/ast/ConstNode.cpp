@@ -22,6 +22,6 @@ TermNode::TermType ConstNode::type()
 void ConstNode::print(const std::string &indent)
 {
     std::cout << indent << "=======[Start ConstNode]======" << std::endl;
-
+    std::cout << indent << "Value: " << m_Value << std::endl;
     std::cout << indent << "=======[End ConstNode]======" << std::endl;
 }
