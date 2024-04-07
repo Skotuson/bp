@@ -1,5 +1,9 @@
 #include "ListNode.hpp"
 
+#include "StructNode.hpp"
+
+#include <queue>
+
 ListNode::ListNode(const std::vector<TermNode *> &list, TermNode *tail)
     : ComplexNode(".")
 {
@@ -81,6 +85,60 @@ size_t ListNode::arity(void)
 
 void ListNode::unifyHead(CompilationContext &cctx)
 {
+    std::queue<std::pair<ComplexNode *, std::string>> terms;
+    // Generate code for car and cdr of the list.
+    std::vector<TermNode *> args = m_Head;
+    args.push_back(m_Tail);
+    for (const auto &arg : args)
+    {
+        TermNode::TermType type = arg->type();
+        if (type == TermNode::CONST)
+        {
+            cctx.addInstruction(std::make_shared<UnifyConstantInstruction>(arg->name()));
+        }
+
+        else if (type == TermNode::VAR)
+        {
+            // Note variable if it appears in complex structure
+            cctx.noteVariable(arg->name());
+            cctx.addVariable(arg->name());
+            cctx.addInstruction(std::make_shared<UnifyVariableInstruction>(arg->name(), cctx.getVarOffset(arg->name())));
+        }
+        else
+        {
+            // Allocate extra local clause variable
+            // TODO: non collision naming, add some legit name
+            std::string tempVariable = "__temp" + std::to_string(cctx.allocate()) + "__";
+            cctx.noteVariable(tempVariable);
+            // Instead of unify-xxx (xxx = struct or list), use the unifyv for the created variable
+            cctx.addInstruction(std::make_shared<UnifyVariableInstruction>(tempVariable, cctx.getVarOffset(tempVariable)));
+
+            // Add term to queue to be processed after all the "top level" code has been generated
+            terms.push({static_cast<ComplexNode *>(arg), tempVariable});
+        }
+    }
+
+    // Top level code has been generated
+    while (!terms.empty())
+    {
+        auto top = terms.front();
+        // Generate putv instruction to load some unneeded arg. register with the contents of the new variable
+        cctx.addInstruction(std::make_shared<PutVariableInstruction>(top.second, m_AvailableReg, cctx.getVarOffset(top.second)));
+        auto arg = top.first;
+        arg->m_IsGoal = true;
+        arg->m_IsArg = true;
+        arg->m_AvailableReg = m_AvailableReg;
+        if (arg->type() == STRUCT)
+        {
+            cctx.addInstruction(std::make_shared<GetStructureInstruction>(arg->name(), m_AvailableReg, arg->arity()));
+        }
+        else if (arg->type() == LIST)
+        {
+            cctx.addInstruction(std::make_shared<GetListInstruction>(arg->name(), m_AvailableReg));
+        }
+        arg->unifyHead(cctx);
+        terms.pop();
+    }
 }
 
 void ListNode::unifyRHS(CompilationContext &cctx)
