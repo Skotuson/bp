@@ -32,7 +32,21 @@ StructNode::~StructNode(void)
 
 void StructNode::codegen(CompilationContext &cctx)
 {
-    std::string code = "";
+
+    // Treat struct as a constant if it has no "arguments"
+    if (m_Args.empty())
+    {
+        if (!m_IsGoal)
+        {
+            cctx.addInstruction(std::make_shared<GetConstantInstruction>(m_Name, m_AvailableReg++));
+        }
+        else
+        {
+            cctx.addInstruction(std::make_shared<PutConstantInstruction>(m_Name, m_AvailableReg++));
+        }
+        return;
+    }
+
     if (m_IsGoal)
     {
         if (!m_IsArg)
@@ -50,25 +64,12 @@ void StructNode::codegen(CompilationContext &cctx)
             // Reset available registers after call
             m_AvailableReg = 1;
         }
-        // Treat structs without arguments as constants (if they are an argument)
-        else if (m_Args.empty())
-        {
-            cctx.addInstruction(std::make_shared<PutConstantInstruction>(m_Name, m_AvailableReg++));
-        }
         // Allocate space for complex structure buried inside other complex structure
         else
         {
             unifyRHS(cctx);
             m_AvailableReg++;
         }
-        return;
-    }
-
-    // Treat struct as a constant if it has no "arguments"
-    if (m_Args.empty())
-    {
-        code += "get-constant " + m_Name + " A" + std::to_string(m_AvailableReg);
-        cctx.addInstruction(std::make_shared<GetConstantInstruction>(m_Name, m_AvailableReg++));
         return;
     }
 
