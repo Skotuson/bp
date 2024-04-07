@@ -6,13 +6,12 @@ ConstNode::ConstNode(size_t value)
 {
 }
 
-std::string ConstNode::codegen(CompilationContext &cctx)
+void ConstNode::codegen(CompilationContext &cctx)
 {
     if (!m_IsGoal)
-        cctx.addInstruction(std::make_shared<GetConstantInstruction>(m_Name, m_AvailableReg));
+        cctx.addInstruction(std::make_shared<GetConstantInstruction>(m_Name, m_AvailableReg++));
     else
-        cctx.addInstruction(std::make_shared<PutConstantInstruction>(m_Name, m_AvailableReg));
-    return (m_IsGoal ? "put" : "get") + std::string("-constant ") + m_Name + " A" + std::to_string(m_AvailableReg++);
+        cctx.addInstruction(std::make_shared<PutConstantInstruction>(m_Name, m_AvailableReg++));
 }
 
 TermNode::TermType ConstNode::type()

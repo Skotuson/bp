@@ -6,7 +6,7 @@ UnificationNode::UnificationNode(TermNode *x, TermNode *y)
 {
 }
 
-std::string UnificationNode::codegen(CompilationContext &cctx)
+void UnificationNode::codegen(CompilationContext &cctx)
 {
-    return "";
+    
 }

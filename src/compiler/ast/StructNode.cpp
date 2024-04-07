@@ -30,7 +30,7 @@ StructNode::~StructNode(void)
         delete arg;
 }
 
-std::string StructNode::codegen(CompilationContext &cctx)
+void StructNode::codegen(CompilationContext &cctx)
 {
     std::string code = "";
     if (m_IsGoal)
@@ -42,7 +42,7 @@ std::string StructNode::codegen(CompilationContext &cctx)
                 arg->m_IsGoal = true;
                 arg->m_IsArg = true;
                 arg->m_AvailableReg = m_AvailableReg;
-                code += arg->codegen(cctx) + "\n\t";
+                arg->codegen(cctx);
                 m_AvailableReg = arg->m_AvailableReg;
             }
             std::string callName = m_Name + "/" + std::to_string(m_Args.size());
@@ -61,7 +61,7 @@ std::string StructNode::codegen(CompilationContext &cctx)
             unifyRHS(cctx);
             m_AvailableReg++;
         }
-        return code;
+        return;
     }
 
     // Treat struct as a constant if it has no "arguments"
@@ -69,13 +69,12 @@ std::string StructNode::codegen(CompilationContext &cctx)
     {
         code += "get-constant " + m_Name + " A" + std::to_string(m_AvailableReg);
         cctx.addInstruction(std::make_shared<GetConstantInstruction>(m_Name, m_AvailableReg++));
-        return code;
+        return;
     }
 
     cctx.addInstruction(std::make_shared<GetStructureInstruction>(m_Name, m_AvailableReg, m_Args.size()));
     unifyHead(cctx);
     m_AvailableReg++;
-    return code;
 }
 
 TermNode::TermType StructNode::type()

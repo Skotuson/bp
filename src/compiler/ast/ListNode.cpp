@@ -24,7 +24,7 @@ ListNode::~ListNode(void)
     delete m_Tail;
 }
 
-std::string ListNode::codegen(CompilationContext &cctx)
+void ListNode::codegen(CompilationContext &cctx)
 {
     std::string code = "";
     if (m_Head.empty())
@@ -37,16 +37,14 @@ std::string ListNode::codegen(CompilationContext &cctx)
         {
             cctx.addInstruction(std::make_shared<PutConstantInstruction>("[]", m_AvailableReg++));
         }
-        return code;
+        return;
     }
 
     if (m_IsGoal)
     {
                 
-        return code;
+        return;
     }
-
-    return code;
 }
 
 TermNode::TermType ListNode::type()

@@ -1,6 +1,6 @@
 #include "ProgramNode.hpp"
 
-std::string ProgramNode::codegen(CompilationContext &cctx)
+void ProgramNode::codegen(CompilationContext &cctx)
 {
     std::string code = "";
     // Initialize the symbol table
@@ -20,9 +20,7 @@ std::string ProgramNode::codegen(CompilationContext &cctx)
 
     for (const auto &clause : m_Clauses)
     {
-        if (!code.empty())
-            code += "\n";
-        code += clause->codegen(cctx);
+        clause->codegen(cctx);
     }
 
     // Generate the "quit" label
@@ -31,8 +29,6 @@ std::string ProgramNode::codegen(CompilationContext &cctx)
     cctx.addInstruction(std::make_shared<BacktrackInstruction>());
 
     cctx.getCode().updateJumpInstructions();
-
-    return code;
 }
 
 void ProgramNode::print(const std::string &indent)

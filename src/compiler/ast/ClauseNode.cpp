@@ -18,7 +18,7 @@ ClauseNode::~ClauseNode(void)
         delete goal;
 }
 
-std::string ClauseNode::codegen(CompilationContext &cctx)
+void ClauseNode::codegen(CompilationContext &cctx)
 {
     std::string code = "";
     TableEntry *entry = cctx.get(m_Head);
@@ -53,7 +53,7 @@ std::string ClauseNode::codegen(CompilationContext &cctx)
         m_Args[i]->m_IsGoal = false;
         m_Args[i]->m_AvailableReg = currentArgumentRegister;
         // Load the arguments into argument registers
-        code += "\t" + m_Args[i]->codegen(cctx) + "\n";
+        m_Args[i]->codegen(cctx);
         currentArgumentRegister = m_Args[i]->m_AvailableReg;
     }
 
@@ -63,7 +63,7 @@ std::string ClauseNode::codegen(CompilationContext &cctx)
     for (size_t i = 0; i < m_Body.size(); i++)
     {
         m_Body[i]->m_AvailableReg = currentArgumentRegister;
-        code += "\t" + m_Body[i]->codegen(cctx) + "\n";
+        m_Body[i]->codegen(cctx);
         currentArgumentRegister = m_Body[i]->m_AvailableReg;
     }
 
@@ -74,7 +74,6 @@ std::string ClauseNode::codegen(CompilationContext &cctx)
         cctx.getCode().deleteInstruction(allocInstrIdx);
 
     cctx.addInstruction(std::make_shared<ReturnInstruction>());
-    return code + "\treturn\n";
 }
 
 void ClauseNode::print(const std::string &indent)

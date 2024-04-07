@@ -7,7 +7,7 @@ struct StructNode : public ComplexNode
     StructNode(const std::string &name,
                std::vector<TermNode *> args = std::vector<TermNode *>());
     ~StructNode(void) override;
-    std::string codegen(CompilationContext &cctx) override;
+    void codegen(CompilationContext &cctx) override;
     TermType type() override;
     void print(const std::string &indent = "") override;
 

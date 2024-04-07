@@ -7,7 +7,7 @@ struct ListNode : public ComplexNode
     ListNode(const std::vector<TermNode *> &head,
              TermNode *tail = nullptr);
     ~ListNode(void) override;
-    std::string codegen(CompilationContext &cctx) override;
+    void codegen(CompilationContext &cctx) override;
     TermType type() override;
     void print(const std::string &indent = "") override;
 

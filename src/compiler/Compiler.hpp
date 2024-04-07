@@ -20,6 +20,5 @@ public:
 private:
     CompilationContext m_CCtx;
     Parser m_Parser = Parser(Lexer(std::cin));
-    std::string m_Code = "";
     WAMCode m_WAMCode;
 };

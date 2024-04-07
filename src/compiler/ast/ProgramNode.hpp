@@ -6,7 +6,7 @@
 
 struct ProgramNode : public Node
 {
-    virtual std::string codegen(CompilationContext &cctx);
+    void codegen(CompilationContext &cctx);
     void print(const std::string &indent = "") override;
     std::vector<std::shared_ptr<ClauseNode>> m_Clauses;
 };

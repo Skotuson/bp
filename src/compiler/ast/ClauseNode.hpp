@@ -10,7 +10,7 @@ struct ClauseNode : public Node
 
     ~ClauseNode(void) override;
 
-    std::string codegen(CompilationContext &cctx) override;
+    void codegen(CompilationContext &cctx) override;
     void print(const std::string &indent = "") override;
     std::string m_Head;
     std::vector<TermNode *> m_Args;
