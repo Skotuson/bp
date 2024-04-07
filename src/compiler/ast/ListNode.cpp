@@ -3,9 +3,10 @@
 #include "StructNode.hpp"
 
 #include <queue>
+#include <algorithm>
 
 ListNode::ListNode(const std::vector<TermNode *> &list, TermNode *tail)
-    : ComplexNode(".")
+    : ComplexNode("[]")
 {
     if (tail)
     {
@@ -22,8 +23,11 @@ ListNode::ListNode(const std::vector<TermNode *> &list, TermNode *tail)
 
     if (type() == LIST)
     {
-        std::vector<TermNode*> args = m_Head;
-        m_Head.push_back(tail);
+        std::vector<TermNode *> args = m_Head;
+        if (tail)
+        {
+            args.push_back(tail);
+        }
         for (const auto &arg : args)
         {
             if (arg->type() == STRUCT || arg->type() == LIST)
@@ -43,9 +47,9 @@ ListNode::ListNode(const std::vector<TermNode *> &list, TermNode *tail)
 
 ListNode::~ListNode(void)
 {
-    //for (TermNode *el : m_Head)
-    //    delete el;
-    //delete m_Tail;
+    // for (TermNode *el : m_Head)
+    //     delete el;
+    // delete m_Tail;
 }
 
 void ListNode::codegen(CompilationContext &cctx)
@@ -141,7 +145,6 @@ void ListNode::unifyHead(CompilationContext &cctx)
             terms.push({static_cast<ComplexNode *>(arg), tempVariable});
         }
     }
-
     // Top level code has been generated
     while (!terms.empty())
     {
@@ -167,8 +170,87 @@ void ListNode::unifyHead(CompilationContext &cctx)
 
 void ListNode::unifyRHS(CompilationContext &cctx)
 {
+    if (!hasNestedComplex())
+    {
+        cctx.addInstruction(std::make_shared<PutListInstruction>(name(), m_AvailableReg));
+        std::vector<TermNode *> args = m_Head;
+        args.push_back(m_Tail);
+        for (const auto &arg : args)
+        {
+            TermNode::TermType type = arg->type();
+            if (type == TermNode::CONST)
+            {
+                cctx.addInstruction(std::make_shared<UnifyConstantInstruction>(arg->name()));
+            }
+
+            else if (type == TermNode::VAR)
+            {
+                // Note variable if it appears in complex structure
+                cctx.noteVariable(arg->name());
+                cctx.addVariable(arg->name());
+                cctx.addInstruction(std::make_shared<UnifyVariableInstruction>(arg->name(), cctx.getVarOffset(arg->name())));
+            }
+        }
+    }
+
+    else // hasNestedComplex()
+    {
+        std::vector<ComplexNode *> nested;
+        ProcessedComplex processedComplex;
+        for (const auto &c : m_Complex)
+        {
+            nested.push_back(c.first);
+        }
+
+        // Sort the nested structures from the most nested to the least nested
+        std::sort(nested.begin(), nested.end(), [&](ComplexNode *&a, ComplexNode *&b)
+                  { return m_Complex[a] > m_Complex[b]; });
+
+        // (a) Take the most deeply nested such component
+        for (const auto &n : nested)
+        {
+            // (b) Select a currently unsued argument register Au - the m_AvailableReg variable is the next available register
+            n->m_AvailableReg = m_AvailableReg;
+            // (c) Generate an instruction sequence as in the prior step (put-list or put-structure), but target the result to Au
+            n->unifyArguments(cctx, processedComplex);
+            // (d) Generate a getv to place Au in a specially allocated clause variable (as was done for nested objects in the clause head)
+            // TODO: non collision naming, add some legit name, make a function to remove duplicity
+            std::string tempVariable = "__temp" + std::to_string(cctx.allocate()) + "__";
+            cctx.noteVariable(tempVariable);
+            cctx.addInstruction(std::make_shared<GetVariableInstruction>(tempVariable, m_AvailableReg, cctx.getVarOffset(tempVariable)));
+            processedComplex.insert({n, tempVariable});
+            // (e) Repeat the above process for the next most nested component, expect that for components that refer to nested structures that have already been processed
+        }
+    }
 }
 
 void ListNode::unifyArguments(CompilationContext &cctx, ProcessedComplex &processedComplex)
 {
+    // (c) Generate an instruction sequence as in the prior step (put-list or put-structure), but target the result to Au
+    cctx.addInstruction(std::make_shared<PutListInstruction>(name(), m_AvailableReg));
+    std::vector<TermNode *> args = m_Head;
+    args.push_back(m_Tail);
+    for (const auto &arg : args)
+    {
+        TermType type = arg->type();
+        if (type == TermNode::CONST)
+        {
+            cctx.addInstruction(std::make_shared<UnifyConstantInstruction>(arg->name()));
+        }
+
+        else if (type == TermNode::VAR)
+        {
+            // Note variable if it appears in complex structure
+            cctx.noteVariable(arg->name());
+            cctx.addVariable(arg->name());
+            cctx.addInstruction(std::make_shared<UnifyVariableInstruction>(arg->name(), cctx.getVarOffset(arg->name())));
+        }
+
+        else
+        {
+            // Use a unifyv instruction with the offset of the clause variable into which they were compiled earlier:
+            std::string var = processedComplex[arg];
+            cctx.addInstruction(std::make_shared<UnifyVariableInstruction>(var, cctx.getVarOffset(var)));
+        }
+    }
 }
