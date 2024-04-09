@@ -5,30 +5,21 @@
 #include <queue>
 #include <algorithm>
 
-ListNode::ListNode(const std::vector<TermNode *> &list, TermNode *tail)
+ListNode::ListNode(const std::vector<TermNode *> &head, TermNode *tail)
     : ComplexNode("[]")
 {
     if (tail)
     {
-        m_Head = list;
+        m_Head = head;
         m_Tail = tail;
     }
-    else if (!list.empty())
+    else if (!head.empty())
     {
-        {
-            m_Head = {list.front()};
-            m_Tail = new ListNode({list.begin() + 1, list.end()});
-        }
-    }
+        m_List = head;
+        m_Head = {head.front()};
+        m_Tail = new ListNode({head.begin() + 1, head.end()});
 
-    if (type() == LIST)
-    {
-        std::vector<TermNode *> args = m_Head;
-        if (tail)
-        {
-            args.push_back(tail);
-        }
-        for (const auto &arg : args)
+        for (const auto &arg : m_List)
         {
             if (arg->type() == STRUCT || arg->type() == LIST)
             {
@@ -39,9 +30,9 @@ ListNode::ListNode(const std::vector<TermNode *> &list, TermNode *tail)
                 {
                     m_Complex.insert({complexNode, depth + 1});
                 }
+                m_Complex.insert({cn, 0});
             }
         }
-        m_Complex.insert({this, 0});
     }
 }
 

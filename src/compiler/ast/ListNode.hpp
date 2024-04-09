@@ -19,4 +19,7 @@ struct ListNode : public ComplexNode
 
     std::vector<TermNode *> m_Head;
     TermNode *m_Tail = nullptr;
+
+    // Whole list, used for RHS unification
+    std::vector<TermNode *> m_List;
 };
