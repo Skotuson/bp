@@ -10,6 +10,11 @@ size_t WAMState::SReg(void) const
     return m_Stack.size() - 1;
 }
 
+size_t WAMState::EReg(void) const
+{
+    return m_EnvironmentRegister;
+}
+
 size_t WAMState::TRReg(void) const
 {
     return m_Trail.size();
@@ -148,6 +153,7 @@ std::ostream &operator<<(std::ostream &os, const WAMState &state)
 {
     os << "Mode: " << (state.readMode() ? "READ" : "WRITE") << std::endl;
     os << "SP: " << state.SPReg() << std::endl;
+    os << "E: " << state.m_EnvironmentRegister << std::endl;
     os << state.m_ArgumentRegisters << std::endl;
     os << "HEAP-BOT" << std::endl;
     for (const auto &w : state.m_Heap)
