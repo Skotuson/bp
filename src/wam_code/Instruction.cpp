@@ -86,9 +86,9 @@ void Instruction::clearPDL(WAMState &state, std::shared_ptr<Word> X, std::shared
 
         else if (branch == 7)
         {
-            // TODO: lists
-            std::cout << "NOT IMPLEMENTED CLEAR PDL 7" << std::endl;
-            state.pdlPush({0, 0, 2});
+            size_t XA = std::static_pointer_cast<ListWord>(X)->m_HeapAddress;
+            size_t YA = std::static_pointer_cast<ListWord>(Y)->m_HeapAddress;
+            state.pdlPush({XA, YA, 2});
         }
 
         else if (branch == 8)
