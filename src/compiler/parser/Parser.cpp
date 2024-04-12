@@ -1,19 +1,17 @@
 #include "Parser.hpp"
 
+#include "../ast/ConstNode.hpp"
+#include "../ast/VarNode.hpp"
+
 bool Parser::parse(void)
 {
     m_Lex.get();
-    m_ASTRoot = new ProgramNode();
+    m_ASTRoot = std::make_shared<ProgramNode>();
     Start();
     return true;
 }
 
-Parser::~Parser(void)
-{
-    delete m_ASTRoot;
-}
-
-ProgramNode *Parser::getAST(void)
+std::shared_ptr<ProgramNode> Parser::getAST(void)
 {
     return m_ASTRoot;
 }
@@ -51,14 +49,14 @@ void Parser::Next(void)
     }
 }
 
-ClauseNode *Parser::Predicates(void)
+std::shared_ptr<ClauseNode> Parser::Predicates(void)
 {
     std::string head = m_Lex.identifier();
     switch (m_Lex.peek())
     {
     case TOK_PERIOD:
     case TOK_IF:
-        return new ClauseNode(head, std::vector<TermNode *>(), Predicate());
+        return std::make_shared<ClauseNode>(head, std::vector<TermNode *>(), Predicate());
     case TOK_LPAR:
         m_Lex.match(TOK_LPAR);
         return Pred(head);
@@ -67,7 +65,7 @@ ClauseNode *Parser::Predicates(void)
     }
 }
 
-ClauseNode *Parser::Pred(const std::string &head)
+std::shared_ptr<ClauseNode> Parser::Pred(const std::string &head)
 {
     std::vector<TermNode *> args;
     std::vector<GoalNode *> body;
@@ -81,7 +79,7 @@ ClauseNode *Parser::Pred(const std::string &head)
         args = Terms();
         m_Lex.match(TOK_RPAR);
         body = Predicate();
-        return new ClauseNode(head, args, body);
+        return std::make_shared<ClauseNode>(head, args, body);
     default:
         throw std::runtime_error("Pred Parsing error");
     }
@@ -117,8 +115,9 @@ std::vector<GoalNode *> Parser::Body(void)
         compound = BodyLower();
         if (!(term = BodyTerm()))
             body.push_back(compound);
-        //TODO: check this
-        else delete compound;
+        // TODO: check this
+        else
+            delete compound;
         // TODO: delete for now so it doesn't leak
         delete term;
         bodyCont = BodyCont();
@@ -234,7 +233,7 @@ ListNode *Parser::ListInner(void)
         return new ListNode(list);
     case TOK_ATOM_LOWER:
     case TOK_CONST:
-    case TOK_LPAR:
+    case TOK_LSPAR:
     case TOK_VAR:
         list = Terms();
         // Cons is nullptr if the list is not being decomposed into [H|T]

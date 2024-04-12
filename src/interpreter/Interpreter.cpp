@@ -16,7 +16,8 @@ bool Interpreter::run(void)
     std::string query;
     std::getline(std::cin >> std::ws, query);
 
-    m_Renderer.clearScreen(std::cout);
+    if (m_Renderer.step())
+        m_Renderer.clearScreen(std::cout);
 
     // TODO: will add as an instruction
     if (query == "halt.")
@@ -30,6 +31,8 @@ bool Interpreter::run(void)
     queryCompiler.compile();
     WAMCode queryCode = queryCompiler.dump();
 
+    m_State.m_QueryVariables = queryCode.getVariables();
+
     queryCode.popInstructions(1);
 
     m_Program.addLabel(queryLabel);
@@ -41,39 +44,46 @@ bool Interpreter::run(void)
     m_State.m_ProgramCounter = m_Program.getLabelAddress(queryLabel);
 
     // TODO: handle emptying arg regs after sucessfully completing a goal (multiple goals in conjuction in a query)
-    // Maybe delete them from arg reg after sucessfuly unifying/.... (have to check whether possible)
-    Instruction *instr;
-    bool skip = true;
+    // Code as a different clause (different arity, e.g. bigger/1 and bigger/0)
+    std::shared_ptr<Instruction> instr;
     while ((instr = fetch()) && !m_State.m_FailFlag)
     {
-        if (!skip)
+        if (m_Renderer.step())
         {
             std::string com = "";
             std::getline(std::cin, com);
-
-            if (com == "state")
-                std::cout << m_State << std::endl;
-            if (com == "run")
-                skip = true;
+            m_Renderer.clearScreen(std::cout);
+            m_Renderer.renderCode(std::cout, m_Program, m_State.m_ProgramCounter - 1);
+            std::cout << m_State << std::endl;
+            std::cout << ANSI_RETURN_CURSOR;
         }
-
-        m_Renderer.clearScreen(std::cout);
-        m_Renderer.renderCode(std::cout, m_Program, m_State.m_ProgramCounter - 1);
-        std::cout << m_State << std::endl;
-        std::cout << ANSI_RETURN_CURSOR;
 
         execute(instr);
     }
 
-    m_Renderer.clearScreen(std::cout);
+    if (m_Renderer.step())
+    {
+        m_Renderer.clearScreen(std::cout);
+    }
 
     std::cout << m_State << std::endl;
 
     if (m_State.m_FailFlag)
+    {
         std::cout << ANSI_COLOR_RED << "false." << ANSI_COLOR_DEFAULT << std::endl;
+    }
     else
     {
         std::cout << ANSI_COLOR_GREEN << "true." << ANSI_COLOR_DEFAULT << std::endl;
+        for (const auto &v : m_State.m_QueryVariables)
+        {
+            std::string value = m_State.variableToString(0, v.first);
+            // TODO: ugly hack probably
+            if (v.second != value)
+            {
+                std::cout << v.second << " = " << value << std::endl;
+            }
+        }
     }
 
     // Remove the query code
@@ -84,12 +94,19 @@ bool Interpreter::run(void)
     return true;
 }
 
-Instruction *Interpreter::fetch(void)
+std::shared_ptr<Instruction> Interpreter::fetch(void)
 {
+    // if (m_State.m_ProgramCounter == BAD_ADDRESS)
+    //{
+    //     m_State.m_FailFlag = true;
+    //     return nullptr;
+    // }
     return m_Program.getInstruction(m_State.m_ProgramCounter++);
 }
 
-void Interpreter::execute(Instruction *instr)
+void Interpreter::execute(std::shared_ptr<Instruction> instr)
 {
+    if (!m_Renderer.step())
+        std::cout << ANSI_COLOR_B_GREEN << *instr << ANSI_COLOR_DEFAULT << std::endl;
     instr->execute(m_State);
 }

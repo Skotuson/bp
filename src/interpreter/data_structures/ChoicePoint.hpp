@@ -1,13 +1,12 @@
 #pragma once
 
 #include "ArgumentRegisters.hpp"
-#include "Word.hpp"
+#include "word/Word.hpp"
 #include <vector>
 
 struct ChoicePoint
 {
     ChoicePoint(const ArgumentRegisters &argReg, size_t bce, size_t bcp, size_t bb, size_t btr, size_t bh, size_t fa);
-    ~ChoicePoint(void);
 
     friend std::ostream &operator<<(std::ostream &os, const ChoicePoint &cp);
 
@@ -18,5 +17,5 @@ struct ChoicePoint
     size_t m_BTR; // Backtrack Trail Top
     size_t m_BH; // Backtrack Heap Top
     size_t m_FA;  // Failure Address
-    std::vector<Word *> m_Variables;
+    std::vector<std::shared_ptr<Word>> m_Variables;
 };

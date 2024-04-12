@@ -1,7 +1,9 @@
 #pragma once
 
 #include "../lexer/Lexer.hpp"
-#include "../ast/AST.hpp"
+#include "../ast/ListNode.hpp"
+#include "../ast/StructNode.hpp"
+#include "../ast/ProgramNode.hpp"
 
 class Parser
 {
@@ -11,11 +13,9 @@ public:
     {
     }
 
-    ~Parser(void);
-
     bool parse(void);
 
-    ProgramNode *getAST(void);
+    std::shared_ptr<ProgramNode> getAST(void);
 
     void printAST(void);
 
@@ -23,8 +23,8 @@ private:
     //--------RECURSIVE DESCENT METHODS--------//
     void Start(void);
     void Next(void);
-    ClauseNode *Predicates(void);
-    ClauseNode *Pred(const std::string &head);
+    std::shared_ptr<ClauseNode> Predicates(void);
+    std::shared_ptr<ClauseNode> Pred(const std::string &head);
     std::vector<GoalNode *> Predicate(void);
     std::vector<GoalNode *> Body(void);
     StructNode *BodyLower(void);
@@ -38,5 +38,5 @@ private:
     TermNode *TermLower(void);
     //-------------CLASS VARIABLES-------------//
     Lexer m_Lex;
-    ProgramNode *m_ASTRoot;
+    std::shared_ptr<ProgramNode> m_ASTRoot;
 };

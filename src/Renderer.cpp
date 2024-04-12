@@ -19,3 +19,13 @@ void Renderer::clearScreen(std::ostream &os)
 {
     os << ANSI_CLEAR_SCREEN << ANSI_CLEAR_SCREEN_BUFFER << ANSI_RETURN_CURSOR;
 }
+
+bool Renderer::step(void)
+{
+    return m_Step;
+}
+
+void Renderer::setStepper(bool step)
+{
+    m_Step = step;
+}

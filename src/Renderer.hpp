@@ -30,4 +30,9 @@ class Renderer
 public:
     void renderCode(std::ostream &os, const WAMCode &code, size_t pc);
     void clearScreen(std::ostream &os);
+
+    bool step(void);
+    void setStepper(bool step);
+private:
+    bool m_Step = false;
 };
