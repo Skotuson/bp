@@ -87,6 +87,7 @@ void Instruction::clearPDL(WAMState &state, std::shared_ptr<Word> X, std::shared
         else if (branch == 7)
         {
             // TODO: lists
+            std::cout << "NOT IMPLEMENTED CLEAR PDL 7" << std::endl;
             state.pdlPush({0, 0, 2});
         }
 
@@ -559,7 +560,7 @@ void PutVariableInstruction::print(std::ostream &os) const
 
 // TODO: name is redundant here
 PutListInstruction::PutListInstruction(const std::string &name, size_t ArgumentRegister)
-    : PutInstruction(m_Name, ArgumentRegister)
+    : PutInstruction(name, ArgumentRegister)
 {
 }
 
