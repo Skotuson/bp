@@ -3,6 +3,7 @@
 #include "StructNode.hpp"
 
 #include <queue>
+#include <cassert>
 #include <algorithm>
 
 ListNode::ListNode(const std::vector<TermNode *> &head, TermNode *tail)
@@ -13,30 +14,33 @@ ListNode::ListNode(const std::vector<TermNode *> &head, TermNode *tail)
         m_Head = head;
         m_Tail = tail;
     }
+
     else if (!head.empty())
     {
-        m_List = head;
         m_Head = {head.front()};
         m_Tail = new ListNode({head.begin() + 1, head.end()});
+    }
 
-        for (const auto &arg : m_List)
+    m_List = m_Head;
+    if (m_Tail)
+    {
+        m_List.push_back(m_Tail);
+    }
+    
+    for (const auto &arg : m_List)
+    {
+        if (arg->type() == STRUCT || arg->type() == LIST)
         {
-            if (arg->type() == STRUCT || arg->type() == LIST)
+            ComplexNode *cn = static_cast<ComplexNode *>(arg);
+            NestedPairing p = cn->getNestedComplex();
+            // Get the information about more nested terms, increase their nested depth by one
+            for (const auto &[complexNode, depth] : p)
             {
-                ComplexNode *cn = static_cast<ComplexNode *>(arg);
-                NestedPairing p = cn->getNestedComplex();
-                // Get the information about more nested terms, increase their nested depth by one
-                for (const auto &[complexNode, depth] : p)
-                {
-                    m_Complex.insert({complexNode, depth + 1});
-                }
-                if(arg->type() == LIST)
-                {
-                    m_Complex.insert({cn, 1});
-                }
+                m_Complex.insert({complexNode, depth + 1});
             }
         }
     }
+    m_Complex.insert({this, 0});
 }
 
 ListNode::~ListNode(void)
