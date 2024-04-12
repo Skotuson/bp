@@ -30,7 +30,10 @@ ListNode::ListNode(const std::vector<TermNode *> &head, TermNode *tail)
                 {
                     m_Complex.insert({complexNode, depth + 1});
                 }
-                m_Complex.insert({cn, 0});
+                if(arg->type() == LIST)
+                {
+                    m_Complex.insert({cn, 1});
+                }
             }
         }
     }
@@ -164,9 +167,7 @@ void ListNode::unifyRHS(CompilationContext &cctx)
     if (!hasNestedComplex())
     {
         cctx.addInstruction(std::make_shared<PutListInstruction>(name(), m_AvailableReg));
-        std::vector<TermNode *> args = m_Head;
-        args.push_back(m_Tail);
-        for (const auto &arg : args)
+        for (const auto &arg : m_List)
         {
             TermNode::TermType type = arg->type();
             if (type == TermNode::CONST)
@@ -219,9 +220,7 @@ void ListNode::unifyArguments(CompilationContext &cctx, ProcessedComplex &proces
 {
     // (c) Generate an instruction sequence as in the prior step (put-list or put-structure), but target the result to Au
     cctx.addInstruction(std::make_shared<PutListInstruction>(name(), m_AvailableReg));
-    std::vector<TermNode *> args = m_Head;
-    args.push_back(m_Tail);
-    for (const auto &arg : args)
+    for (const auto &arg : m_List)
     {
         TermType type = arg->type();
         if (type == TermNode::CONST)
