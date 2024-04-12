@@ -487,7 +487,7 @@ std::shared_ptr<Instruction> GetVariableInstruction::clone(void)
 void GetVariableInstruction::execute(WAMState &state)
 {
     std::shared_ptr<Word> X = state.m_ArgumentRegisters.dereferenceRegister(m_ArgumentRegister),
-                          Y = state.stackTop()->m_Variables[m_Offset];
+                          Y = state.getChoicePoint(state.EReg())->m_Variables[m_Offset];
     clearPDL(state, X, Y);
 }
 
