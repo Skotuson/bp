@@ -9,7 +9,7 @@ ListWord::ListWord(size_t heapAddress, const std::vector<std::shared_ptr<Word>> 
 
 void ListWord::print(std::ostream &os) const
 {
-    os << "list";
+    os << "list -> " << m_HeapAddress;
 }
 
 std::shared_ptr<Word> ListWord::clone(void)
