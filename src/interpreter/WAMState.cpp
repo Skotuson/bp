@@ -153,7 +153,8 @@ std::ostream &operator<<(std::ostream &os, const WAMState &state)
 {
     os << "Mode: " << (state.readMode() ? "READ" : "WRITE") << std::endl;
     os << "SP: " << state.SPReg() << std::endl;
-    os << "E: " << state.m_EnvironmentRegister << std::endl;
+    os << "E: " << state.EReg() << std::endl;
+    os << "B: " << state.m_BacktrackRegister << std::endl;
     os << state.m_ArgumentRegisters << std::endl;
     os << "HEAP-BOT" << std::endl;
     for (const auto &w : state.m_Heap)
