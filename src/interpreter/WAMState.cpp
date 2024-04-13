@@ -161,14 +161,14 @@ std::ostream &operator<<(std::ostream &os, const WAMState &state)
     os << "HEAP-BOT" << std::endl;
     for (const auto &w : state.m_Heap)
     {
-        os << *w << std::endl;
+        os << "\t" << *w << std::endl;
     }
     os << "HEAP-TOP" << std::endl;
     os << "STACK-BOT" << std::endl;
-    size_t n = 1;
+    size_t n = 0;
     for (const auto &cp : state.m_Stack)
     {
-        std::cout << "Stack pos: " << n++ << std::endl;
+        os << "Environment: " << n++ << std::endl;
         os << *cp << std::endl;
     }
     os << "STACK-TOP" << std::endl;
@@ -177,7 +177,7 @@ std::ostream &operator<<(std::ostream &os, const WAMState &state)
     n = 1;
     for (const auto &w : state.m_Trail)
     {
-        os << *w << std::endl;
+        os << "\t" << *w << std::endl;
     }
     os << "TRAIL-TOP";
     return os;
