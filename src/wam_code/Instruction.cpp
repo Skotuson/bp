@@ -222,7 +222,8 @@ void BacktrackInstruction::execute(WAMState &state)
 
     fail(state);
 
-    state.stackPop(); // Discard the choice point (last clause in the chain failed)
+    // Discard the choice point (last clause in the chain failed)
+    state.stackPop();
 }
 
 void BacktrackInstruction::print(std::ostream &os) const
