@@ -155,6 +155,8 @@ std::ostream &operator<<(std::ostream &os, const WAMState &state)
     os << "SP: " << state.SPReg() << std::endl;
     os << "E: " << state.EReg() << std::endl;
     os << "B: " << state.m_BacktrackRegister << std::endl;
+    os << "CP: " << state.m_ContinuationPointer << std::endl;
+    os << "PC: " << state.m_ProgramCounter << std::endl;
     os << state.m_ArgumentRegisters << std::endl;
     os << "HEAP-BOT" << std::endl;
     for (const auto &w : state.m_Heap)
