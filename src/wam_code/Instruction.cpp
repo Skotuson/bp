@@ -343,7 +343,7 @@ std::shared_ptr<Instruction> ReturnInstruction::clone(void)
 
 void ReturnInstruction::execute(WAMState &state)
 {
-    std::shared_ptr<ChoicePoint> cp = state.getChoicePoint(state.m_EnvironmentRegister);
+    std::shared_ptr<ChoicePoint> cp = state.getChoicePoint(state.EReg());
     if (cp)
     {
         // Caller's return address
@@ -556,7 +556,7 @@ std::shared_ptr<Instruction> PutVariableInstruction::clone(void)
 
 void PutVariableInstruction::execute(WAMState &state)
 {
-    std::shared_ptr<ChoicePoint> cp = state.getChoicePoint(state.m_EnvironmentRegister);
+    std::shared_ptr<ChoicePoint> cp = state.getChoicePoint(state.EReg());
     std::shared_ptr<Word> word = cp->m_Variables[m_Offset]->dereference();
     if (word->tag() == TAG::VARIABLE)
     {
@@ -693,7 +693,7 @@ std::shared_ptr<Instruction> UnifyVariableInstruction::clone(void)
 
 void UnifyVariableInstruction::execute(WAMState &state)
 {
-    std::shared_ptr<Word> w = state.getChoicePoint(state.m_EnvironmentRegister)->m_Variables[m_Offset]->dereference();
+    std::shared_ptr<Word> w = state.getChoicePoint(state.EReg())->m_Variables[m_Offset]->dereference();
     if (!state.readMode())
     {
         state.heapPush(w->clone());
@@ -718,7 +718,7 @@ std::shared_ptr<Instruction> CutInstruction::clone(void)
 
 void CutInstruction::execute(WAMState &state)
 {
-    state.m_BacktrackRegister = state.getChoicePoint(state.m_EnvironmentRegister)->m_BB;
+    state.m_BacktrackRegister = state.getChoicePoint(state.EReg())->m_BB;
 }
 
 void CutInstruction::print(std::ostream &os) const
