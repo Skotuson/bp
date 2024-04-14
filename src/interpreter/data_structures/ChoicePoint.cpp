@@ -25,12 +25,12 @@ std::ostream &operator<<(std::ostream &os, const ChoicePoint &cp)
   os << "START-ARG-REGS" << std::endl;
   os << cp.m_ArgumentRegisters << std::endl;
   os << "END-ARG-REGS" << std::endl;
-  os << "BCP:" << format(cp.m_BCP) << std::endl;
-  os << "BCE:" << format(cp.m_BCE) << std::endl;
-  os << "BB:" << format(cp.m_BB) << std::endl;
-  os << "BTR:" << format(cp.m_BTR) << std::endl;
-  os << "BH:" << format(cp.m_BH) << std::endl;
-  os << "FA:" << format(cp.m_FA) << std::endl;
+  os << "BCP:" << format(cp.m_BCP);
+  os << " BCE:" << format(cp.m_BCE);
+  os << " BB:" << format(cp.m_BB);
+  os << " BTR:" << format(cp.m_BTR);
+  os << " BH:" << format(cp.m_BH);
+  os << " FA:" << format(cp.m_FA) << std::endl;
   for (size_t i = 0; i < cp.m_Variables.size(); i++)
   {
     os << "\t" << "[" << &cp.m_Variables[i] << "]" << *cp.m_Variables[i] << std::endl;
