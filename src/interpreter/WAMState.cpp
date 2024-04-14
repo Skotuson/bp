@@ -1,5 +1,7 @@
 #include "WAMState.hpp"
 
+#include <limits>
+
 void WAMState::fillRegister(std::shared_ptr<Word> word, size_t reg)
 {
     m_ArgumentRegisters.fillRegister(word, reg);
@@ -7,7 +9,7 @@ void WAMState::fillRegister(std::shared_ptr<Word> word, size_t reg)
 
 size_t WAMState::SReg(void) const
 {
-    return m_Stack.size() - 1;
+    return m_Stack.size();
 }
 
 size_t WAMState::EReg(void) const
@@ -151,12 +153,17 @@ std::string WAMState::variableToString(size_t choicePoint, size_t offset)
 
 std::ostream &operator<<(std::ostream &os, const WAMState &state)
 {
-    os << "Mode: " << (state.readMode() ? "READ" : "WRITE") << std::endl;
-    os << "SP: " << state.SPReg() << std::endl;
-    os << "E: " << state.EReg() << std::endl;
-    os << "B: " << state.m_BacktrackRegister << std::endl;
-    os << "CP: " << state.m_ContinuationPointer << std::endl;
-    os << "PC: " << state.m_ProgramCounter << std::endl;
+    auto format = [](size_t n)
+    {
+        return n == std::numeric_limits<size_t>::max() ? "xxx" : std::to_string(n);
+    };
+
+    os << "Mode:" << (state.readMode() ? "READ" : "WRITE");
+    os << " SP:" << state.SPReg();
+    os << " E:" << format(state.EReg());
+    os << " B:" << format(state.m_BacktrackRegister);
+    os << " CP:" << format(state.m_ContinuationPointer);
+    os << " PC:" << format(state.m_ProgramCounter) << std::endl;
     os << state.m_ArgumentRegisters << std::endl;
     os << "HEAP-BOT" << std::endl;
     for (const auto &w : state.m_Heap)
