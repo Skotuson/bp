@@ -17,6 +17,11 @@ size_t WAMState::EReg(void) const
     return m_EnvironmentRegister;
 }
 
+size_t WAMState::BReg(void) const
+{
+    return m_BacktrackRegister;
+}
+
 size_t WAMState::TRReg(void) const
 {
     return m_Trail.size();

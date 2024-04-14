@@ -25,6 +25,7 @@ struct WAMState
 
     size_t SReg(void) const;
     size_t EReg(void) const;
+    size_t BReg(void) const;
     size_t TRReg(void) const;
     size_t PDLReg(void) const;
     size_t SPReg(void) const;
