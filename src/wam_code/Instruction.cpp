@@ -221,7 +221,7 @@ void BacktrackInstruction::execute(WAMState &state)
     std::shared_ptr<ChoicePoint> cp = state.getChoicePoint(state.m_BacktrackRegister);
     if (cp)
     {
-        // E register is experimental
+        // TODO: E register is experimental
         state.m_EnvironmentRegister = cp->m_BCE;
         state.m_BacktrackRegister = cp->m_BB;
     }
@@ -247,15 +247,16 @@ void FailInstruction::execute(WAMState &state)
     std::shared_ptr<ChoicePoint> cp = state.getChoicePoint(state.m_BacktrackRegister);
     if (cp)
     {
-        // Reload arg registers
+        // Reload argument registers
         state.m_ArgumentRegisters = cp->m_ArgumentRegisters;
 
-        // Reset heap top
+        // Reset heap
         while (state.HReg() != cp->m_BH)
         {
             state.heapPop();
         }
 
+        // Reset all variables instantiated since choice point was built
         while (state.TRReg() != cp->m_BTR)
         {
             std::shared_ptr<VariableWord> popped = state.trailTop();
@@ -263,6 +264,7 @@ void FailInstruction::execute(WAMState &state)
             *popped->ref() = popped->clone();
             state.trailPop();
         }
+        // Branch to next rule
         state.m_ProgramCounter = cp->m_FA;
     }
     // TODO: Experimental (check when choice point stack is empty)
@@ -289,7 +291,7 @@ std::shared_ptr<Instruction> AllocateInstruction::clone(void)
 void AllocateInstruction::execute(WAMState &state)
 {
     std::shared_ptr<ChoicePoint> cp = state.stackTop();
-    // Pre-Alloc space
+    // Allocate new environment to current choice point (Initialize all variables).
     cp->m_Variables.resize(m_N, nullptr);
     for (size_t i = 0; i < m_N; i++)
     {
@@ -302,8 +304,8 @@ void AllocateInstruction::execute(WAMState &state)
             cp->m_Variables[i] = std::make_shared<VariableWord>(&cp->m_Variables[i]);
         }
     }
-
-    state.m_EnvironmentRegister = state.m_BacktrackRegister;
+    // Set E to this choice point
+    state.m_EnvironmentRegister = state.BReg();
 }
 
 void AllocateInstruction::print(std::ostream &os) const
@@ -325,6 +327,7 @@ void CallInstruction::execute(WAMState &state)
 {
     // Program counter already points to another instruction
     state.m_ContinuationPointer = state.m_ProgramCounter;
+    // Branch to L (m_Address), with return address in CP.
     state.m_ProgramCounter = m_Address;
 }
 
@@ -343,11 +346,14 @@ void ReturnInstruction::execute(WAMState &state)
     std::shared_ptr<ChoicePoint> cp = state.getChoicePoint(state.m_EnvironmentRegister);
     if (cp)
     {
+        // Caller's return address
         state.m_ProgramCounter = cp->m_BCP;
+        // Caller's environment
         state.m_EnvironmentRegister = cp->m_BCE;
     }
     else
     {
+        // TODO: mainly debug 
         throw std::runtime_error("Invalid stack access");
     }
     // std::cout << state << std::endl;
