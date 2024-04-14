@@ -51,6 +51,7 @@ void Instruction::clearPDL(WAMState &state, std::shared_ptr<Word> X, std::shared
             state.trailPush(y);
             // Bind them together
             //*y->ref() = X;
+            // x->bind();
             y->bind(X);
         }
 
@@ -165,16 +166,18 @@ void BranchInstruction::setAddress(size_t address)
 
 void MarkInstruction::execute(WAMState &state)
 {
+    // Build a new choice point up to the enviornment
     auto ncp = std::make_shared<ChoicePoint>(state.m_ArgumentRegisters,
-                                             state.m_EnvironmentRegister,
+                                             state.EReg(),
                                              state.m_ContinuationPointer,
-                                             state.m_BacktrackRegister,
+                                             state.BReg(),
                                              state.TRReg(),
                                              state.HReg(),
                                              state.m_ProgramCounter);
     state.stackPush(ncp);
     // Set E and B registers
-    state.m_BacktrackRegister = state.m_EnvironmentRegister = state.SReg();
+    // Make it a current one
+    state.m_BacktrackRegister = state.m_EnvironmentRegister = state.SReg() - 1;
     // std::cout << state << std::endl;
 }
 
@@ -195,7 +198,8 @@ std::shared_ptr<Instruction> RetryMeElseInstruction::clone(void)
 
 void RetryMeElseInstruction::execute(WAMState &state)
 {
-    std::shared_ptr<ChoicePoint> cp = state.stackTop();
+    // Set next clause to the L (m_Address)
+    std::shared_ptr<ChoicePoint> cp = state.getChoicePoint(state.BReg());
     if (cp)
     {
         cp->m_FA = m_Address;
@@ -217,6 +221,8 @@ void BacktrackInstruction::execute(WAMState &state)
     std::shared_ptr<ChoicePoint> cp = state.getChoicePoint(state.m_BacktrackRegister);
     if (cp)
     {
+        // E register is experimental
+        state.m_EnvironmentRegister = cp->m_BCE;
         state.m_BacktrackRegister = cp->m_BB;
     }
 
@@ -339,6 +345,10 @@ void ReturnInstruction::execute(WAMState &state)
     {
         state.m_ProgramCounter = cp->m_BCP;
         state.m_EnvironmentRegister = cp->m_BCE;
+    }
+    else
+    {
+        throw std::runtime_error("Invalid stack access");
     }
     // std::cout << state << std::endl;
 }
