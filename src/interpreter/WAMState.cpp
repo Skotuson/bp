@@ -170,27 +170,26 @@ std::ostream &operator<<(std::ostream &os, const WAMState &state)
     os << " CP:" << format(state.m_ContinuationPointer);
     os << " PC:" << format(state.m_ProgramCounter) << std::endl;
     os << state.m_ArgumentRegisters << std::endl;
-    os << "HEAP-BOT" << std::endl;
-    for (const auto &w : state.m_Heap)
-    {
-        os << "\t" << *w << std::endl;
-    }
-    os << "HEAP-TOP" << std::endl;
-    os << "STACK-BOT" << std::endl;
-    size_t n = 0;
-    for (const auto &cp : state.m_Stack)
-    {
-        os << "Environment: " << n++ << std::endl;
-        os << *cp << std::endl;
-    }
-    os << "STACK-TOP" << std::endl;
-    os << "TRAIL-BOT" << std::endl;
 
-    n = 1;
-    for (const auto &w : state.m_Trail)
+    // Print heap
+    for (size_t i = 0; i < state.m_Heap.size(); i++)
     {
-        os << "\t" << *w << std::endl;
+        os << "\t"
+           << "H" << i << " " << *(state.m_Heap[i]) << std::endl;
     }
-    os << "TRAIL-TOP";
+
+    // Print stack
+    for (size_t i = 0; i < state.m_Stack.size(); i++)
+    {
+        os << "Environment: " << i << std::endl;
+        os << *(state.m_Stack[i]) << std::endl;
+    }
+
+    // Print trail
+    for (size_t i = 0; i < state.m_Trail.size(); i++)
+    {
+        os << "\t"
+           << "TR" << i << " " << *(state.m_Trail[i]) << std::endl;
+    }
     return os;
 }
