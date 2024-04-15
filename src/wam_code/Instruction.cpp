@@ -50,8 +50,8 @@ void Instruction::clearPDL(WAMState &state, std::shared_ptr<Word> X, std::shared
             state.trailPush(x);
             state.trailPush(y);
             // Bind them together
-            //*y->ref() = X;
-            // x->bind();
+            // TODO: bind both
+            x->bind();
             y->bind(X);
         }
 
