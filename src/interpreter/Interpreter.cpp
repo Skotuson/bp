@@ -45,47 +45,60 @@ bool Interpreter::run(void)
 
     // TODO: handle emptying arg regs after sucessfully completing a goal (multiple goals in conjuction in a query)
     // Code as a different clause (different arity, e.g. bigger/1 and bigger/0)
-    std::shared_ptr<Instruction> instr;
-    while ((instr = fetch()) && !m_State.m_FailFlag)
+    while (42)
     {
+        std::shared_ptr<Instruction> instr;
+        while ((instr = fetch()) && !m_State.m_FailFlag)
+        {
+            if (m_Renderer.step())
+            {
+                m_Renderer.clearScreen(std::cout);
+                m_Renderer.renderCode(std::cout, m_Program, m_State.m_ProgramCounter - 1);
+                std::cout << m_State << std::endl;
+                std::cout << ANSI_RETURN_CURSOR;
+                std::string com = "";
+                std::getline(std::cin, com);
+            }
+
+            execute(instr);
+        }
+
         if (m_Renderer.step())
         {
+            m_Renderer.clearScreen(std::cout);
+        }
+
+        std::cout << m_State << std::endl;
+
+        if (m_State.m_FailFlag)
+        {
+            std::cout << ANSI_COLOR_RED << "false." << ANSI_COLOR_DEFAULT << std::endl;
+            break;
+        }
+        else
+        {
+            std::cout << ANSI_COLOR_GREEN << "true." << ANSI_COLOR_DEFAULT << std::endl;
+            for (const auto &v : m_State.m_QueryVariables)
+            {
+                std::string value = m_State.variableToString(0, v.first);
+                // TODO: ugly hack probably
+                if (v.second != value)
+                {
+                    std::cout << v.second << " = " << value << std::endl;
+                }
+            }
+
             std::string com = "";
             std::getline(std::cin, com);
-            m_Renderer.clearScreen(std::cout);
-            m_Renderer.renderCode(std::cout, m_Program, m_State.m_ProgramCounter - 1);
-            std::cout << m_State << std::endl;
-            std::cout << ANSI_RETURN_CURSOR;
-        }
-
-        execute(instr);
-    }
-
-    if (m_Renderer.step())
-    {
-        m_Renderer.clearScreen(std::cout);
-    }
-
-    std::cout << m_State << std::endl;
-
-    if (m_State.m_FailFlag)
-    {
-        std::cout << ANSI_COLOR_RED << "false." << ANSI_COLOR_DEFAULT << std::endl;
-    }
-    else
-    {
-        std::cout << ANSI_COLOR_GREEN << "true." << ANSI_COLOR_DEFAULT << std::endl;
-        for (const auto &v : m_State.m_QueryVariables)
-        {
-            std::string value = m_State.variableToString(0, v.first);
-            // TODO: ugly hack probably
-            if (v.second != value)
+            if (com != ";")
             {
-                std::cout << v.second << " = " << value << std::endl;
+                break;
             }
+            m_State.m_EnvironmentRegister = m_State.getChoicePoint(m_State.BReg())->m_BCE;
+            std::shared_ptr<FailInstruction> fi = std::make_shared<FailInstruction>();
+            fi->execute(m_State);
         }
     }
-
     // Remove the query code
     m_Program.popInstructions(queryCode.m_Program.size());
 
