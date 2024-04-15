@@ -93,12 +93,6 @@ void StructNode::print(const std::string &indent)
         for (const auto &arg : m_Args)
             arg->print(indent + " ");
     }
-
-    // for (const auto &[strct, depth] : m_Complex)
-    //{
-    //     std::cout << indent << strct->name() << " " << depth << std::endl;
-    // }
-
     std::cout << indent << "=======[End StructNode]======" << std::endl;
 }
 
