@@ -56,9 +56,8 @@ std::ostream &operator<<(std::ostream &os, const ArgumentRegisters &argReg)
     {
         if (i != 1)
             os << std::endl;
-        os << "A" << i << ": ";
         auto reg = argReg.dereferenceRegister(i);
-        os << "\t";
+        os << "\tA" << i << ": ";
         if (reg)
             reg->print(os);
         else
