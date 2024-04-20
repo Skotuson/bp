@@ -20,7 +20,6 @@ public:
     void bind(void);
     void bind(std::shared_ptr<Word> w);
     void unbind(void);
-    void setRef(std::shared_ptr<Word> *ref);
     std::shared_ptr<Word> *ref(void);
     bool bound(void) const;
 

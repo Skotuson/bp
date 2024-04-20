@@ -65,11 +65,6 @@ void VariableWord::unbind(void)
     m_Bound = false;
 }
 
-void VariableWord::setRef(std::shared_ptr<Word> *ref)
-{
-    m_Ref = ref;
-}
-
 std::shared_ptr<Word> VariableWord::dereference(void)
 {
     return std::shared_ptr<Word>(*m_Ref);
