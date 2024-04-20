@@ -165,7 +165,7 @@ std::ostream &operator<<(std::ostream &os, const WAMState &state)
         return n == std::numeric_limits<size_t>::max() ? "xxx" : std::to_string(n);
     };
 
-    os << "Mode:" << (state.readMode() ? "READ" : "WRITE");
+    os << ANSI_COLOR_B_MAGENTA << "Mode:" << (state.readMode() ? "READ" : "WRITE") << ANSI_COLOR_DEFAULT;
     os << " SP:" << state.SPReg();
     os << " E:" << format(state.EReg());
     os << " B:" << format(state.m_BacktrackRegister);
