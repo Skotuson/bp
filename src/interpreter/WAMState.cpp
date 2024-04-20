@@ -1,5 +1,7 @@
 #include "WAMState.hpp"
 
+#include "../Renderer.hpp"
+
 #include <limits>
 
 void WAMState::fillRegister(std::shared_ptr<Word> word, size_t reg)
@@ -169,7 +171,7 @@ std::ostream &operator<<(std::ostream &os, const WAMState &state)
     os << " B:" << format(state.m_BacktrackRegister);
     os << " CP:" << format(state.m_ContinuationPointer);
     os << " PC:" << format(state.m_ProgramCounter) << std::endl;
-    os << state.m_ArgumentRegisters << std::endl;
+    os << ANSI_COLOR_B_YELLOW << state.m_ArgumentRegisters << ANSI_COLOR_DEFAULT << std::endl;
 
     // Print heap
     for (size_t i = 0; i < state.m_Heap.size(); i++)
