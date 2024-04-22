@@ -94,7 +94,7 @@ bool Interpreter::run(void)
             {
                 break;
             }
-            m_State.m_EnvironmentRegister = m_State.getChoicePoint(m_State.BReg())->m_BCE;
+            m_State.m_EnvironmentRegister = m_State.BReg();
             std::shared_ptr<FailInstruction> fi = std::make_shared<FailInstruction>();
             fi->execute(m_State);
         }
