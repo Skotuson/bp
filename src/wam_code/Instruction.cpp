@@ -196,7 +196,7 @@ std::shared_ptr<Instruction> RetryMeElseInstruction::clone(void)
 void RetryMeElseInstruction::execute(WAMState &state)
 {
     // Set next clause to the L (m_Address)
-    std::shared_ptr<ChoicePoint> cp = state.getChoicePoint(state.BReg());
+    std::shared_ptr<ChoicePoint> cp = state.stackAt(state.BReg());
     if (cp)
     {
         cp->m_FA = m_Address;
@@ -215,7 +215,7 @@ std::shared_ptr<Instruction> BacktrackInstruction::clone(void)
 
 void BacktrackInstruction::execute(WAMState &state)
 {
-    std::shared_ptr<ChoicePoint> cp = state.getChoicePoint(state.m_BacktrackRegister);
+    std::shared_ptr<ChoicePoint> cp = state.stackAt(state.m_BacktrackRegister);
     if (cp)
     {
         state.m_BacktrackRegister = cp->m_BB;
@@ -239,7 +239,7 @@ std::shared_ptr<Instruction> FailInstruction::clone(void)
 
 void FailInstruction::execute(WAMState &state)
 {
-    std::shared_ptr<ChoicePoint> cp = state.getChoicePoint(state.m_BacktrackRegister);
+    std::shared_ptr<ChoicePoint> cp = state.stackAt(state.m_BacktrackRegister);
     if (cp)
     {
         // Reload argument registers
@@ -338,7 +338,7 @@ std::shared_ptr<Instruction> ReturnInstruction::clone(void)
 
 void ReturnInstruction::execute(WAMState &state)
 {
-    std::shared_ptr<ChoicePoint> cp = state.getChoicePoint(state.EReg());
+    std::shared_ptr<ChoicePoint> cp = state.stackAt(state.EReg());
     if (cp)
     {
         // Caller's return address
@@ -499,7 +499,7 @@ std::shared_ptr<Instruction> GetVariableInstruction::clone(void)
 void GetVariableInstruction::execute(WAMState &state)
 {
     std::shared_ptr<Word> X = state.m_ArgumentRegisters.dereferenceRegister(m_ArgumentRegister),
-                          Y = state.getChoicePoint(state.EReg())->m_Variables[m_Offset];
+                          Y = state.stackAt(state.EReg())->m_Variables[m_Offset];
     clearPDL(state, X, Y);
 }
 
@@ -551,7 +551,7 @@ std::shared_ptr<Instruction> PutVariableInstruction::clone(void)
 
 void PutVariableInstruction::execute(WAMState &state)
 {
-    std::shared_ptr<ChoicePoint> cp = state.getChoicePoint(state.EReg());
+    std::shared_ptr<ChoicePoint> cp = state.stackAt(state.EReg());
     std::shared_ptr<Word> word = cp->m_Variables[m_Offset]->dereference();
     if (word->tag() == TAG::VARIABLE)
     {
@@ -686,7 +686,7 @@ std::shared_ptr<Instruction> UnifyVariableInstruction::clone(void)
 
 void UnifyVariableInstruction::execute(WAMState &state)
 {
-    std::shared_ptr<Word> w = state.getChoicePoint(state.EReg())->m_Variables[m_Offset]->dereference();
+    std::shared_ptr<Word> w = state.stackAt(state.EReg())->m_Variables[m_Offset]->dereference();
     if (!state.readMode())
     {
         state.heapPush(w);
@@ -711,7 +711,7 @@ std::shared_ptr<Instruction> CutInstruction::clone(void)
 
 void CutInstruction::execute(WAMState &state)
 {
-    state.m_BacktrackRegister = state.getChoicePoint(state.EReg())->m_BB;
+    state.m_BacktrackRegister = state.stackAt(state.EReg())->m_BB;
 }
 
 void CutInstruction::print(std::ostream &os) const

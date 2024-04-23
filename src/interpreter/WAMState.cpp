@@ -107,7 +107,7 @@ std::shared_ptr<ChoicePoint> WAMState::stackTop(void)
     return nullptr;
 }
 
-std::shared_ptr<ChoicePoint> WAMState::getChoicePoint(size_t address)
+std::shared_ptr<ChoicePoint> WAMState::stackAt(size_t address)
 {
     if (m_Stack.size() && address < m_Stack.size())
     {
@@ -154,7 +154,7 @@ PDLTriple WAMState::pdlTop(void)
 
 std::string WAMState::variableToString(size_t choicePoint, size_t offset)
 {
-    auto cp = getChoicePoint(choicePoint);
+    auto cp = stackAt(choicePoint);
     return cp->m_Variables[offset]->toString();
 }
 

@@ -46,8 +46,7 @@ struct WAMState
     void stackPop(void);
     bool stackEmpty(void);
     std::shared_ptr<ChoicePoint> stackTop(void);
-    // TODO: rename to stackAt
-    std::shared_ptr<ChoicePoint> getChoicePoint(size_t address);
+    std::shared_ptr<ChoicePoint> stackAt(size_t address);
 
     // Trail operations
     void trailPush(std::shared_ptr<VariableWord> word);
