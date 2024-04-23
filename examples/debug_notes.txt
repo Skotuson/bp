@@ -21,3 +21,16 @@ mul s(s(0))
         add
     add
 
+mul(s(s(0)),X,s(s(s(0)))).
+
+mul(s(A), X, C) // A = s(0), B = X, C = s(s(s(0)))
+    mul(s(0),X,D1) // A = 0, D1
+        mul(0,X,D2) // D2 = 0
+        add(0,X,D1) // D1 = X
+    add(X, X, s(s(s(0)))) // X = 0
+
+add(X,s(X),s(0)).
+
+0. query
+1. is_bigger(1)
+2. bigger(0)
