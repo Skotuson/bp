@@ -645,9 +645,7 @@ void UnifyConstantInstruction::execute(WAMState &state)
     {
         std::shared_ptr<VariableWord> vw = std::static_pointer_cast<VariableWord>(w);
         state.trailPush(vw);
-        // TODO: check
         vw->bind(std::make_shared<ConstantWord>(m_Name));
-        //*vw->ref() = std::make_shared<ConstantWord>(m_Name);
     }
 
     else if (w->tag() == CONSTANT)
