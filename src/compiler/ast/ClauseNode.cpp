@@ -41,7 +41,7 @@ void ClauseNode::codegen(CompilationContext &cctx)
     code += "\tretry-me-else " + retryLabel + "\n";
     cctx.addInstruction(std::make_shared<RetryMeElseInstruction>(retryLabel));
 
-    // TODO: count all variables and complex objects (even nested) and generate the "n" afterwards
+    // Generate an allocate instruction and count the number of local variables needed during codegen.
     cctx.resetVariables();
     std::shared_ptr<AllocateInstruction> alloc = std::make_shared<AllocateInstruction>(0);
     cctx.addInstruction(alloc);
@@ -69,9 +69,14 @@ void ClauseNode::codegen(CompilationContext &cctx)
 
     // Generate allocate only if N is non-zero
     if (cctx.allocate())
+    {
         alloc->m_N = cctx.allocate();
+    }
+    // No local variables needed, delete the empty allocate instruction.
     else
+    {
         cctx.getCode().deleteInstruction(allocInstrIdx);
+    }
 
     cctx.addInstruction(std::make_shared<ReturnInstruction>());
 }
