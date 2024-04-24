@@ -1,6 +1,7 @@
 #define DOCTEST_CONFIG_IMPLEMENT
 #include "../test/doctest.h"
 
+#include <cstdio>
 #include <cassert>
 #include <iostream>
 #include <fstream>
@@ -71,6 +72,8 @@ int main(int argc, const char **argv)
 
     while (intp.run())
         ;
+
+    std::remove(fp.c_str());
 
     return res;
 }
