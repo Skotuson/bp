@@ -48,13 +48,9 @@ bool Interpreter::run(void)
         else
         {
             std::cout << ANSI_COLOR_GREEN << "true." << ANSI_COLOR_DEFAULT << std::endl;
-            for (const auto &v : vars)
+            for (const auto &[var, value] : vars)
             {
-                std::string value = m_State.variableToString(0, v.first);
-                if (v.second != value)
-                {
-                    std::cout << v.second << " = " << value << std::endl;
-                }
+                std::cout << var << " = " << value << std::endl;
             }
 
             std::string com = "";
@@ -121,7 +117,16 @@ Result Interpreter::evaluateQuery(void)
     }
     else
     {
-        r = {true, m_CurrentQuery.getVariables()};
+        std::map<std::string, std::string> vars;
+        for (const auto &v : m_CurrentQuery.getVariables())
+        {
+            std::string value = m_State.variableToString(0, v.first);
+            if (v.second != value)
+            {
+                vars.insert({v.second, value});
+            }
+        }
+        r = {true, vars};
     }
     return r;
 }
@@ -154,9 +159,9 @@ std::shared_ptr<Instruction> Interpreter::fetch(void)
 
 void Interpreter::execute(std::shared_ptr<Instruction> instr)
 {
-    //if (!m_Renderer.step())
+    // if (!m_Renderer.step())
     //{
-    //    std::cout << ANSI_COLOR_B_GREEN << *instr << ANSI_COLOR_DEFAULT << std::endl;
-    //}
+    //     std::cout << ANSI_COLOR_B_GREEN << *instr << ANSI_COLOR_DEFAULT << std::endl;
+    // }
     instr->execute(m_State);
 }

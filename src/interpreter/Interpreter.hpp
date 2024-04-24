@@ -13,7 +13,7 @@
 #include <map>
 
 using Label = std::string;
-using Result = std::pair<bool, std::map<size_t, std::string>>;
+using Result = std::pair<bool, std::map<std::string, std::string>>;
 
 class Interpreter
 {
