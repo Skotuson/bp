@@ -111,4 +111,12 @@ TEST_CASE("Interpreter test suite")
             i.clearQuery();
         }
     }
+
+    SUBCASE("Run queries with lists (append): ")
+    {
+        std::istringstream iss(
+            "append([], X, X)."
+            "append([H|T1],T2,[H|T3]) :- append(T1, T2, T3).");
+        c.compile(iss);
+    }
 }
