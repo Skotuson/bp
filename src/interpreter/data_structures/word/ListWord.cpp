@@ -19,7 +19,7 @@ std::shared_ptr<Word> ListWord::clone(void)
 
 std::string ListWord::toString(void)
 {
-    std::string str = m_HeapRef[m_HeapAddress]->toString() + " ";
-    str += m_HeapRef[m_HeapAddress + 1]->toString(); 
+    std::string str = "[" + m_HeapRef[m_HeapAddress]->toString() + "|";
+    str += m_HeapRef[m_HeapAddress + 1]->toString() + "]";
     return str;
 }
