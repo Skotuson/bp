@@ -31,7 +31,7 @@ bool Interpreter::run(void)
 
     while (42)
     {
-        auto [success, vars] = evaluateQuery(std::cin);
+        auto [success, vars] = evaluateQuery();
 
         if (m_Renderer.step())
         {
@@ -95,7 +95,7 @@ WAMCode Interpreter::compileQuery(const std::string &query)
     return queryCode;
 }
 
-Result Interpreter::evaluateQuery(std::istream &is)
+Result Interpreter::evaluateQuery(void)
 {
     // TODO: handle emptying arg regs after sucessfully completing a goal (multiple goals in conjuction in a query)
     // Code as a different clause (different arity, e.g. bigger/1 and bigger/0)
@@ -109,7 +109,7 @@ Result Interpreter::evaluateQuery(std::istream &is)
             std::cout << m_State << std::endl;
             std::cout << ANSI_RETURN_CURSOR;
             std::string com = "";
-            std::getline(is, com);
+            std::getline(std::cin, com);
         }
         execute(instr);
     }
@@ -154,9 +154,9 @@ std::shared_ptr<Instruction> Interpreter::fetch(void)
 
 void Interpreter::execute(std::shared_ptr<Instruction> instr)
 {
-    if (!m_Renderer.step())
-    {
-        std::cout << ANSI_COLOR_B_GREEN << *instr << ANSI_COLOR_DEFAULT << std::endl;
-    }
+    //if (!m_Renderer.step())
+    //{
+    //    std::cout << ANSI_COLOR_B_GREEN << *instr << ANSI_COLOR_DEFAULT << std::endl;
+    //}
     instr->execute(m_State);
 }
