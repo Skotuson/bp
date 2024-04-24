@@ -11,7 +11,7 @@ public:
   static std::string toPeano(size_t n);
   static size_t fromPeano(const std::string &n);
 
-  Filepath linkLibraries(const std::string &filepath, const std::string &libPath);
+  Filepath linkLibraries(const Filepath &filepath, const Filepath &libPath);
 
 private:
   size_t m_FilesCreated = 0;
