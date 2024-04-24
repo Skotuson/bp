@@ -35,6 +35,9 @@ struct WAMState
     void setReadMode(void);
     bool readMode(void) const;
 
+    bool fail(void) const;
+    bool halt(void) const;
+
     // Heap operations
     void heapPush(std::shared_ptr<Word> word);
     void heapPop(void);
@@ -81,4 +84,5 @@ struct WAMState
 
     bool m_ReadMode = false;
     bool m_FailFlag = false;
+    bool m_HaltFlag = false;
 };

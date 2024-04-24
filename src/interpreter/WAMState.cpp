@@ -59,6 +59,16 @@ bool WAMState::readMode(void) const
     return m_ReadMode;
 }
 
+bool WAMState::fail(void) const
+{
+    return m_FailFlag;
+}
+
+bool WAMState::halt(void) const
+{
+    return m_HaltFlag;
+}
+
 void WAMState::heapPush(std::shared_ptr<Word> word)
 {
     m_Heap.push_back(word);
