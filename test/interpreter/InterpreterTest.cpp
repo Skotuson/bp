@@ -110,6 +110,39 @@ TEST_CASE("Interpreter test suite")
             CHECK(vars["X"] == Preprocessor::toPeano(120));
             i.clearQuery();
         }
+
+        {
+            Interpreter i(c.dump());
+            i.setQuery(i.compileQuery(
+                "fact(X,s(s(s(s(s(s(0)))))))."));
+            auto [success, vars] = i.evaluateQuery();
+            CHECK(success);
+            CHECK(vars.size() == 1);
+            CHECK(vars["X"] == Preprocessor::toPeano(3));
+            i.clearQuery();
+        }
+
+        {
+            Interpreter i(c.dump());
+            std::string q = "fact(X," + Preprocessor::toPeano(24) + ").";
+            i.setQuery(i.compileQuery(q));
+            auto [success, vars] = i.evaluateQuery();
+            CHECK(success);
+            CHECK(vars.size() == 1);
+            CHECK(vars["X"] == Preprocessor::toPeano(4));
+            i.clearQuery();
+        }
+
+        {
+            Interpreter i(c.dump());
+            std::string q = "fact(X," + Preprocessor::toPeano(120) + ").";
+            i.setQuery(i.compileQuery(q));
+            auto [success, vars] = i.evaluateQuery();
+            CHECK(success);
+            CHECK(vars.size() == 1);
+            CHECK(vars["X"] == Preprocessor::toPeano(5));
+            i.clearQuery();
+        }
     }
 
     SUBCASE("Run queries with lists (append): ")
