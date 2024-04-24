@@ -30,7 +30,7 @@ size_t Preprocessor::fromPeano(const std::string &n)
     bool fail = false;
     for (const auto &c : n)
     {
-        if (c == 'S')
+        if (c == 's')
         {
             peano++;
         }
