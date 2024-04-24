@@ -35,7 +35,7 @@ struct WAMCode
     void dump(std::ostream &os);
 
     void addVariable(const Variable &v);
-    std::map<size_t, std::string> getVariables(void);
+    std::map<size_t, std::string> getVariables(void) const;
 
     void addLabel(const Label &label);
     void removeLabel(const Label &label);

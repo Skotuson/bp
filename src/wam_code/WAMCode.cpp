@@ -67,10 +67,7 @@ void WAMCode::updateJumpInstructions(void)
 
 void WAMCode::merge(const WAMCode &code)
 {
-    std::vector<std::shared_ptr<Instruction>> instrCpy;
-    for (const auto &instr : code.m_Program)
-        instrCpy.push_back(instr->clone());
-    addInstructions(instrCpy);
+    addInstructions(code.m_Program);
     updateJumpInstructions();
 }
 
@@ -107,7 +104,7 @@ void WAMCode::addVariable(const Variable &v)
     m_Variables.insert(v);
 }
 
-std::map<size_t, std::string> WAMCode::getVariables(void)
+std::map<size_t, std::string> WAMCode::getVariables(void) const
 {
     return m_Variables;
 }
