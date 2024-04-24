@@ -22,7 +22,10 @@ public:
 
     bool run(void);
     WAMCode compileQuery(const std::string &query);
-    Result evaluateQuery(WAMCode &queryCode, std::istream &is);
+    Result evaluateQuery(std::istream &is);
+
+    void setQuery(const WAMCode &query);
+    void clearQuery(void);
 
 private:
     std::shared_ptr<Instruction> fetch(void);
@@ -31,6 +34,8 @@ private:
     WAMState m_State;
     WAMCode m_Program;
     Renderer m_Renderer;
+
+    WAMCode m_CurrentQuery;
 
     const Label m_QueryLabel = "__query";
 };
