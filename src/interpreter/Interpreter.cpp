@@ -17,7 +17,7 @@ bool Interpreter::run(void)
     std::string query;
     std::getline(std::cin >> std::ws, query);
 
-    WAMCode queryCode = compileQuery(query);
+    setQuery(compileQuery(query));
 
     if (m_State.halt())
     {
@@ -29,15 +29,9 @@ bool Interpreter::run(void)
         m_Renderer.clearScreen(std::cout);
     }
 
-    m_Program.addLabel(m_QueryLabel);
-    // Add the query instructions to the other code
-    m_Program.merge(queryCode);
-
-    m_State.m_ProgramCounter = m_Program.getLabelAddress(m_QueryLabel);
-
     while (42)
     {
-        auto [success, vars] = evaluateQuery(queryCode, std::cin);
+        auto [success, vars] = evaluateQuery(std::cin);
 
         if (m_Renderer.step())
         {
@@ -57,7 +51,6 @@ bool Interpreter::run(void)
             for (const auto &v : vars)
             {
                 std::string value = m_State.variableToString(0, v.first);
-                // TODO: ugly hack probably
                 if (v.second != value)
                 {
                     std::cout << v.second << " = " << value << std::endl;
@@ -76,9 +69,7 @@ bool Interpreter::run(void)
         }
     }
 
-    // Remove the query code
-    m_Program.popInstructions(queryCode.size());
-    m_Program.removeLabel(m_QueryLabel);
+    clearQuery();
 
     // Reset the WAM
     m_State = WAMState();
@@ -104,7 +95,7 @@ WAMCode Interpreter::compileQuery(const std::string &query)
     return queryCode;
 }
 
-Result Interpreter::evaluateQuery(WAMCode &queryCode, std::istream &is)
+Result Interpreter::evaluateQuery(std::istream &is)
 {
     // TODO: handle emptying arg regs after sucessfully completing a goal (multiple goals in conjuction in a query)
     // Code as a different clause (different arity, e.g. bigger/1 and bigger/0)
@@ -130,9 +121,25 @@ Result Interpreter::evaluateQuery(WAMCode &queryCode, std::istream &is)
     }
     else
     {
-        r = {true, queryCode.getVariables()};
+        r = {true, m_CurrentQuery.getVariables()};
     }
     return r;
+}
+
+void Interpreter::setQuery(const WAMCode &query)
+{
+    m_CurrentQuery = query;
+    m_Program.addLabel(m_QueryLabel);
+    // Add the query instructions to the other code
+    m_Program.merge(query);
+    m_State.m_ProgramCounter = m_Program.getLabelAddress(m_QueryLabel);
+}
+
+void Interpreter::clearQuery(void)
+{
+    // Remove the query code
+    m_Program.popInstructions(m_CurrentQuery.size());
+    m_Program.removeLabel(m_QueryLabel);
 }
 
 std::shared_ptr<Instruction> Interpreter::fetch(void)
