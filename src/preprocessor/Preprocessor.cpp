@@ -2,23 +2,40 @@
 
 #include <fstream>
 #include <iostream>
+#include <filesystem>
 
-Filepath Preprocessor::linkFiles(const std::vector<Filepath> &paths)
+std::string Preprocessor::toPeano(size_t n)
+{
+}
+
+size_t Preprocessor::fromPeano(const std::string &n)
+{
+}
+
+Filepath Preprocessor::linkLibraries(const Filepath &filepath, const Filepath &libPath)
 {
     Filepath linkedFilePath = "__link" + std::to_string(++m_FilesCreated);
     std::ofstream ofs(linkedFilePath);
 
-    for (const auto &path : paths)
+    for (const auto &lib : std::filesystem::directory_iterator(libPath))
     {
-        std::ifstream ifs(path);
+        std::ifstream ifs(lib.path());
         std::string line;
-        while(std::getline(ifs, line))
+        while (std::getline(ifs, line))
         {
             ofs << line;
         }
         ofs << std::endl;
         ifs.close();
     }
+
+    std::ifstream ifs(filepath);
+    std::string line;
+    while (std::getline(ifs, line))
+    {
+        ofs << line;
+    }
+    ifs.close();
     ofs.close();
     return linkedFilePath;
 }
