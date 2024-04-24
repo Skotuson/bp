@@ -13,55 +13,31 @@ Interpreter::Interpreter(const WAMCode &wamCode, const Renderer &renderer)
 bool Interpreter::run(void)
 {
     std::cout << "?> ";
+
     std::string query;
     std::getline(std::cin >> std::ws, query);
 
-    if (m_Renderer.step())
-        m_Renderer.clearScreen(std::cout);
+    WAMCode queryCode = compileQuery(query);
 
-    // TODO: will add as an instruction
-    if (query == "halt.")
+    if (m_State.halt())
+    {
         return false;
+    }
 
-    std::string queryLabel = "query";
+    if (m_Renderer.step())
+    {
+        m_Renderer.clearScreen(std::cout);
+    }
 
-    // Compile query
-    std::istringstream iss(queryLabel + ":-" + query);
-    Compiler queryCompiler(iss);
-    queryCompiler.compile();
-    WAMCode queryCode = queryCompiler.dump();
-
-    m_State.m_QueryVariables = queryCode.getVariables();
-
-    queryCode.popInstructions(1);
-
-    m_Program.addLabel(queryLabel);
+    m_Program.addLabel(m_QueryLabel);
     // Add the query instructions to the other code
     m_Program.merge(queryCode);
 
-    m_Program.dump(std::cout);
+    m_State.m_ProgramCounter = m_Program.getLabelAddress(m_QueryLabel);
 
-    m_State.m_ProgramCounter = m_Program.getLabelAddress(queryLabel);
-
-    // TODO: handle emptying arg regs after sucessfully completing a goal (multiple goals in conjuction in a query)
-    // Code as a different clause (different arity, e.g. bigger/1 and bigger/0)
     while (42)
     {
-        std::shared_ptr<Instruction> instr;
-        while ((instr = fetch()) && !m_State.m_FailFlag)
-        {
-            if (m_Renderer.step())
-            {
-                m_Renderer.clearScreen(std::cout);
-                m_Renderer.renderCode(std::cout, m_Program, m_State.m_ProgramCounter - 1);
-                std::cout << m_State << std::endl;
-                std::cout << ANSI_RETURN_CURSOR;
-                std::string com = "";
-                std::getline(std::cin, com);
-            }
-
-            execute(instr);
-        }
+        auto [success, vars] = evaluateQuery(queryCode, std::cin);
 
         if (m_Renderer.step())
         {
@@ -70,7 +46,7 @@ bool Interpreter::run(void)
 
         std::cout << m_State << std::endl;
 
-        if (m_State.m_FailFlag)
+        if (!success)
         {
             std::cout << ANSI_COLOR_RED << "false." << ANSI_COLOR_DEFAULT << std::endl;
             break;
@@ -78,7 +54,7 @@ bool Interpreter::run(void)
         else
         {
             std::cout << ANSI_COLOR_GREEN << "true." << ANSI_COLOR_DEFAULT << std::endl;
-            for (const auto &v : m_State.m_QueryVariables)
+            for (const auto &v : vars)
             {
                 std::string value = m_State.variableToString(0, v.first);
                 // TODO: ugly hack probably
@@ -99,12 +75,64 @@ bool Interpreter::run(void)
             fi->execute(m_State);
         }
     }
+
     // Remove the query code
-    m_Program.popInstructions(queryCode.m_Program.size());
+    m_Program.popInstructions(queryCode.size());
+    m_Program.removeLabel(m_QueryLabel);
 
     // Reset the WAM
     m_State = WAMState();
     return true;
+}
+
+WAMCode Interpreter::compileQuery(const std::string &query)
+{
+    // TODO: will add as an instruction
+    if (query == "halt.")
+    {
+        m_State.m_HaltFlag = true;
+        return WAMCode();
+    }
+
+    // Compile query
+    std::istringstream iss(m_QueryLabel + ":-" + query);
+    Compiler queryCompiler(iss);
+    queryCompiler.compile();
+
+    WAMCode queryCode = queryCompiler.dump();
+    queryCode.popInstructions(1);
+    return queryCode;
+}
+
+Result Interpreter::evaluateQuery(WAMCode &queryCode, std::istream &is)
+{
+    // TODO: handle emptying arg regs after sucessfully completing a goal (multiple goals in conjuction in a query)
+    // Code as a different clause (different arity, e.g. bigger/1 and bigger/0)
+    std::shared_ptr<Instruction> instr;
+    while ((instr = fetch()) && !m_State.m_FailFlag)
+    {
+        if (m_Renderer.step())
+        {
+            m_Renderer.clearScreen(std::cout);
+            m_Renderer.renderCode(std::cout, m_Program, m_State.m_ProgramCounter - 1);
+            std::cout << m_State << std::endl;
+            std::cout << ANSI_RETURN_CURSOR;
+            std::string com = "";
+            std::getline(is, com);
+        }
+        execute(instr);
+    }
+
+    Result r;
+    if (m_State.m_FailFlag)
+    {
+        r = {false, {}};
+    }
+    else
+    {
+        r = {true, queryCode.getVariables()};
+    }
+    return r;
 }
 
 std::shared_ptr<Instruction> Interpreter::fetch(void)
