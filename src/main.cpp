@@ -65,8 +65,8 @@ int main(int argc, const char **argv)
         return 0;
     }
 
-    Compiler comp(ifs);
-    comp.compile();
+    Compiler comp;
+    comp.compile(ifs);
 
     Interpreter intp(comp.dump(), renderer);
 

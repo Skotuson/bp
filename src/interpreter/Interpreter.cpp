@@ -87,8 +87,8 @@ WAMCode Interpreter::compileQuery(const std::string &query)
 
     // Compile query
     std::istringstream iss(m_QueryLabel + ":-" + query);
-    Compiler queryCompiler(iss);
-    queryCompiler.compile();
+    Compiler queryCompiler;
+    queryCompiler.compile(iss);
 
     WAMCode queryCode = queryCompiler.dump();
     queryCode.popInstructions(1);
