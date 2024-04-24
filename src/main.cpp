@@ -54,7 +54,7 @@ int main(int argc, const char **argv)
 
     Preprocessor preprocessor;
     // TODO: add directory iterator
-    Filepath fp = preprocessor.linkFiles({sourceCodePath, "stdlib/__id.pl"});
+    Filepath fp = preprocessor.linkLibraries(sourceCodePath, "stdlib");
 
     std::ifstream ifs(fp);
 
