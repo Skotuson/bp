@@ -1,6 +1,7 @@
 #include "Preprocessor.hpp"
 
 #include <fstream>
+#include <iostream>
 
 Filepath Preprocessor::linkFiles(const std::vector<Filepath> &paths)
 {
@@ -15,6 +16,7 @@ Filepath Preprocessor::linkFiles(const std::vector<Filepath> &paths)
         {
             ofs << line;
         }
+        ofs << std::endl;
         ifs.close();
     }
     ofs.close();

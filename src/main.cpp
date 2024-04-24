@@ -9,6 +9,7 @@
 
 #include "compiler/Compiler.hpp"
 #include "interpreter/Interpreter.hpp"
+#include "preprocessor/Preprocessor.hpp"
 
 int main(int argc, const char **argv)
 {
@@ -31,8 +32,7 @@ int main(int argc, const char **argv)
         return res;           // propagate the result of the tests
 
     Renderer renderer;
-    std::ifstream ifs;
-
+    Filepath sourceCodePath = "";
     int i = 0;
     for (; i < argc; i++)
     {
@@ -44,13 +44,19 @@ int main(int argc, const char **argv)
                 return 1;
             }
 
-            ifs = std::ifstream(argv[i + 1]);
+            sourceCodePath = argv[i + 1];
         }
         if (!strcmp(argv[i], "--step"))
         {
             renderer.setStepper(true);
         }
     }
+
+    Preprocessor preprocessor;
+    // TODO: add directory iterator
+    Filepath fp = preprocessor.linkFiles({sourceCodePath, "stdlib/__id.pl"});
+
+    std::ifstream ifs(fp);
 
     if (!ifs)
     {
