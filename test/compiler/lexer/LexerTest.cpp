@@ -154,4 +154,20 @@ TEST_CASE("Lexer test suite")
         CHECK(lex.get() == TOK_CONST);
         CHECK(lex.numericValue() == 5687);
     }
+
+    SUBCASE("Lex Expression: __id(_,_).")
+    {
+        std::istringstream iss("__id(_,_).");
+        Lexer lex(iss);
+        CHECK(lex.get() == TOK_ATOM_LOWER);
+        CHECK(lex.identifier() == "__id");
+        CHECK(lex.get() == TOK_LPAR);
+        CHECK(lex.get() == TOK_VAR);
+        CHECK(lex.identifier() == "_");
+        CHECK(lex.get() == TOK_COMMA);
+        CHECK(lex.get() == TOK_VAR);
+        CHECK(lex.identifier() == "_");
+        CHECK(lex.get() == TOK_RPAR);
+        CHECK(lex.get() == TOK_PERIOD);
+    }
 }
