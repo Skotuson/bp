@@ -53,17 +53,16 @@ int main(int argc, const char **argv)
         }
     }
 
+    if (sourceCodePath.empty())
+    {
+        std::cout << "Missing mandatory --file parameter" << std::endl;
+        return 1;
+    }
+
     Preprocessor preprocessor;
-    // TODO: add directory iterator
     Filepath fp = preprocessor.linkLibraries(sourceCodePath, "stdlib");
 
     std::ifstream ifs(fp);
-
-    if (!ifs)
-    {
-        std::cout << "File couldn't be opened" << std::endl;
-        return 0;
-    }
 
     Compiler comp;
     comp.compile(ifs);
