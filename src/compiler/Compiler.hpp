@@ -11,14 +11,11 @@
 class Compiler
 {
 public:
-    Compiler(std::istream &is);
-
-    void compile(void);
+    void compile(std::istream &is);
     WAMCode dump(void);
     void dump(std::ostream &os);
 
 private:
     CompilationContext m_CCtx;
-    Parser m_Parser = Parser(Lexer(std::cin));
     WAMCode m_WAMCode;
 };
