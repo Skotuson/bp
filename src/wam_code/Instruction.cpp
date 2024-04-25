@@ -173,7 +173,7 @@ void MarkInstruction::execute(WAMState &state)
     state.stackPush(ncp);
     // Set E and B registers
     // Make it a current one
-    state.m_BacktrackRegister = state.m_EnvironmentRegister = state.SReg() - 1;
+    state.m_BacktrackRegister /*= state.m_EnvironmentRegister*/ = state.SReg() - 1;
 }
 
 void MarkInstruction::print(std::ostream &os) const
