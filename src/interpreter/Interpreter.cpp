@@ -59,7 +59,7 @@ bool Interpreter::run(void)
             {
                 break;
             }
-            m_State.m_EnvironmentRegister = m_State.BReg();
+            // m_State.m_EnvironmentRegister = m_State.BReg();
             std::shared_ptr<FailInstruction> fi = std::make_shared<FailInstruction>();
             fi->execute(m_State);
         }
@@ -87,7 +87,7 @@ WAMCode Interpreter::compileQuery(const std::string &query)
     queryCompiler.compile(iss);
 
     WAMCode queryCode = queryCompiler.dump();
-    // Pop backtrack 
+    // Pop backtrack
     queryCode.popInstructions(1);
     return queryCode;
 }
@@ -135,6 +135,7 @@ Result Interpreter::evaluateQuery(void)
 void Interpreter::setQuery(const WAMCode &query)
 {
     m_CurrentQuery = query;
+    m_State.m_QueryVariables = m_CurrentQuery.getVariables();
     m_Program.addLabel(m_QueryLabel);
     // Add the query instructions to the other code
     m_Program.merge(query);
