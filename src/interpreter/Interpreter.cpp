@@ -87,6 +87,7 @@ WAMCode Interpreter::compileQuery(const std::string &query)
     queryCompiler.compile(iss);
 
     WAMCode queryCode = queryCompiler.dump();
+    // Pop backtrack 
     queryCode.popInstructions(1);
     return queryCode;
 }
