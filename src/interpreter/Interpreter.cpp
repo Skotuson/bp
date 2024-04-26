@@ -89,8 +89,6 @@ WAMCode Interpreter::compileQuery(const std::string &query)
 
 Result Interpreter::evaluateQuery(void)
 {
-    // TODO: handle emptying arg regs after sucessfully completing a goal (multiple goals in conjuction in a query)
-    // Code as a different clause (different arity, e.g. bigger/1 and bigger/0)
     std::shared_ptr<Instruction> instr;
     while ((instr = fetch()) && !m_State.m_FailFlag)
     {
