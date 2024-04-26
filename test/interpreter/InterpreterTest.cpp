@@ -2,7 +2,7 @@
 
 #include "../../src/compiler/Compiler.hpp"
 #include "../../src/interpreter/Interpreter.hpp"
-#include "../../src/preprocessor/Preprocessor.hpp"
+#include "../../src/desugar/Desugar.hpp"
 
 #include <sstream>
 #include <iostream>
@@ -96,7 +96,7 @@ TEST_CASE("Interpreter test suite")
             auto [success, vars] = i.evaluateQuery();
             CHECK(success);
             CHECK(vars.size() == 1);
-            CHECK(vars["X"] == Preprocessor::toPeano(2));
+            CHECK(vars["X"] == Desugar::toPeano(2));
             i.clearQuery();
         }
 
@@ -107,7 +107,7 @@ TEST_CASE("Interpreter test suite")
             auto [success, vars] = i.evaluateQuery();
             CHECK(success);
             CHECK(vars.size() == 1);
-            CHECK(vars["X"] == Preprocessor::toPeano(120));
+            CHECK(vars["X"] == Desugar::toPeano(120));
             i.clearQuery();
         }
 
@@ -118,29 +118,29 @@ TEST_CASE("Interpreter test suite")
             auto [success, vars] = i.evaluateQuery();
             CHECK(success);
             CHECK(vars.size() == 1);
-            CHECK(vars["X"] == Preprocessor::toPeano(3));
+            CHECK(vars["X"] == Desugar::toPeano(3));
             i.clearQuery();
         }
 
         {
             Interpreter i(c.dump());
-            std::string q = "fact(X," + Preprocessor::toPeano(24) + ").";
+            std::string q = "fact(X," + Desugar::toPeano(24) + ").";
             i.setQuery(i.compileQuery(q));
             auto [success, vars] = i.evaluateQuery();
             CHECK(success);
             CHECK(vars.size() == 1);
-            CHECK(vars["X"] == Preprocessor::toPeano(4));
+            CHECK(vars["X"] == Desugar::toPeano(4));
             i.clearQuery();
         }
 
         {
             Interpreter i(c.dump());
-            std::string q = "fact(X," + Preprocessor::toPeano(120) + ").";
+            std::string q = "fact(X," + Desugar::toPeano(120) + ").";
             i.setQuery(i.compileQuery(q));
             auto [success, vars] = i.evaluateQuery();
             CHECK(success);
             CHECK(vars.size() == 1);
-            CHECK(vars["X"] == Preprocessor::toPeano(5));
+            CHECK(vars["X"] == Desugar::toPeano(5));
             i.clearQuery();
         }
     }
