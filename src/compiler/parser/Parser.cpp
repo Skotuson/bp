@@ -3,6 +3,7 @@
 #include "../ast/UnificationNode.hpp"
 #include "../ast/ConstNode.hpp"
 #include "../ast/VarNode.hpp"
+#include "../ast/CutNode.hpp"
 
 bool Parser::parse(void)
 {
@@ -140,6 +141,12 @@ std::vector<GoalNode *> Parser::Body(void)
         m_Lex.match(TOK_EQUAL);
         term = Term();
         body.push_back(new UnificationNode(new VarNode(varName), term));
+        bodyCont = BodyCont();
+        body.insert(body.end(), bodyCont.begin(), bodyCont.end());
+        return body;
+    case TOK_CUT:
+        m_Lex.match(TOK_CUT);
+        body.push_back(new CutNode());
         bodyCont = BodyCont();
         body.insert(body.end(), bodyCont.begin(), bodyCont.end());
         return body;

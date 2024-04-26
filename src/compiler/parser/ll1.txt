@@ -16,6 +16,7 @@ Predicate -> :- Body .
 Body -> lower BodyLower BodyTerm BodyCont
 Body -> const = Term BodyCont
 Body -> var = Term BodyCont
+Body -> ! BodyCont
 
 # Allows using predicate with or without arguments in body
 BodyLower -> 
