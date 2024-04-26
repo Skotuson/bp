@@ -44,6 +44,11 @@ size_t WAMState::HReg(void) const
     return m_Heap.size();
 }
 
+size_t WAMState::PC(void) const
+{
+    return m_ProgramCounter;
+}
+
 void WAMState::setWriteMode(void)
 {
     m_ReadMode = false;
@@ -172,7 +177,7 @@ std::ostream &operator<<(std::ostream &os, const WAMState &state)
 {
     auto format = [](size_t n)
     {
-        return n == std::numeric_limits<size_t>::max() ? "xxx" : std::to_string(n);
+        return n == UNSET_REG ? "xxx" : std::to_string(n);
     };
 
     os << ANSI_COLOR_B_MAGENTA << "Mode:" << (state.readMode() ? "READ" : "WRITE") << ANSI_COLOR_DEFAULT;

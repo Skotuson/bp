@@ -17,7 +17,7 @@
 
 using PDLTriple = std::tuple<size_t, size_t, size_t>;
 
-const size_t UNSET_REG = -1;
+const size_t UNSET_REG = -2;
 
 struct WAMState
 {
@@ -30,6 +30,7 @@ struct WAMState
     size_t PDLReg(void) const;
     size_t SPReg(void) const;
     size_t HReg(void) const;
+    size_t PC(void) const;
 
     void setWriteMode(void);
     void setReadMode(void);
