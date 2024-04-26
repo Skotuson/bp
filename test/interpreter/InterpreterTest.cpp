@@ -26,7 +26,7 @@ TEST_CASE("Interpreter test suite")
             CHECK(vars.empty());
             i.clearQuery();
         }
-
+        
         {
             Interpreter i(c.dump());
             i.setQuery(i.compileQuery(
@@ -47,8 +47,7 @@ TEST_CASE("Interpreter test suite")
             CHECK(vars["X"] == "elephant");
             i.clearQuery();
         }
-
-        {
+        {   
             Interpreter i(c.dump());
             i.setQuery(i.compileQuery(
                 "bigger(X,Y)."));
