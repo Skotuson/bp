@@ -222,6 +222,7 @@ void BacktrackInstruction::execute(WAMState &state)
     fail(state);
 
     // Discard the choice point (last clause in the chain failed)
+    // TODO: make sure to discard all choice points when cut is encountered.
     state.stackPop();
 }
 
