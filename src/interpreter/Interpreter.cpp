@@ -53,15 +53,7 @@ bool Interpreter::run(void)
                 std::cout << var << " = " << value << std::endl;
             }
 
-            std::string com = "";
-            std::getline(std::cin, com);
-            if (com != ";")
-            {
-                break;
-            }
-            // m_State.m_EnvironmentRegister = m_State.BReg();
-            std::shared_ptr<FailInstruction> fi = std::make_shared<FailInstruction>();
-            fi->execute(m_State);
+            nextAnswer(std::cin);
         }
     }
 
@@ -130,6 +122,18 @@ Result Interpreter::evaluateQuery(void)
         r = {true, vars};
     }
     return r;
+}
+
+void Interpreter::nextAnswer(std::istream &is)
+{
+    std::string com = "";
+    std::getline(is, com);
+    if (com != ";")
+    {
+        return;
+    }
+    std::shared_ptr<FailInstruction> fi = std::make_shared<FailInstruction>();
+    fi->execute(m_State);
 }
 
 void Interpreter::setQuery(const WAMCode &query)
