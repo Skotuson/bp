@@ -17,6 +17,7 @@ TEST_CASE("Interpreter test suite")
             "bigger(mouse,bug)."
             "same(bug,bug).");
         c.compile(iss);
+        SUBCASE("Query which should be true:")
         {
             Interpreter i(c.dump());
             i.setQuery(i.compileQuery(
@@ -27,6 +28,7 @@ TEST_CASE("Interpreter test suite")
             i.clearQuery();
         }
 
+        SUBCASE("Query which should be false:")
         {
             Interpreter i(c.dump());
             i.setQuery(i.compileQuery(
@@ -37,6 +39,7 @@ TEST_CASE("Interpreter test suite")
             i.clearQuery();
         }
 
+        SUBCASE("Query which should be true and bind X to elephant:")
         {
             Interpreter i(c.dump());
             i.setQuery(i.compileQuery(
@@ -48,6 +51,7 @@ TEST_CASE("Interpreter test suite")
             i.clearQuery();
         }
 
+        SUBCASE("Asking for all answers:")
         {
             Interpreter i(c.dump());
             i.setQuery(i.compileQuery(
