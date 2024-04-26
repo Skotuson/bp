@@ -26,7 +26,7 @@ TEST_CASE("Interpreter test suite")
             CHECK(vars.empty());
             i.clearQuery();
         }
-        
+
         {
             Interpreter i(c.dump());
             i.setQuery(i.compileQuery(
@@ -47,17 +47,6 @@ TEST_CASE("Interpreter test suite")
             CHECK(vars["X"] == "elephant");
             i.clearQuery();
         }
-        {   
-            Interpreter i(c.dump());
-            i.setQuery(i.compileQuery(
-                "bigger(X,Y)."));
-            auto [success, vars] = i.evaluateQuery();
-            CHECK(success);
-            CHECK(vars.size() == 2);
-            CHECK(vars["X"] == "elephant");
-            CHECK(vars["Y"] == "mouse");
-            i.clearQuery();
-        }
 
         {
             Interpreter i(c.dump());
@@ -68,6 +57,20 @@ TEST_CASE("Interpreter test suite")
             CHECK(r.second.size() == 2);
             CHECK(r.second["X"] == "elephant");
             CHECK(r.second["Y"] == "mouse");
+            std::istringstream iss(";");
+            i.nextAnswer(iss);
+
+            r = i.evaluateQuery();
+            CHECK(r.first);
+            CHECK(r.second.size() == 2);
+            CHECK(r.second["X"] == "mouse");
+            CHECK(r.second["Y"] == "bug");
+            iss = std::istringstream(";");
+            i.nextAnswer(iss);
+
+            r = i.evaluateQuery();
+            CHECK(!r.first);
+            CHECK(r.second.empty());
             i.clearQuery();
         }
     }
