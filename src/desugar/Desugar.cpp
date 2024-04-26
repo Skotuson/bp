@@ -1,5 +1,7 @@
 #include "Desugar.hpp"
 
+#include <stdexcept>
+
 std::string Desugar::toPeano(size_t n)
 {
     std::string peano = "";
@@ -47,7 +49,7 @@ size_t Desugar::fromPeano(const std::string &n)
 
     if (fail || parenCnt)
     {
-        throw new std::runtime_error("Malformed peano number");
+        throw std::runtime_error("Malformed peano number");
     }
 
     return peano;
