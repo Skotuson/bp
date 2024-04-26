@@ -223,7 +223,10 @@ void BacktrackInstruction::execute(WAMState &state)
 
     // Discard the choice point (last clause in the chain failed)
     // TODO: make sure to discard all choice points when cut is encountered.
-    state.stackPop();
+    while ((state.SReg() - 1) && state.SReg() - 1 != state.BReg())
+    {
+        state.stackPop();
+    }
 }
 
 void BacktrackInstruction::print(std::ostream &os) const
