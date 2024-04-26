@@ -53,7 +53,10 @@ bool Interpreter::run(void)
                 std::cout << var << " = " << value << std::endl;
             }
 
-            nextAnswer(std::cin);
+            if (!nextAnswer(std::cin))
+            {
+                break;
+            }
         }
     }
 
@@ -124,16 +127,17 @@ Result Interpreter::evaluateQuery(void)
     return r;
 }
 
-void Interpreter::nextAnswer(std::istream &is)
+bool Interpreter::nextAnswer(std::istream &is)
 {
     std::string com = "";
     std::getline(is, com);
     if (com != ";")
     {
-        return;
+        return false;
     }
     std::shared_ptr<FailInstruction> fi = std::make_shared<FailInstruction>();
     fi->execute(m_State);
+    return true;
 }
 
 void Interpreter::setQuery(const WAMCode &query)
@@ -155,11 +159,10 @@ void Interpreter::clearQuery(void)
 
 std::shared_ptr<Instruction> Interpreter::fetch(void)
 {
-    // if (m_State.m_ProgramCounter == BAD_ADDRESS)
-    //{
-    //     m_State.m_FailFlag = true;
-    //     return nullptr;
-    // }
+    if (m_State.PC() == BAD_ADDRESS)
+    {
+        m_State.m_FailFlag = true;
+    }
     return m_Program.getInstruction(m_State.m_ProgramCounter++);
 }
 
