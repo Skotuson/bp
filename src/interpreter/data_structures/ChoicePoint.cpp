@@ -18,7 +18,7 @@ std::ostream &operator<<(std::ostream &os, const ChoicePoint &cp)
 {
   auto format = [](size_t n)
   {
-    return n == std::numeric_limits<size_t>::max() ? "xxx" : std::to_string(n);
+    return n == UNSET_REG ? "xxx" : std::to_string(n);
   };
 
   os << "-------------------------" << std::endl;
