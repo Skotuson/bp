@@ -5,6 +5,7 @@ WAMCode::WAMCode(const WAMCode &wamCode)
       m_LabelToAddress(wamCode.m_LabelToAddress),
       m_Variables(wamCode.m_Variables)
 {
+    m_Program.clear();
     for (const auto &instr : wamCode.m_Program)
     {
         m_Program.push_back(instr->clone());
@@ -22,6 +23,7 @@ WAMCode &WAMCode::operator=(const WAMCode &wamCode)
     m_LabelToAddress = wamCode.m_LabelToAddress;
     m_Variables = wamCode.m_Variables;
 
+    m_Program.clear();
     for (const auto &instr : wamCode.m_Program)
     {
         m_Program.push_back(instr->clone());
