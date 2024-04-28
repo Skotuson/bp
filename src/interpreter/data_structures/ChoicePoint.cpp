@@ -18,7 +18,7 @@ std::ostream &operator<<(std::ostream &os, const ChoicePoint &cp)
 {
   auto format = [](size_t n)
   {
-    return n == UNSET_REG ? "xxx" : std::to_string(n);
+    return n == std::numeric_limits<size_t>::max() - 1 ? "xxx" : std::to_string(n);
   };
 
   os << "-------------------------" << std::endl;
@@ -31,7 +31,8 @@ std::ostream &operator<<(std::ostream &os, const ChoicePoint &cp)
   os << "|FA:" << format(cp.m_FA) << std::endl;
   for (size_t i = 0; i < cp.m_Variables.size(); i++)
   {
-    os << "\t" << "[" << &cp.m_Variables[i] << "]" << *cp.m_Variables[i] << std::endl;
+    os << "\t"
+       << "[" << &cp.m_Variables[i] << "]" << *cp.m_Variables[i] << std::endl;
   }
   os << "-------------------------";
   return os;
