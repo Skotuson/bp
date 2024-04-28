@@ -23,6 +23,10 @@ mul s(s(0))
 
 mul(s(s(0)),X,s(s(s(0)))).
 
+fact(X,s(s(s(0)))).
+fact(X,s(s(s(s(s(0)))))).
+fact(X,s(s(s(s(s(s(0))))))).
+
 mul(s(A), X, C) // A = s(0), B = X, C = s(s(s(0)))
     mul(s(0),X,D1) // A = 0, D1
         mul(0,X,D2) // D2 = 0
