@@ -12,7 +12,7 @@ void StructurePointerWord::print(std::ostream &os) const
     os << "structure-pointer -> H" << m_HeapAddress;
 }
 
-std::shared_ptr<Word> StructurePointerWord::clone(void)
+std::shared_ptr<Word> StructurePointerWord::clone(void) const
 {
     return std::make_shared<StructurePointerWord>(m_HeapAddress, m_HeapRef);
 }

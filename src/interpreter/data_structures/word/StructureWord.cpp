@@ -14,7 +14,7 @@ void StructureWord::print(std::ostream &os) const
     os << "structure -> " << m_Functor << "/" << m_Arity;
 }
 
-std::shared_ptr<Word> StructureWord::clone(void)
+std::shared_ptr<Word> StructureWord::clone(void) const
 {
     return std::make_shared<StructureWord>(m_Functor, m_Arity, m_HeapRef, m_Offset);
 }

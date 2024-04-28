@@ -30,7 +30,7 @@ TAG Word::tag(void)
     return m_Tag;
 }
 
-std::shared_ptr<Word> Word::dereference(void)
+std::shared_ptr<Word> Word::dereference(void) const
 {
     return clone();
 }

@@ -12,7 +12,7 @@ void ListWord::print(std::ostream &os) const
     os << "list -> " << m_HeapAddress;
 }
 
-std::shared_ptr<Word> ListWord::clone(void)
+std::shared_ptr<Word> ListWord::clone(void) const
 {
     return std::make_shared<ListWord>(m_HeapAddress, m_HeapRef);
 }
