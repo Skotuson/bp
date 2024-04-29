@@ -12,14 +12,14 @@ void ListWord::print(std::ostream &os) const
     os << "list -> " << m_HeapAddress;
 }
 
-std::shared_ptr<Word> ListWord::clone(void)
+std::shared_ptr<Word> ListWord::clone(void) const
 {
     return std::make_shared<ListWord>(m_HeapAddress, m_HeapRef);
 }
 
 std::string ListWord::toString(void)
 {
-    std::string str = m_HeapRef[m_HeapAddress]->toString() + " ";
-    str += m_HeapRef[m_HeapAddress + 1]->toString(); 
+    std::string str = "[" + m_HeapRef[m_HeapAddress]->toString() + "|";
+    str += m_HeapRef[m_HeapAddress + 1]->toString() + "]";
     return str;
 }

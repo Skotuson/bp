@@ -5,6 +5,7 @@ WAMCode::WAMCode(const WAMCode &wamCode)
       m_LabelToAddress(wamCode.m_LabelToAddress),
       m_Variables(wamCode.m_Variables)
 {
+    m_Program.clear();
     for (const auto &instr : wamCode.m_Program)
     {
         m_Program.push_back(instr->clone());
@@ -22,6 +23,7 @@ WAMCode &WAMCode::operator=(const WAMCode &wamCode)
     m_LabelToAddress = wamCode.m_LabelToAddress;
     m_Variables = wamCode.m_Variables;
 
+    m_Program.clear();
     for (const auto &instr : wamCode.m_Program)
     {
         m_Program.push_back(instr->clone());
@@ -67,10 +69,7 @@ void WAMCode::updateJumpInstructions(void)
 
 void WAMCode::merge(const WAMCode &code)
 {
-    std::vector<std::shared_ptr<Instruction>> instrCpy;
-    for (const auto &instr : code.m_Program)
-        instrCpy.push_back(instr->clone());
-    addInstructions(instrCpy);
+    addInstructions(code.m_Program);
     updateJumpInstructions();
 }
 
@@ -107,7 +106,7 @@ void WAMCode::addVariable(const Variable &v)
     m_Variables.insert(v);
 }
 
-std::map<size_t, std::string> WAMCode::getVariables(void)
+std::map<size_t, std::string> WAMCode::getVariables(void) const
 {
     return m_Variables;
 }

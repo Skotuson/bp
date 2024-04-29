@@ -11,17 +11,16 @@ class VariableWord : public Word
 public:
     VariableWord(std::shared_ptr<Word> *ref, std::string name = "", bool bound = false);
     void print(std::ostream &os) const override;
-    std::shared_ptr<Word> clone(void) override;
+    std::shared_ptr<Word> clone(void) const override;
     std::string toString(void);
     TAG tag(void) override;
 
-    std::shared_ptr<Word> dereference(void) override;
+    std::shared_ptr<Word> dereference(void) const override;
 
     void bind(void);
     void bind(std::shared_ptr<Word> w);
     void unbind(void);
-    void setRef(std::shared_ptr<Word> *ref);
-    std::shared_ptr<Word> *ref(void);
+    std::shared_ptr<Word> *ref(void) const;
     bool bound(void) const;
 
 private:

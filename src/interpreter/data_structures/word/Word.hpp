@@ -27,11 +27,11 @@ class Word
 public:
     virtual ~Word() = default;
     virtual void print(std::ostream &os) const = 0;
-    virtual std::shared_ptr<Word> clone(void) = 0;
+    virtual std::shared_ptr<Word> clone(void) const = 0;
     virtual std::string toString(void) = 0;
     virtual TAG tag(void);
 
-    virtual std::shared_ptr<Word> dereference(void);
+    virtual std::shared_ptr<Word> dereference(void) const;
 
     virtual bool compareToConst(std::shared_ptr<ConstantWord> cword);
     virtual bool compareToStruct(std::shared_ptr<StructureWord> sword);

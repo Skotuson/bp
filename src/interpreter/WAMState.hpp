@@ -17,7 +17,7 @@
 
 using PDLTriple = std::tuple<size_t, size_t, size_t>;
 
-const size_t UNSET_REG = -1;
+const size_t UNSET_REG = -2;
 
 struct WAMState
 {
@@ -25,14 +25,19 @@ struct WAMState
 
     size_t SReg(void) const;
     size_t EReg(void) const;
+    size_t BReg(void) const;
     size_t TRReg(void) const;
     size_t PDLReg(void) const;
     size_t SPReg(void) const;
     size_t HReg(void) const;
+    size_t PC(void) const;
 
     void setWriteMode(void);
     void setReadMode(void);
     bool readMode(void) const;
+
+    bool fail(void) const;
+    bool halt(void) const;
 
     // Heap operations
     void heapPush(std::shared_ptr<Word> word);
@@ -45,7 +50,7 @@ struct WAMState
     void stackPop(void);
     bool stackEmpty(void);
     std::shared_ptr<ChoicePoint> stackTop(void);
-    std::shared_ptr<ChoicePoint> getChoicePoint(size_t address);
+    std::shared_ptr<ChoicePoint> stackAt(size_t address);
 
     // Trail operations
     void trailPush(std::shared_ptr<VariableWord> word);
@@ -80,4 +85,5 @@ struct WAMState
 
     bool m_ReadMode = false;
     bool m_FailFlag = false;
+    bool m_HaltFlag = false;
 };

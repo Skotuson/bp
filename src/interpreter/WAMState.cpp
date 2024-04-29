@@ -1,5 +1,9 @@
 #include "WAMState.hpp"
 
+#include "../Renderer.hpp"
+
+#include <limits>
+
 void WAMState::fillRegister(std::shared_ptr<Word> word, size_t reg)
 {
     m_ArgumentRegisters.fillRegister(word, reg);
@@ -7,12 +11,17 @@ void WAMState::fillRegister(std::shared_ptr<Word> word, size_t reg)
 
 size_t WAMState::SReg(void) const
 {
-    return m_Stack.size() - 1;
+    return m_Stack.size();
 }
 
 size_t WAMState::EReg(void) const
 {
     return m_EnvironmentRegister;
+}
+
+size_t WAMState::BReg(void) const
+{
+    return m_BacktrackRegister;
 }
 
 size_t WAMState::TRReg(void) const
@@ -35,6 +44,11 @@ size_t WAMState::HReg(void) const
     return m_Heap.size();
 }
 
+size_t WAMState::PC(void) const
+{
+    return m_ProgramCounter;
+}
+
 void WAMState::setWriteMode(void)
 {
     m_ReadMode = false;
@@ -48,6 +62,16 @@ void WAMState::setReadMode(void)
 bool WAMState::readMode(void) const
 {
     return m_ReadMode;
+}
+
+bool WAMState::fail(void) const
+{
+    return m_FailFlag;
+}
+
+bool WAMState::halt(void) const
+{
+    return m_HaltFlag;
 }
 
 void WAMState::heapPush(std::shared_ptr<Word> word)
@@ -98,7 +122,7 @@ std::shared_ptr<ChoicePoint> WAMState::stackTop(void)
     return nullptr;
 }
 
-std::shared_ptr<ChoicePoint> WAMState::getChoicePoint(size_t address)
+std::shared_ptr<ChoicePoint> WAMState::stackAt(size_t address)
 {
     if (m_Stack.size() && address < m_Stack.size())
     {
@@ -145,38 +169,44 @@ PDLTriple WAMState::pdlTop(void)
 
 std::string WAMState::variableToString(size_t choicePoint, size_t offset)
 {
-    auto cp = getChoicePoint(choicePoint);
+    auto cp = stackAt(choicePoint);
     return cp->m_Variables[offset]->toString();
 }
 
 std::ostream &operator<<(std::ostream &os, const WAMState &state)
 {
-    os << "Mode: " << (state.readMode() ? "READ" : "WRITE") << std::endl;
-    os << "SP: " << state.SPReg() << std::endl;
-    os << "E: " << state.EReg() << std::endl;
-    os << "B: " << state.m_BacktrackRegister << std::endl;
-    os << state.m_ArgumentRegisters << std::endl;
-    os << "HEAP-BOT" << std::endl;
-    for (const auto &w : state.m_Heap)
+    auto format = [](size_t n)
     {
-        os << *w << std::endl;
-    }
-    os << "HEAP-TOP" << std::endl;
-    os << "STACK-BOT" << std::endl;
-    size_t n = 1;
-    for (const auto &cp : state.m_Stack)
-    {
-        std::cout << "Stack pos: " << n++ << std::endl;
-        os << *cp << std::endl;
-    }
-    os << "STACK-TOP" << std::endl;
-    os << "TRAIL-BOT" << std::endl;
+        return n == UNSET_REG ? "xxx" : std::to_string(n);
+    };
 
-    n = 1;
-    for (const auto &w : state.m_Trail)
+    os << ANSI_COLOR_B_MAGENTA << "Mode:" << (state.readMode() ? "READ" : "WRITE") << ANSI_COLOR_DEFAULT;
+    os << " SP:" << state.SPReg();
+    os << " E:" << format(state.EReg());
+    os << " B:" << format(state.m_BacktrackRegister);
+    os << " CP:" << format(state.m_ContinuationPointer);
+    os << " PC:" << format(state.m_ProgramCounter) << std::endl;
+    os << ANSI_COLOR_B_YELLOW << state.m_ArgumentRegisters << ANSI_COLOR_DEFAULT << std::endl;
+
+    // Print heap
+    for (size_t i = 0; i < state.m_Heap.size(); i++)
     {
-        os << *w << std::endl;
+        os << "\t"
+           << "H" << i << " " << *(state.m_Heap[i]) << std::endl;
     }
-    os << "TRAIL-TOP";
+
+    // Print stack
+    for (size_t i = 0; i < state.m_Stack.size(); i++)
+    {
+        os << "Environment: " << i << std::endl;
+        os << *(state.m_Stack[i]) << std::endl;
+    }
+
+    // Print trail
+    for (size_t i = 0; i < state.m_Trail.size(); i++)
+    {
+        os << "\t"
+           << "TR" << i << " " << *(state.m_Trail[i]) << std::endl;
+    }
     return os;
 }

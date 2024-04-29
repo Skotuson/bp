@@ -2,7 +2,6 @@
 
 void ProgramNode::codegen(CompilationContext &cctx)
 {
-    std::string code = "";
     // Initialize the symbol table
     for (const auto &clause : m_Clauses)
     {
@@ -24,7 +23,6 @@ void ProgramNode::codegen(CompilationContext &cctx)
     }
 
     // Generate the "quit" label
-    code += "\nquit: backtrack\n";
     cctx.addLabel("quit");
     cctx.addInstruction(std::make_shared<BacktrackInstruction>());
 

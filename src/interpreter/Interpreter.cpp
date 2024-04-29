@@ -13,102 +13,162 @@ Interpreter::Interpreter(const WAMCode &wamCode, const Renderer &renderer)
 bool Interpreter::run(void)
 {
     std::cout << "?> ";
+
     std::string query;
     std::getline(std::cin >> std::ws, query);
 
-    if (m_Renderer.step())
-        m_Renderer.clearScreen(std::cout);
+    setQuery(compileQuery(query));
 
-    // TODO: will add as an instruction
-    if (query == "halt.")
-        return false;
-
-    std::string queryLabel = "query";
-
-    // Compile query
-    std::istringstream iss(queryLabel + ":-" + query);
-    Compiler queryCompiler(iss);
-    queryCompiler.compile();
-    WAMCode queryCode = queryCompiler.dump();
-
-    m_State.m_QueryVariables = queryCode.getVariables();
-
-    queryCode.popInstructions(1);
-
-    m_Program.addLabel(queryLabel);
-    // Add the query instructions to the other code
-    m_Program.merge(queryCode);
-
-    m_Program.dump(std::cout);
-
-    m_State.m_ProgramCounter = m_Program.getLabelAddress(queryLabel);
-
-    // TODO: handle emptying arg regs after sucessfully completing a goal (multiple goals in conjuction in a query)
-    // Code as a different clause (different arity, e.g. bigger/1 and bigger/0)
-    std::shared_ptr<Instruction> instr;
-    while ((instr = fetch()) && !m_State.m_FailFlag)
+    if (m_State.halt())
     {
+        return false;
+    }
+
+    if (m_Renderer.step())
+    {
+        m_Renderer.clearScreen(std::cout);
+    }
+
+    while (42)
+    {
+        auto [success, vars] = evaluateQuery();
+
         if (m_Renderer.step())
         {
-            std::string com = "";
-            std::getline(std::cin, com);
             m_Renderer.clearScreen(std::cout);
-            m_Renderer.renderCode(std::cout, m_Program, m_State.m_ProgramCounter - 1);
-            std::cout << m_State << std::endl;
-            std::cout << ANSI_RETURN_CURSOR;
         }
 
-        execute(instr);
-    }
+        std::cout << m_State << std::endl;
 
-    if (m_Renderer.step())
-    {
-        m_Renderer.clearScreen(std::cout);
-    }
-
-    std::cout << m_State << std::endl;
-
-    if (m_State.m_FailFlag)
-    {
-        std::cout << ANSI_COLOR_RED << "false." << ANSI_COLOR_DEFAULT << std::endl;
-    }
-    else
-    {
-        std::cout << ANSI_COLOR_GREEN << "true." << ANSI_COLOR_DEFAULT << std::endl;
-        for (const auto &v : m_State.m_QueryVariables)
+        if (!success)
         {
-            std::string value = m_State.variableToString(0, v.first);
-            // TODO: ugly hack probably
-            if (v.second != value)
+            std::cout << ANSI_COLOR_RED << "false." << ANSI_COLOR_DEFAULT << std::endl;
+            break;
+        }
+        else
+        {
+            std::cout << ANSI_COLOR_GREEN << "true." << ANSI_COLOR_DEFAULT << std::endl;
+            for (const auto &[var, value] : vars)
             {
-                std::cout << v.second << " = " << value << std::endl;
+                std::cout << var << " = " << value << std::endl;
+            }
+
+            if (!nextAnswer(std::cin))
+            {
+                break;
             }
         }
     }
 
-    // Remove the query code
-    m_Program.popInstructions(queryCode.m_Program.size());
+    clearQuery();
 
     // Reset the WAM
     m_State = WAMState();
     return true;
 }
 
+WAMCode Interpreter::compileQuery(const std::string &query)
+{
+    // TODO: will add as an instruction
+    if (query == "halt.")
+    {
+        m_State.m_HaltFlag = true;
+        return WAMCode();
+    }
+
+    // Compile query
+    std::istringstream iss(m_QueryLabel + ":-" + query);
+    Compiler queryCompiler;
+    queryCompiler.compile(iss);
+
+    WAMCode queryCode = queryCompiler.dump();
+    // Pop backtrack
+    queryCode.popInstructions(1);
+    return queryCode;
+}
+
+Result Interpreter::evaluateQuery(void)
+{
+    std::shared_ptr<Instruction> instr;
+    while ((instr = fetch()) && !m_State.m_FailFlag)
+    {
+        if (m_Renderer.step())
+        {
+            m_Renderer.clearScreen(std::cout);
+            m_Renderer.renderCode(std::cout, m_Program, m_State.m_ProgramCounter - 1);
+            std::cout << m_State << std::endl;
+            std::cout << ANSI_RETURN_CURSOR;
+            std::string com = "";
+            std::getline(std::cin, com);
+        }
+        execute(instr);
+    }
+
+    Result r;
+    if (m_State.m_FailFlag)
+    {
+        r = {false, {}};
+    }
+    else
+    {
+        std::map<std::string, std::string> vars;
+        for (const auto &v : m_CurrentQuery.getVariables())
+        {
+            std::string value = m_State.variableToString(0, v.first);
+            if (v.second != value)
+            {
+                vars.insert({v.second, value});
+            }
+        }
+        r = {true, vars};
+    }
+    return r;
+}
+
+bool Interpreter::nextAnswer(std::istream &is)
+{
+    std::string com = "";
+    std::getline(is, com);
+    if (com != ";")
+    {
+        return false;
+    }
+    std::shared_ptr<FailInstruction> fi = std::make_shared<FailInstruction>();
+    fi->execute(m_State);
+    return true;
+}
+
+void Interpreter::setQuery(const WAMCode &query)
+{
+    m_CurrentQuery = query;
+    m_State.m_QueryVariables = m_CurrentQuery.getVariables();
+    m_Program.addLabel(m_QueryLabel);
+    // Add the query instructions to the other code
+    m_Program.merge(query);
+    m_State.m_ProgramCounter = m_Program.getLabelAddress(m_QueryLabel);
+}
+
+void Interpreter::clearQuery(void)
+{
+    // Remove the query code
+    m_Program.popInstructions(m_CurrentQuery.size());
+    m_Program.removeLabel(m_QueryLabel);
+}
+
 std::shared_ptr<Instruction> Interpreter::fetch(void)
 {
-    // if (m_State.m_ProgramCounter == BAD_ADDRESS)
-    //{
-    //     m_State.m_FailFlag = true;
-    //     return nullptr;
-    // }
+    if (m_State.PC() == BAD_ADDRESS)
+    {
+        m_State.m_FailFlag = true;
+    }
     return m_Program.getInstruction(m_State.m_ProgramCounter++);
 }
 
 void Interpreter::execute(std::shared_ptr<Instruction> instr)
 {
-    if (!m_Renderer.step())
-    {
-        std::cout << ANSI_COLOR_B_GREEN << *instr << ANSI_COLOR_DEFAULT << std::endl;
-    }
+    // if (!m_Renderer.step())
+    //{
+    //     std::cout << ANSI_COLOR_B_GREEN << *instr << ANSI_COLOR_DEFAULT << std::endl;
+    // }
     instr->execute(m_State);
 }

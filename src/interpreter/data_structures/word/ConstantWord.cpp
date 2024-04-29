@@ -11,7 +11,7 @@ void ConstantWord::print(std::ostream &os) const
     os << "constant -> " << m_Value;
 }
 
-std::shared_ptr<Word> ConstantWord::clone(void)
+std::shared_ptr<Word> ConstantWord::clone(void) const
 {
     return std::make_shared<ConstantWord>(m_Value);
 }

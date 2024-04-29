@@ -9,10 +9,10 @@ StructurePointerWord::StructurePointerWord(size_t heapAddress, const std::vector
 
 void StructurePointerWord::print(std::ostream &os) const
 {
-    os << "structure-pointer -> HEAP-BOT + " << m_HeapAddress;
+    os << "structure-pointer -> H" << m_HeapAddress;
 }
 
-std::shared_ptr<Word> StructurePointerWord::clone(void)
+std::shared_ptr<Word> StructurePointerWord::clone(void) const
 {
     return std::make_shared<StructurePointerWord>(m_HeapAddress, m_HeapRef);
 }

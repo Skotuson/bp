@@ -26,8 +26,10 @@ Token Lexer::lexIdentifier(void)
 
     m_Source.unget();
 
-    if (islower(m_Identifier[0]))
+    if (islower(m_Identifier.front()) || (m_Identifier.front() == '_' && m_Identifier.length() > 1))
+    {
         return TOK_ATOM_LOWER;
+    }
     return TOK_VAR;
 }
 
@@ -111,7 +113,7 @@ Token Lexer::get(void)
         return lastToken = lexNumber();
     }
 
-    if (isalpha(c))
+    if (isalpha(c) || c == '_')
     {
         m_Identifier = "";
         return lastToken = lexIdentifier();

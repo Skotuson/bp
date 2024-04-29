@@ -1,7 +1,9 @@
 #include "Parser.hpp"
 
+#include "../ast/UnificationNode.hpp"
 #include "../ast/ConstNode.hpp"
 #include "../ast/VarNode.hpp"
+#include "../ast/CutNode.hpp"
 
 bool Parser::parse(void)
 {
@@ -108,38 +110,43 @@ std::vector<GoalNode *> Parser::Body(void)
     std::vector<GoalNode *> body, bodyCont;
     StructNode *compound;
     TermNode *term;
+    std::string varName = "";
     switch (m_Lex.peek())
     {
     case TOK_ATOM_LOWER:
         m_Lex.match(TOK_ATOM_LOWER);
         compound = BodyLower();
         if (!(term = BodyTerm()))
+        {
             body.push_back(compound);
-        // TODO: check this
+        }
         else
-            delete compound;
-        // TODO: delete for now so it doesn't leak
-        delete term;
+        {
+            body.push_back(new UnificationNode(compound, term));
+        }
         bodyCont = BodyCont();
         body.insert(body.end(), bodyCont.begin(), bodyCont.end());
         return body;
     case TOK_CONST:
         m_Lex.match(TOK_CONST);
         m_Lex.match(TOK_EQUAL);
-        // TODO: Unification
         term = Term();
-        // TODO: delete for now so it doesn't leak
-        delete term;
+        body.push_back(new UnificationNode(new ConstNode(m_Lex.numericValue()), term));
         bodyCont = BodyCont();
         body.insert(body.end(), bodyCont.begin(), bodyCont.end());
         return body;
     case TOK_VAR:
         m_Lex.match(TOK_VAR);
+        varName = m_Lex.identifier();
         m_Lex.match(TOK_EQUAL);
-        // TODO: Unification
         term = Term();
-        // TODO: delete for now so it doesn't leak
-        delete term;
+        body.push_back(new UnificationNode(new VarNode(varName), term));
+        bodyCont = BodyCont();
+        body.insert(body.end(), bodyCont.begin(), bodyCont.end());
+        return body;
+    case TOK_CUT:
+        m_Lex.match(TOK_CUT);
+        body.push_back(new CutNode());
         bodyCont = BodyCont();
         body.insert(body.end(), bodyCont.begin(), bodyCont.end());
         return body;

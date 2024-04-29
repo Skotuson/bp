@@ -29,7 +29,6 @@ void Instruction::clearPDL(WAMState &state, std::shared_ptr<Word> X, std::shared
         if (branch == 1)
         {
             X = X->dereference();
-            // X = *static_cast<VariableWord *>(X)->ref();
             continue;
         }
 
@@ -37,27 +36,25 @@ void Instruction::clearPDL(WAMState &state, std::shared_ptr<Word> X, std::shared
         else if (branch == 2)
         {
             Y = Y->dereference();
-            // Y = *static_cast<VariableWord *>(Y)->ref();
             continue;
         }
 
         // X and Y are both unbound variables
         else if (branch == 3)
         {
-            std::shared_ptr<VariableWord> x = std::static_pointer_cast<VariableWord>(X->clone());
-            std::shared_ptr<VariableWord> y = std::static_pointer_cast<VariableWord>(Y->clone());
+            std::shared_ptr<VariableWord> x = std::static_pointer_cast<VariableWord>(X);
+            std::shared_ptr<VariableWord> y = std::static_pointer_cast<VariableWord>(Y);
             // Trail both X and Y
             state.trailPush(x);
             state.trailPush(y);
             // Bind them together
-            //*y->ref() = X;
             y->bind(X);
         }
 
         // X is not a variable, Y is an unbound variable
         else if (branch == 4)
         {
-            std::shared_ptr<VariableWord> vw = std::static_pointer_cast<VariableWord>(Y->clone());
+            std::shared_ptr<VariableWord> vw = std::static_pointer_cast<VariableWord>(Y);
             // Trail
             state.trailPush(vw);
             //*vw->ref() = X->clone();
@@ -67,7 +64,7 @@ void Instruction::clearPDL(WAMState &state, std::shared_ptr<Word> X, std::shared
         // Y is a constant, X is an unbound variable
         else if (branch == 5)
         {
-            std::shared_ptr<VariableWord> vw = std::static_pointer_cast<VariableWord>(X->clone());
+            std::shared_ptr<VariableWord> vw = std::static_pointer_cast<VariableWord>(X);
             // Trail
             state.trailPush(vw);
             //*vw->ref() = Y->clone();
@@ -165,17 +162,18 @@ void BranchInstruction::setAddress(size_t address)
 
 void MarkInstruction::execute(WAMState &state)
 {
+    // Build a new choice point up to the enviornment
     auto ncp = std::make_shared<ChoicePoint>(state.m_ArgumentRegisters,
-                                             state.m_EnvironmentRegister,
+                                             state.EReg(),
                                              state.m_ContinuationPointer,
-                                             state.m_BacktrackRegister,
+                                             state.BReg(),
                                              state.TRReg(),
                                              state.HReg(),
                                              state.m_ProgramCounter);
     state.stackPush(ncp);
     // Set E and B registers
-    state.m_BacktrackRegister = state.m_EnvironmentRegister = state.SReg();
-    // std::cout << state << std::endl;
+    // Make it a current one
+    state.m_BacktrackRegister /*= state.m_EnvironmentRegister*/ = state.SReg() - 1;
 }
 
 void MarkInstruction::print(std::ostream &os) const
@@ -195,7 +193,8 @@ std::shared_ptr<Instruction> RetryMeElseInstruction::clone(void)
 
 void RetryMeElseInstruction::execute(WAMState &state)
 {
-    std::shared_ptr<ChoicePoint> cp = state.stackTop();
+    // Set next clause to the L (m_Address)
+    std::shared_ptr<ChoicePoint> cp = state.stackAt(state.BReg());
     if (cp)
     {
         cp->m_FA = m_Address;
@@ -214,7 +213,7 @@ std::shared_ptr<Instruction> BacktrackInstruction::clone(void)
 
 void BacktrackInstruction::execute(WAMState &state)
 {
-    std::shared_ptr<ChoicePoint> cp = state.getChoicePoint(state.m_BacktrackRegister);
+    std::shared_ptr<ChoicePoint> cp = state.stackAt(state.m_BacktrackRegister);
     if (cp)
     {
         state.m_BacktrackRegister = cp->m_BB;
@@ -223,7 +222,11 @@ void BacktrackInstruction::execute(WAMState &state)
     fail(state);
 
     // Discard the choice point (last clause in the chain failed)
-    state.stackPop();
+    // TODO: make sure to discard all choice points when cut is encountered.
+    while ((state.SReg() - 1) && state.SReg() - 1 != state.BReg())
+    {
+        state.stackPop();
+    }
 }
 
 void BacktrackInstruction::print(std::ostream &os) const
@@ -238,25 +241,27 @@ std::shared_ptr<Instruction> FailInstruction::clone(void)
 
 void FailInstruction::execute(WAMState &state)
 {
-    std::shared_ptr<ChoicePoint> cp = state.getChoicePoint(state.m_BacktrackRegister);
+    std::shared_ptr<ChoicePoint> cp = state.stackAt(state.m_BacktrackRegister);
     if (cp)
     {
-        // Reload arg registers
+        // Reload argument registers
         state.m_ArgumentRegisters = cp->m_ArgumentRegisters;
 
-        // Reset heap top
+        // Reset heap
         while (state.HReg() != cp->m_BH)
         {
             state.heapPop();
         }
 
+        // Reset all variables instantiated since choice point was built
         while (state.TRReg() != cp->m_BTR)
         {
             std::shared_ptr<VariableWord> popped = state.trailTop();
             popped->unbind();
-            *popped->ref() = popped->clone();
+            *popped->ref() = popped;
             state.trailPop();
         }
+        // Branch to next rule
         state.m_ProgramCounter = cp->m_FA;
     }
     // TODO: Experimental (check when choice point stack is empty)
@@ -283,7 +288,7 @@ std::shared_ptr<Instruction> AllocateInstruction::clone(void)
 void AllocateInstruction::execute(WAMState &state)
 {
     std::shared_ptr<ChoicePoint> cp = state.stackTop();
-    // Pre-Alloc space
+    // Allocate new environment to current choice point (Initialize all variables).
     cp->m_Variables.resize(m_N, nullptr);
     for (size_t i = 0; i < m_N; i++)
     {
@@ -296,8 +301,8 @@ void AllocateInstruction::execute(WAMState &state)
             cp->m_Variables[i] = std::make_shared<VariableWord>(&cp->m_Variables[i]);
         }
     }
-
-    state.m_EnvironmentRegister = state.m_BacktrackRegister;
+    // Set E to this choice point
+    state.m_EnvironmentRegister = state.BReg();
 }
 
 void AllocateInstruction::print(std::ostream &os) const
@@ -319,6 +324,7 @@ void CallInstruction::execute(WAMState &state)
 {
     // Program counter already points to another instruction
     state.m_ContinuationPointer = state.m_ProgramCounter;
+    // Branch to L (m_Address), with return address in CP.
     state.m_ProgramCounter = m_Address;
 }
 
@@ -334,11 +340,18 @@ std::shared_ptr<Instruction> ReturnInstruction::clone(void)
 
 void ReturnInstruction::execute(WAMState &state)
 {
-    std::shared_ptr<ChoicePoint> cp = state.getChoicePoint(state.m_EnvironmentRegister);
+    std::shared_ptr<ChoicePoint> cp = state.stackAt(state.EReg());
     if (cp)
     {
+        // Caller's return address
         state.m_ProgramCounter = cp->m_BCP;
+        // Caller's environment
         state.m_EnvironmentRegister = cp->m_BCE;
+    }
+    else
+    {
+        // TODO: mainly debug
+        throw std::runtime_error("Invalid stack access");
     }
     // std::cout << state << std::endl;
 }
@@ -372,7 +385,7 @@ void GetConstantInstruction::execute(WAMState &state)
     std::shared_ptr<ConstantWord> cword = std::make_shared<ConstantWord>(m_Name);
     if (reg && reg->tag() == TAG::VARIABLE)
     {
-        std::shared_ptr<VariableWord> vw = std::static_pointer_cast<VariableWord>(reg->clone());
+        std::shared_ptr<VariableWord> vw = std::static_pointer_cast<VariableWord>(reg);
         state.trailPush(vw); // Trail
         //*vw->ref() = cword;
         vw->bind(cword);
@@ -403,7 +416,7 @@ void GetListInstruction::execute(WAMState &state)
     std::shared_ptr<Word> w = state.m_ArgumentRegisters.dereferenceRegister(m_ArgumentRegister);
     if (w->tag() == VARIABLE)
     {
-        std::shared_ptr<VariableWord> vw = std::static_pointer_cast<VariableWord>(w->clone());
+        std::shared_ptr<VariableWord> vw = std::static_pointer_cast<VariableWord>(w);
         state.trailPush(vw);
         vw->bind(std::make_shared<ListWord>(state.HReg(), state.m_Heap));
         state.setWriteMode();
@@ -441,7 +454,7 @@ void GetStructureInstruction::execute(WAMState &state)
     std::shared_ptr<Word> w = state.m_ArgumentRegisters.dereferenceRegister(m_ArgumentRegister);
     if (w->tag() == VARIABLE)
     {
-        std::shared_ptr<VariableWord> vw = std::static_pointer_cast<VariableWord>(w->clone());
+        std::shared_ptr<VariableWord> vw = std::static_pointer_cast<VariableWord>(w);
         state.trailPush(vw);
         //*vw->ref() = new StructurePointerWord(state.HReg(), state.m_Heap);
         vw->bind(std::make_shared<StructurePointerWord>(state.HReg(), state.m_Heap));
@@ -488,7 +501,7 @@ std::shared_ptr<Instruction> GetVariableInstruction::clone(void)
 void GetVariableInstruction::execute(WAMState &state)
 {
     std::shared_ptr<Word> X = state.m_ArgumentRegisters.dereferenceRegister(m_ArgumentRegister),
-                          Y = state.getChoicePoint(state.EReg())->m_Variables[m_Offset];
+                          Y = state.stackAt(state.EReg())->m_Variables[m_Offset];
     clearPDL(state, X, Y);
 }
 
@@ -540,13 +553,11 @@ std::shared_ptr<Instruction> PutVariableInstruction::clone(void)
 
 void PutVariableInstruction::execute(WAMState &state)
 {
-    std::shared_ptr<ChoicePoint> cp = state.getChoicePoint(state.m_EnvironmentRegister);
+    std::shared_ptr<ChoicePoint> cp = state.stackAt(state.EReg());
     std::shared_ptr<Word> word = cp->m_Variables[m_Offset]->dereference();
     if (word->tag() == TAG::VARIABLE)
     {
-        std::shared_ptr<VariableWord> vw = std::static_pointer_cast<VariableWord>(word->clone());
-        vw->setRef(&cp->m_Variables[m_Offset]);
-        vw->bind();
+        std::shared_ptr<VariableWord> vw = std::make_shared<VariableWord>(&cp->m_Variables[m_Offset], "", true);
         state.fillRegister(vw, m_ArgumentRegister);
     }
     else
@@ -636,11 +647,9 @@ void UnifyConstantInstruction::execute(WAMState &state)
 
     if (w->tag() == VARIABLE)
     {
-        std::shared_ptr<VariableWord> vw = std::static_pointer_cast<VariableWord>(w->clone());
+        std::shared_ptr<VariableWord> vw = std::static_pointer_cast<VariableWord>(w);
         state.trailPush(vw);
-        // TODO: check
         vw->bind(std::make_shared<ConstantWord>(m_Name));
-        //*vw->ref() = std::make_shared<ConstantWord>(m_Name);
     }
 
     else if (w->tag() == CONSTANT)
@@ -677,10 +686,10 @@ std::shared_ptr<Instruction> UnifyVariableInstruction::clone(void)
 
 void UnifyVariableInstruction::execute(WAMState &state)
 {
-    std::shared_ptr<Word> w = state.getChoicePoint(state.m_EnvironmentRegister)->m_Variables[m_Offset]->dereference();
+    std::shared_ptr<Word> w = state.stackAt(state.EReg())->m_Variables[m_Offset]->dereference();
     if (!state.readMode())
     {
-        state.heapPush(w->clone());
+        state.heapPush(w);
         return;
     }
 
@@ -702,7 +711,7 @@ std::shared_ptr<Instruction> CutInstruction::clone(void)
 
 void CutInstruction::execute(WAMState &state)
 {
-    state.m_BacktrackRegister = state.getChoicePoint(state.m_EnvironmentRegister)->m_BB;
+    state.m_BacktrackRegister = state.stackAt(state.EReg())->m_BB;
 }
 
 void CutInstruction::print(std::ostream &os) const

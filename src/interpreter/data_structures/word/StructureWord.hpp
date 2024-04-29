@@ -9,7 +9,7 @@ class StructureWord : public Word
 public:
     StructureWord(const std::string &functor, size_t arity, const std::vector<std::shared_ptr<Word>> &heapRef, size_t offset);
     void print(std::ostream &os) const override;
-    std::shared_ptr<Word> clone(void) override;
+    std::shared_ptr<Word> clone(void) const override;
     std::string toString(void);
 
     bool compareToStruct(std::shared_ptr<StructureWord> sword) override;
