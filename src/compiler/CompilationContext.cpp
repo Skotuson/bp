@@ -52,6 +52,11 @@ WAMCode &CompilationContext::getCode()
     return m_GeneratedCode;
 }
 
+std::string CompilationContext::generateTempVar(void)
+{
+    return "__T" + std::to_string(allocate());
+}
+
 void CompilationContext::addVariable(const std::string &variable)
 {
     m_GeneratedCode.addVariable({getVarOffset(variable), variable});

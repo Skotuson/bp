@@ -36,6 +36,8 @@ public:
     WAMCode code(void);
     WAMCode &getCode(void);
 
+    std::string generateTempVar(void);
+
     void addVariable(const std::string &variable);
 
     size_t allocate(void);
