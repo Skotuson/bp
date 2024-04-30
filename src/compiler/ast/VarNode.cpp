@@ -7,15 +7,24 @@ VarNode::VarNode(const std::string &name)
 
 void VarNode::codegen(CompilationContext &cctx)
 {
-    cctx.noteVariable(m_Name);
+    bool isWildcard = false;
+    std::string name = m_Name;
+    if (m_Name == "_")
+    {
+        name = cctx.generateTempVar();
+    }
+    cctx.noteVariable(name);
     if (!m_IsGoal)
         cctx.addInstruction(
-            std::make_shared<GetVariableInstruction>(m_Name, m_AvailableReg++, cctx.getVarOffset(m_Name)));
+            std::make_shared<GetVariableInstruction>(name, m_AvailableReg++, cctx.getVarOffset(name)));
     else
     {
-        cctx.addVariable(m_Name);
+        if (!isWildcard)
+        {
+            cctx.addVariable(name);
+        }
         cctx.addInstruction(
-            std::make_shared<PutVariableInstruction>(m_Name, m_AvailableReg++, cctx.getVarOffset(m_Name)));
+            std::make_shared<PutVariableInstruction>(name, m_AvailableReg++, cctx.getVarOffset(name)));
     }
 }
 
