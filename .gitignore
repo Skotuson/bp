@@ -2,3 +2,4 @@
 *.o
 wam
 .vscode/settings.json
+/build
