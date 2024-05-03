@@ -151,6 +151,104 @@ TEST_CASE("Interpreter test suite")
         }
     }
 
+    SUBCASE("Run queries with recursion II: ")
+    {
+        std::istringstream iss(
+            "bigger(dog, mouse)."
+            "bigger(elephant, dog)."
+            "bigger(dog, cat)."
+            "bigger(whale, elephant)."
+
+            "is_bigger(X, Y) :- bigger(X, Y)."
+            "is_bigger(X, Y) :-"
+            "bigger(X, Z),"
+            "is_bigger(Z, Y).");
+        c.compile(iss);
+
+        SUBCASE("Asking for all answers:")
+        {
+            Interpreter i(c.dump());
+            i.setQuery(i.compileQuery(
+                "is_bigger(X,Y)."));
+            auto r = i.evaluateQuery();
+            CHECK(r.first);
+            CHECK(r.second.size() == 2);
+            CHECK(r.second["X"] == "dog");
+            CHECK(r.second["Y"] == "mouse");
+            std::istringstream iss(";");
+            i.nextAnswer(iss);
+
+            r = i.evaluateQuery();
+            CHECK(r.first);
+            CHECK(r.second.size() == 2);
+            CHECK(r.second["X"] == "elephant");
+            CHECK(r.second["Y"] == "dog");
+            iss = std::istringstream(";");
+            i.nextAnswer(iss);
+
+            r = i.evaluateQuery();
+            CHECK(r.first);
+            CHECK(r.second.size() == 2);
+            CHECK(r.second["X"] == "dog");
+            CHECK(r.second["Y"] == "cat");
+            iss = std::istringstream(";");
+            i.nextAnswer(iss);
+
+            r = i.evaluateQuery();
+            CHECK(r.first);
+            CHECK(r.second.size() == 2);
+            CHECK(r.second["X"] == "whale");
+            CHECK(r.second["Y"] == "elephant");
+            iss = std::istringstream(";");
+            i.nextAnswer(iss);
+
+            r = i.evaluateQuery();
+            CHECK(r.first);
+            CHECK(r.second.size() == 2);
+            CHECK(r.second["X"] == "elephant");
+            CHECK(r.second["Y"] == "mouse");
+            iss = std::istringstream(";");
+            i.nextAnswer(iss);
+
+            r = i.evaluateQuery();
+            CHECK(r.first);
+            CHECK(r.second.size() == 2);
+            CHECK(r.second["X"] == "elephant");
+            CHECK(r.second["Y"] == "cat");
+            iss = std::istringstream(";");
+            i.nextAnswer(iss);
+
+            r = i.evaluateQuery();
+            CHECK(r.first);
+            CHECK(r.second.size() == 2);
+            CHECK(r.second["X"] == "whale");
+            CHECK(r.second["Y"] == "dog");
+            iss = std::istringstream(";");
+            i.nextAnswer(iss);
+
+            r = i.evaluateQuery();
+            CHECK(r.first);
+            CHECK(r.second.size() == 2);
+            CHECK(r.second["X"] == "whale");
+            CHECK(r.second["Y"] == "mouse");
+            iss = std::istringstream(";");
+            i.nextAnswer(iss);
+
+            r = i.evaluateQuery();
+            CHECK(r.first);
+            CHECK(r.second.size() == 2);
+            CHECK(r.second["X"] == "whale");
+            CHECK(r.second["Y"] == "cat");
+            iss = std::istringstream(";");
+            i.nextAnswer(iss);
+
+            r = i.evaluateQuery();
+            CHECK(!r.first);
+            CHECK(r.second.empty());
+            i.clearQuery();
+        }
+    }
+
     SUBCASE("Run queries with nested complex structures: ")
     {
         std::istringstream iss(
