@@ -25,17 +25,17 @@ private:
     void Next(void);
     std::shared_ptr<ClauseNode> Predicates(void);
     std::shared_ptr<ClauseNode> Pred(const std::string &head);
-    std::vector<GoalNode *> Predicate(void);
-    std::vector<GoalNode *> Body(void);
-    StructNode *BodyLower(void);
-    std::vector<GoalNode *> BodyCont(void);
-    TermNode *BodyTerm(void);
-    TermNode *Term(void);
-    ListNode *ListInner(void);
-    TermNode *ListCons(void);
-    std::vector<TermNode *> Terms(void);
-    std::vector<TermNode *> TermsCont(void);
-    TermNode *TermLower(void);
+    std::vector<std::shared_ptr<GoalNode>> Predicate(void);
+    std::vector<std::shared_ptr<GoalNode>> Body(void);
+    std::shared_ptr<StructNode> BodyLower(void);
+    std::vector<std::shared_ptr<GoalNode>> BodyCont(void);
+    std::shared_ptr<TermNode> BodyTerm(void);
+    std::shared_ptr<TermNode> Term(void);
+    std::shared_ptr<ListNode> ListInner(void);
+    std::shared_ptr<TermNode> ListCons(void);
+    std::vector<std::shared_ptr<TermNode>> Terms(void);
+    std::vector<std::shared_ptr<TermNode>> TermsCont(void);
+    std::shared_ptr<TermNode> TermLower(void);
     //-------------CLASS VARIABLES-------------//
     Lexer m_Lex;
     std::shared_ptr<ProgramNode> m_ASTRoot;

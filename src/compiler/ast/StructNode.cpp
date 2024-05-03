@@ -3,7 +3,7 @@
 #include <queue>
 #include <algorithm>
 
-StructNode::StructNode(const std::string &name, std::vector<TermNode *> args)
+StructNode::StructNode(const std::string &name, std::vector<std::shared_ptr<TermNode>> args)
     : ComplexNode(name),
       m_Args(args)
 {
@@ -11,7 +11,7 @@ StructNode::StructNode(const std::string &name, std::vector<TermNode *> args)
     {
         if (arg->type() == STRUCT || arg->type() == LIST)
         {
-            ComplexNode *cn = static_cast<ComplexNode *>(arg);
+            ComplexNode *cn = static_cast<ComplexNode *>(arg.get());
             NestedPairing p = cn->getNestedComplex();
             // Get the information about more nested terms, increase their nested depth by one
             for (const auto &[complexNode, depth] : p)
@@ -21,12 +21,6 @@ StructNode::StructNode(const std::string &name, std::vector<TermNode *> args)
         }
     }
     m_Complex.insert({this, 0});
-}
-
-StructNode::~StructNode(void)
-{
-    for (TermNode *arg : m_Args)
-        delete arg;
 }
 
 void StructNode::codegen(CompilationContext &cctx)
@@ -129,7 +123,7 @@ void StructNode::unifyHead(CompilationContext &cctx)
             cctx.addInstruction(std::make_shared<UnifyVariableInstruction>(tempVariable, cctx.getVarOffset(tempVariable)));
 
             // Add term to queue to be processed after all the "top level" code has been generated
-            terms.push({static_cast<ComplexNode *>(arg), tempVariable});
+            terms.push({static_cast<ComplexNode *>(arg.get()), tempVariable});
         }
     }
 
@@ -233,7 +227,7 @@ void StructNode::unifyArguments(CompilationContext &cctx, ProcessedComplex &proc
         else
         {
             // Use a unifyv instruction with the offset of the clause variable into which they were compiled earlier:
-            std::string var = processedComplex[arg];
+            std::string var = processedComplex[arg.get()];
             cctx.addInstruction(std::make_shared<UnifyVariableInstruction>(var, cctx.getVarOffset(var)));
         }
     }

@@ -1,21 +1,12 @@
 #include "ClauseNode.hpp"
 
 ClauseNode::ClauseNode(const std::string &head,
-                       std::vector<TermNode *> args,
-                       std::vector<GoalNode *> body)
+                       std::vector<std::shared_ptr<TermNode>> args,
+                       std::vector<std::shared_ptr<GoalNode>> body)
     : m_Head(head + "/" + std::to_string(args.size())),
-      // m_Head(head),
       m_Args(args),
       m_Body(body)
 {
-}
-
-ClauseNode::~ClauseNode(void)
-{
-    for (TermNode *arg : m_Args)
-        delete arg;
-    for (GoalNode *goal : m_Body)
-        delete goal;
 }
 
 void ClauseNode::codegen(CompilationContext &cctx)

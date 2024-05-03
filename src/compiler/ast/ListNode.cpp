@@ -6,7 +6,7 @@
 #include <cassert>
 #include <algorithm>
 
-ListNode::ListNode(const std::vector<TermNode *> &head, TermNode *tail)
+ListNode::ListNode(const std::vector<std::shared_ptr<TermNode>> &head, std::shared_ptr<TermNode> tail)
     : ComplexNode("[]")
 {
     if (tail)
@@ -18,7 +18,8 @@ ListNode::ListNode(const std::vector<TermNode *> &head, TermNode *tail)
     else if (!head.empty())
     {
         m_Head = {head.front()};
-        m_Tail = new ListNode({head.begin() + 1, head.end()});
+        std::vector<std::shared_ptr<TermNode>> tail = {head.begin() + 1, head.end()};
+        m_Tail = std::make_shared<ListNode>(tail);
     }
 
     m_List = m_Head;
@@ -26,12 +27,12 @@ ListNode::ListNode(const std::vector<TermNode *> &head, TermNode *tail)
     {
         m_List.push_back(m_Tail);
     }
-    
+
     for (const auto &arg : m_List)
     {
         if (arg->type() == STRUCT || arg->type() == LIST)
         {
-            ComplexNode *cn = static_cast<ComplexNode *>(arg);
+            ComplexNode *cn = static_cast<ComplexNode *>(arg.get());
             NestedPairing p = cn->getNestedComplex();
             // Get the information about more nested terms, increase their nested depth by one
             for (const auto &[complexNode, depth] : p)
@@ -41,13 +42,6 @@ ListNode::ListNode(const std::vector<TermNode *> &head, TermNode *tail)
         }
     }
     m_Complex.insert({this, 0});
-}
-
-ListNode::~ListNode(void)
-{
-    // for (TermNode *el : m_Head)
-    //     delete el;
-    // delete m_Tail;
 }
 
 void ListNode::codegen(CompilationContext &cctx)
@@ -113,7 +107,7 @@ void ListNode::unifyHead(CompilationContext &cctx)
 {
     std::queue<std::pair<ComplexNode *, std::string>> terms;
     // Generate code for car and cdr of the list.
-    std::vector<TermNode *> args = m_Head;
+    std::vector<std::shared_ptr<TermNode>> args = m_Head;
     args.push_back(m_Tail);
     for (const auto &arg : args)
     {
@@ -140,7 +134,7 @@ void ListNode::unifyHead(CompilationContext &cctx)
             cctx.addInstruction(std::make_shared<UnifyVariableInstruction>(tempVariable, cctx.getVarOffset(tempVariable)));
 
             // Add term to queue to be processed after all the "top level" code has been generated
-            terms.push({static_cast<ComplexNode *>(arg), tempVariable});
+            terms.push({static_cast<ComplexNode *>(arg.get()), tempVariable});
         }
     }
     // Top level code has been generated
@@ -243,7 +237,7 @@ void ListNode::unifyArguments(CompilationContext &cctx, ProcessedComplex &proces
         else
         {
             // Use a unifyv instruction with the offset of the clause variable into which they were compiled earlier:
-            std::string var = processedComplex[arg];
+            std::string var = processedComplex[arg.get()];
             cctx.addInstruction(std::make_shared<UnifyVariableInstruction>(var, cctx.getVarOffset(var)));
         }
     }
