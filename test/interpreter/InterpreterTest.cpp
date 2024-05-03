@@ -9,6 +9,19 @@
 
 TEST_CASE("Interpreter test suite")
 {
+
+    auto testQuery = [&](Interpreter &i, Result ref)
+    {
+        auto r = i.evaluateQuery();
+        CHECK(r.first == ref.first);
+        CHECK(r.second.size() == ref.second.size());
+        for (const auto &res : ref.second)
+        {
+            std::cout << r.second[res.first] << " =?= " << res.second << std::endl;
+            CHECK(r.second[res.first] == res.second);
+        }
+    };
+
     Compiler c;
     SUBCASE("Run simple queries: ")
     {
@@ -292,6 +305,48 @@ TEST_CASE("Interpreter test suite")
             CHECK(vars["Y"] == "p(2)");
             CHECK(vars["Z"] == "w(d(1))");
             i.clearQuery();
+        }
+    }
+
+    SUBCASE("Run queries with recursion III: ")
+    {
+        std::istringstream iss(
+            "bt_identical(empty, empty)."
+            "bt_identical(t(_, A, AA), t(_, B, BB)) :-"
+            "   bt_identical(A, B), "
+            "   bt_identical(AA, BB).");
+        c.compile(iss);
+
+        SUBCASE("Trivial satisfiable case")
+        {
+            Interpreter i(c.dump());
+            i.setQuery(i.compileQuery(
+                "bt_identical(empty, empty)."));
+            testQuery(i, {true, {}});
+        }
+
+        SUBCASE("Trivial false case")
+        {
+            Interpreter i(c.dump());
+            i.setQuery(i.compileQuery(
+                "bt_identical(non_empty, empty)."));
+            testQuery(i, {false, {}});
+        }
+
+        SUBCASE("Simple true case")
+        {
+            Interpreter i(c.dump());
+            i.setQuery(i.compileQuery(
+                "bt_identical(t(1, empty, empty), t(2, empty, empty))."));
+            testQuery(i, {true, {}});
+        }
+
+        SUBCASE("Simple false case")
+        {
+            Interpreter i(c.dump());
+            i.setQuery(i.compileQuery(
+                "bt_identical(t(1, t(2, empty, empty), empty), t(1, empty, empty))."));
+            testQuery(i, {false, {}});
         }
     }
 }
