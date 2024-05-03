@@ -37,9 +37,13 @@ int main(int argc, const char **argv)
         std::cout << "Missing mandatory --file parameter" << std::endl;
         return 1;
     }
-    
+
     Preprocessor preprocessor;
-    Filepath fp = preprocessor.linkLibraries(sourceCodePath, "../stdlib");
+    std::istringstream iss(
+                           "__id(A, A).\n"
+                           "__zero(0)."
+    );
+    Filepath fp = preprocessor.linkLibrary(sourceCodePath, iss);
 
     std::ifstream ifs(fp);
 

@@ -4,25 +4,20 @@
 #include <iostream>
 #include <filesystem>
 
-Filepath Preprocessor::linkLibraries(const Filepath &filepath, const Filepath &libPath)
+Filepath Preprocessor::linkLibrary(const Filepath &filepath, std::istream &is)
 {
     Filepath linkedFilePath = "__link" + std::to_string(++m_FilesCreated);
     std::ofstream ofs(linkedFilePath);
 
-    for (const auto &lib : std::filesystem::directory_iterator(libPath))
+    std::string line = "";
+    while (getline(is, line))
     {
-        std::ifstream ifs(lib.path());
-        std::string line;
-        while (std::getline(ifs, line))
-        {
-            ofs << line;
-        }
-        ofs << std::endl;
-        ifs.close();
+        ofs << line;
     }
+    ofs << std::endl;
 
     std::ifstream ifs(filepath);
-    std::string line;
+    line = "";
     while (std::getline(ifs, line))
     {
         ofs << line;
