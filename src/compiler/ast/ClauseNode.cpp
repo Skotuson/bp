@@ -11,25 +11,21 @@ ClauseNode::ClauseNode(const std::string &head,
 
 void ClauseNode::codegen(CompilationContext &cctx)
 {
-    std::string code = "";
     std::shared_ptr<TableEntry> entry = cctx.get(m_Head);
     // Generate the initial mark instruction for first clause of the predicate name
     if (!entry->m_Generated)
     {
         cctx.addLabel(m_Head);
         cctx.addInstruction(std::make_shared<MarkInstruction>());
-        code += m_Head + ":\tmark\n";
     }
     else
     {
         std::string label = m_Head + std::to_string(entry->m_Generated);
-        code += label + ":";
         cctx.addLabel(label);
     }
 
     ++entry->m_Generated;
     std::string retryLabel = entry->m_Generated == entry->m_Clauses ? "quit" : m_Head + std::to_string(entry->m_Generated);
-    code += "\tretry-me-else " + retryLabel + "\n";
     cctx.addInstruction(std::make_shared<RetryMeElseInstruction>(retryLabel));
 
     // Generate an allocate instruction and count the number of local variables needed during codegen.
