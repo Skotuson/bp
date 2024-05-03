@@ -151,11 +151,49 @@ TEST_CASE("Interpreter test suite")
         }
     }
 
-    SUBCASE("Run queries with lists (append): ")
+    SUBCASE("Run queries with nested complex structures: ")
     {
         std::istringstream iss(
-            "append([], X, X)."
-            "append([H|T1],T2,[H|T3]) :- append(T1, T2, T3).");
+            "t(1,2,s(g(f(1,2)),h(u(o(5)))))."
+            "t(s(g(f(1,2)),h(u(o(5)))),x(1))."
+            "t(s(g(f(1)),h(u(o(5)))),x(p(2),w(d(1)))).");
         c.compile(iss);
+
+        SUBCASE("Trivial query which should be true:")
+        {
+            Interpreter i(c.dump());
+            i.setQuery(i.compileQuery(
+                "t(s(g(f(1)),h(u(o(5)))),x(p(2),w(d(1))))."));
+            auto [success, vars] = i.evaluateQuery();
+            CHECK(success);
+            CHECK(vars.empty());
+            i.clearQuery();
+        }
+
+        SUBCASE("Trivial query which should be false:")
+        {
+            Interpreter i(c.dump());
+            i.setQuery(i.compileQuery(
+                "t(s(g(f(2)),h(u(o(5)))),x(p(2),w(d(1))))."));
+            auto [success, vars] = i.evaluateQuery();
+            CHECK(!success);
+            CHECK(vars.empty());
+            i.clearQuery();
+        }
+
+        SUBCASE("Query with variables binding to complex structures:")
+        {
+            Interpreter i(c.dump());
+            i.setQuery(i.compileQuery(
+                "t(s(X,h(H)),x(Y,Z))."));
+            auto [success, vars] = i.evaluateQuery();
+            CHECK(success);
+            CHECK(vars.size() == 4);
+            CHECK(vars["X"] == "g(f(1))");
+            CHECK(vars["H"] == "u(o(5))");
+            CHECK(vars["Y"] == "p(2)");
+            CHECK(vars["Z"] == "w(d(1))");
+            i.clearQuery();
+        }
     }
 }
