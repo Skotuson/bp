@@ -1,8 +1,7 @@
 #include "ConstNode.hpp"
 
-ConstNode::ConstNode(size_t value)
-    : TermNode(std::to_string(value)),
-      m_Value(value)
+ConstNode::ConstNode(const std::string &name)
+    : TermNode(name)
 {
 }
 
@@ -28,6 +27,6 @@ TermNode::TermType ConstNode::type()
 void ConstNode::print(const std::string &indent)
 {
     std::cout << indent << "=======[Start ConstNode]======" << std::endl;
-    std::cout << indent << "Value: " << m_Value << std::endl;
+    std::cout << indent << "Value: " << m_Name << std::endl;
     std::cout << indent << "=======[End ConstNode]======" << std::endl;
 }
