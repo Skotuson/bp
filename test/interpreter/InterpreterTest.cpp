@@ -349,4 +349,76 @@ TEST_CASE("Interpreter test suite")
             testQuery(i, {false, {}});
         }
     }
+
+    SUBCASE("Run queries with lists I (append)")
+    {
+        std::istringstream iss(
+            "append([], X, X)."
+            "append([H|T1],T2,[H|T3]) :- append(T1, T2, T3).");
+        c.compile(iss);
+
+        SUBCASE("Trivial case I (appending empty list to empty list)")
+        {
+            Interpreter i(c.dump());
+            i.setQuery(i.compileQuery(
+                "append([], [], [])."));
+            testQuery(i, {true, {}});
+        }
+
+        SUBCASE("Trivial case II (appending one element to empty list)")
+        {
+            Interpreter i(c.dump());
+            i.setQuery(i.compileQuery(
+                "append([], [1], [1])."));
+            testQuery(i, {true, {}});
+        }
+
+        SUBCASE("Trivial satisfiable case")
+        {
+            Interpreter i(c.dump());
+            i.setQuery(i.compileQuery(
+                "append([1,2], [3,4], [1,2,3,4])."));
+            testQuery(i, {true, {}});
+        }
+
+        SUBCASE("Trivial false case I (output list is longer)")
+        {
+            Interpreter i(c.dump());
+            i.setQuery(i.compileQuery(
+                "append([1,2], [3,4], [1,2,3,4,5])."));
+            testQuery(i, {false, {}});
+        }
+
+        SUBCASE("Trivial false case II (output list is shorter)")
+        {
+            Interpreter i(c.dump());
+            i.setQuery(i.compileQuery(
+                "append([1,2], [3,4], [1,2,3])."));
+            testQuery(i, {false, {}});
+        }
+
+        SUBCASE("Variables I")
+        {
+            Interpreter i(c.dump());
+            i.setQuery(i.compileQuery(
+                "append([1,2], [3,4], List)."));
+            testQuery(i, {true, {{"List", "[1|[2|[3|[4|[]]]]]"}}});
+        }
+
+        SUBCASE("Variables II")
+        {
+            Interpreter i(c.dump());
+            i.setQuery(i.compileQuery(
+                "append([1,2], [3,4], [H|T])."));
+            testQuery(i, {true, {{"H", "1"}, {"T", "[2|[3|[4|[]]]]"}}});
+        }
+
+        SUBCASE("Variables III")
+        {
+            Interpreter i(c.dump());
+            i.setQuery(i.compileQuery(
+                "append([1,2], [3,4], [W,X,Y,Z])."));
+            testQuery(i, {true, {{"W", "1"}, {"X", "2"}, {"Y", "3"}, {"Z", "4"}}});
+        }
+    }
 }
