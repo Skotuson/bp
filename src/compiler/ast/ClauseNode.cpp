@@ -12,7 +12,7 @@ ClauseNode::ClauseNode(const std::string &head,
 void ClauseNode::codegen(CompilationContext &cctx)
 {
     std::string code = "";
-    TableEntry *entry = cctx.get(m_Head);
+    std::shared_ptr<TableEntry> entry = cctx.get(m_Head);
     // Generate the initial mark instruction for first clause of the predicate name
     if (!entry->m_Generated)
     {
@@ -36,7 +36,7 @@ void ClauseNode::codegen(CompilationContext &cctx)
     cctx.resetVariables();
     std::shared_ptr<AllocateInstruction> alloc = std::make_shared<AllocateInstruction>(0);
     cctx.addInstruction(alloc);
-    //size_t allocInstrIdx = cctx.getCode().size() - 1;
+    // size_t allocInstrIdx = cctx.getCode().size() - 1;
 
     size_t currentArgumentRegister = 1;
     for (size_t i = 0; i < m_Args.size(); i++)
@@ -64,7 +64,7 @@ void ClauseNode::codegen(CompilationContext &cctx)
     alloc->m_N = cctx.allocate();
     //}
     // No local variables needed, delete the empty allocate instruction.
-    //else
+    // else
     //{
     //    cctx.getCode().deleteInstruction(allocInstrIdx);
     //}

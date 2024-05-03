@@ -9,7 +9,7 @@ void ProgramNode::codegen(CompilationContext &cctx)
         auto entry = cctx.get(clause->m_Head);
         if (!entry)
         {
-            cctx.add(clause->m_Head, new TableEntry(clause->m_Head));
+            cctx.add(clause->m_Head, std::make_shared<TableEntry>(clause->m_Head));
         }
         else
         {
