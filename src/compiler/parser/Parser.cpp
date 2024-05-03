@@ -108,7 +108,7 @@ std::vector<std::shared_ptr<GoalNode>> Parser::Predicate(void)
 std::vector<std::shared_ptr<GoalNode>> Parser::Body(void)
 {
     std::vector<std::shared_ptr<GoalNode>> body, bodyCont;
-    std::shared_ptr<StructNode> compound;
+    std::shared_ptr<TermNode> compound;
     std::shared_ptr<TermNode> term;
     std::string varName = "";
     switch (m_Lex.peek())
@@ -131,7 +131,7 @@ std::vector<std::shared_ptr<GoalNode>> Parser::Body(void)
         m_Lex.match(TOK_CONST);
         m_Lex.match(TOK_EQUAL);
         term = Term();
-        body.push_back(std::make_shared<UnificationNode>(std::make_shared<ConstNode>(m_Lex.numericValue()), term));
+        body.push_back(std::make_shared<UnificationNode>(std::make_shared<ConstNode>(std::to_string(m_Lex.numericValue())), term));
         bodyCont = BodyCont();
         body.insert(body.end(), bodyCont.begin(), bodyCont.end());
         return body;
@@ -155,7 +155,7 @@ std::vector<std::shared_ptr<GoalNode>> Parser::Body(void)
     }
 }
 
-std::shared_ptr<StructNode> Parser::BodyLower(void)
+std::shared_ptr<TermNode> Parser::BodyLower(void)
 {
     std::vector<std::shared_ptr<TermNode>> terms;
     std::string name = m_Lex.identifier();
@@ -164,7 +164,7 @@ std::shared_ptr<StructNode> Parser::BodyLower(void)
     case TOK_EQUAL:
     case TOK_COMMA:
     case TOK_PERIOD:
-        return std::make_shared<StructNode>(name);
+        return std::make_shared<ConstNode>(name);
     case TOK_LPAR:
         m_Lex.match(TOK_LPAR);
         terms = Terms();
@@ -216,7 +216,7 @@ std::shared_ptr<TermNode> Parser::Term(void)
         return TermLower();
     case TOK_CONST:
         m_Lex.match(TOK_CONST);
-        return std::make_shared<ConstNode>(m_Lex.numericValue());
+        return std::make_shared<ConstNode>(std::to_string(m_Lex.numericValue()));
     case TOK_LSPAR:
         m_Lex.match(TOK_LSPAR);
         list = ListInner();
