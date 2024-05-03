@@ -51,25 +51,26 @@ void ListNode::codegen(CompilationContext &cctx)
     {
         if (!m_IsGoal)
         {
-            cctx.addInstruction(std::make_shared<GetConstantInstruction>("[]", m_AvailableReg++));
+            cctx.addInstruction(std::make_shared<GetConstantInstruction>("[]", cctx.availableReg()));
         }
         else
         {
-            cctx.addInstruction(std::make_shared<PutConstantInstruction>("[]", m_AvailableReg++));
+            cctx.addInstruction(std::make_shared<PutConstantInstruction>("[]", cctx.availableReg()));
         }
+        cctx.setAvailableReg(cctx.availableReg() + 1);
         return;
     }
 
     if (m_IsGoal)
     {
         unifyRHS(cctx);
-        m_AvailableReg++;
+        cctx.setAvailableReg(cctx.availableReg() + 1);
         return;
     }
 
-    cctx.addInstruction(std::make_shared<GetListInstruction>(m_Name, m_AvailableReg));
+    cctx.addInstruction(std::make_shared<GetListInstruction>(m_Name, cctx.availableReg()));
     unifyHead(cctx);
-    m_AvailableReg++;
+    cctx.setAvailableReg(cctx.availableReg() + 1);
 }
 
 TermNode::TermType ListNode::type()
@@ -142,18 +143,17 @@ void ListNode::unifyHead(CompilationContext &cctx)
     {
         auto top = terms.front();
         // Generate putv instruction to load some unneeded arg. register with the contents of the new variable
-        cctx.addInstruction(std::make_shared<PutVariableInstruction>(top.second, m_AvailableReg, cctx.getVarOffset(top.second)));
+        cctx.addInstruction(std::make_shared<PutVariableInstruction>(top.second, cctx.availableReg(), cctx.getVarOffset(top.second)));
         auto arg = top.first;
         arg->m_IsGoal = true;
         arg->m_IsArg = true;
-        arg->m_AvailableReg = m_AvailableReg;
         if (arg->type() == STRUCT)
         {
-            cctx.addInstruction(std::make_shared<GetStructureInstruction>(arg->name(), m_AvailableReg, arg->arity()));
+            cctx.addInstruction(std::make_shared<GetStructureInstruction>(arg->name(), cctx.availableReg(), arg->arity()));
         }
         else if (arg->type() == LIST)
         {
-            cctx.addInstruction(std::make_shared<GetListInstruction>(arg->name(), m_AvailableReg));
+            cctx.addInstruction(std::make_shared<GetListInstruction>(arg->name(), cctx.availableReg()));
         }
         arg->unifyHead(cctx);
         terms.pop();
@@ -164,7 +164,7 @@ void ListNode::unifyRHS(CompilationContext &cctx)
 {
     if (!hasNestedComplex())
     {
-        cctx.addInstruction(std::make_shared<PutListInstruction>(name(), m_AvailableReg));
+        cctx.addInstruction(std::make_shared<PutListInstruction>(name(), cctx.availableReg()));
         for (const auto &arg : m_List)
         {
             TermNode::TermType type = arg->type();
@@ -200,14 +200,13 @@ void ListNode::unifyRHS(CompilationContext &cctx)
         for (const auto &n : nested)
         {
             // (b) Select a currently unsued argument register Au - the m_AvailableReg variable is the next available register
-            n->m_AvailableReg = m_AvailableReg;
             // (c) Generate an instruction sequence as in the prior step (put-list or put-structure), but target the result to Au
             n->unifyArguments(cctx, processedComplex);
             // (d) Generate a getv to place Au in a specially allocated clause variable (as was done for nested objects in the clause head)
             // TODO: non collision naming, add some legit name, make a function to remove duplicity
             std::string tempVariable = "__temp" + std::to_string(cctx.allocate()) + "__";
             cctx.noteVariable(tempVariable);
-            cctx.addInstruction(std::make_shared<GetVariableInstruction>(tempVariable, m_AvailableReg, cctx.getVarOffset(tempVariable)));
+            cctx.addInstruction(std::make_shared<GetVariableInstruction>(tempVariable, cctx.availableReg(), cctx.getVarOffset(tempVariable)));
             processedComplex.insert({n, tempVariable});
             // (e) Repeat the above process for the next most nested component, expect that for components that refer to nested structures that have already been processed
         }
@@ -217,7 +216,7 @@ void ListNode::unifyRHS(CompilationContext &cctx)
 void ListNode::unifyArguments(CompilationContext &cctx, ProcessedComplex &processedComplex)
 {
     // (c) Generate an instruction sequence as in the prior step (put-list or put-structure), but target the result to Au
-    cctx.addInstruction(std::make_shared<PutListInstruction>(name(), m_AvailableReg));
+    cctx.addInstruction(std::make_shared<PutListInstruction>(name(), cctx.availableReg()));
     for (const auto &arg : m_List)
     {
         TermType type = arg->type();

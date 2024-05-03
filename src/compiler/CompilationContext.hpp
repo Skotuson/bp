@@ -44,7 +44,7 @@ public:
     void resetVariables(void);
 
     size_t availableReg(void);
-    void setAvilableReg(size_t reg);
+    void setAvailableReg(size_t reg);
 
 private:
     size_t m_AvailableRegister = 1;

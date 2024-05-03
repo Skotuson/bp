@@ -9,9 +9,15 @@ ConstNode::ConstNode(size_t value)
 void ConstNode::codegen(CompilationContext &cctx)
 {
     if (!m_IsGoal)
-        cctx.addInstruction(std::make_shared<GetConstantInstruction>(m_Name, m_AvailableReg++));
+    {
+        cctx.addInstruction(std::make_shared<GetConstantInstruction>(m_Name, cctx.availableReg()));
+    }
     else
-        cctx.addInstruction(std::make_shared<PutConstantInstruction>(m_Name, m_AvailableReg++));
+    {
+        cctx.addInstruction(std::make_shared<PutConstantInstruction>(m_Name, cctx.availableReg()));
+    }
+
+    cctx.setAvailableReg(cctx.availableReg() + 1);
 }
 
 TermNode::TermType ConstNode::type()

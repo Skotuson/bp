@@ -38,24 +38,19 @@ void ClauseNode::codegen(CompilationContext &cctx)
     cctx.addInstruction(alloc);
     // size_t allocInstrIdx = cctx.getCode().size() - 1;
 
-    size_t currentArgumentRegister = 1;
+    cctx.setAvailableReg(1);
     for (size_t i = 0; i < m_Args.size(); i++)
     {
         m_Args[i]->m_IsGoal = false;
-        m_Args[i]->m_AvailableReg = currentArgumentRegister;
         // Load the arguments into argument registers
         m_Args[i]->codegen(cctx);
-        currentArgumentRegister = m_Args[i]->m_AvailableReg;
     }
 
     // All get instructions were carried out
-    currentArgumentRegister = 1;
-
     for (size_t i = 0; i < m_Body.size(); i++)
     {
-        m_Body[i]->m_AvailableReg = currentArgumentRegister;
+        cctx.setAvailableReg(1);
         m_Body[i]->codegen(cctx);
-        currentArgumentRegister = m_Body[i]->m_AvailableReg;
     }
 
     // Generate allocate only if N is non-zero

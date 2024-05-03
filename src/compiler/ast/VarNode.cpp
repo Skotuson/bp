@@ -15,8 +15,10 @@ void VarNode::codegen(CompilationContext &cctx)
     }
     cctx.noteVariable(name);
     if (!m_IsGoal)
+    {
         cctx.addInstruction(
-            std::make_shared<GetVariableInstruction>(name, m_AvailableReg++, cctx.getVarOffset(name)));
+            std::make_shared<GetVariableInstruction>(name, cctx.availableReg(), cctx.getVarOffset(name)));
+    }
     else
     {
         if (!isWildcard)
@@ -24,8 +26,10 @@ void VarNode::codegen(CompilationContext &cctx)
             cctx.addVariable(name);
         }
         cctx.addInstruction(
-            std::make_shared<PutVariableInstruction>(name, m_AvailableReg++, cctx.getVarOffset(name)));
+            std::make_shared<PutVariableInstruction>(name, cctx.availableReg(), cctx.getVarOffset(name)));
     }
+
+    cctx.setAvailableReg(cctx.availableReg() + 1);
 }
 
 TermNode::TermType VarNode::type()

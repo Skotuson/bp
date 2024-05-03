@@ -81,7 +81,7 @@ size_t CompilationContext::availableReg(void)
     return m_AvailableRegister;
 }
 
-void CompilationContext::setAvilableReg(size_t reg)
+void CompilationContext::setAvailableReg(size_t reg)
 {
     m_AvailableRegister = reg;
 }

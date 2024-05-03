@@ -33,25 +33,22 @@ void StructNode::codegen(CompilationContext &cctx)
             {
                 arg->m_IsGoal = true;
                 arg->m_IsArg = true;
-                arg->m_AvailableReg = m_AvailableReg;
                 arg->codegen(cctx);
-                m_AvailableReg = arg->m_AvailableReg;
             }
             std::string callName = m_Name + "/" + std::to_string(m_Args.size());
             cctx.addInstruction(std::make_shared<CallInstruction>(callName));
-            // Reset available registers after call
-            m_AvailableReg = 1;
         }
         // Treat structs without arguments as constants (if they are an argument)
         else if (m_Args.empty())
         {
-            cctx.addInstruction(std::make_shared<PutConstantInstruction>(m_Name, m_AvailableReg++));
+            cctx.addInstruction(std::make_shared<PutConstantInstruction>(m_Name, cctx.availableReg()));
+            cctx.setAvailableReg(cctx.availableReg() + 1);
         }
         // Allocate space for complex structure buried inside other complex structure
         else
         {
             unifyRHS(cctx);
-            m_AvailableReg++;
+            cctx.setAvailableReg(cctx.availableReg() + 1);
         }
         return;
     }
@@ -59,13 +56,14 @@ void StructNode::codegen(CompilationContext &cctx)
     // Treat struct as a constant if it has no "arguments"
     if (m_Args.empty())
     {
-        cctx.addInstruction(std::make_shared<GetConstantInstruction>(m_Name, m_AvailableReg++));
+        cctx.addInstruction(std::make_shared<GetConstantInstruction>(m_Name, cctx.availableReg()));
+        cctx.setAvailableReg(cctx.availableReg() + 1);
         return;
     }
 
-    cctx.addInstruction(std::make_shared<GetStructureInstruction>(m_Name, m_AvailableReg, m_Args.size()));
+    cctx.addInstruction(std::make_shared<GetStructureInstruction>(m_Name, cctx.availableReg(), m_Args.size()));
     unifyHead(cctx);
-    m_AvailableReg++;
+    cctx.setAvailableReg(cctx.availableReg() + 1);
 }
 
 TermNode::TermType StructNode::type()
@@ -132,18 +130,17 @@ void StructNode::unifyHead(CompilationContext &cctx)
     {
         auto top = terms.front();
         // Generate putv instruction to load some unneeded arg. register with the contents of the new variable
-        cctx.addInstruction(std::make_shared<PutVariableInstruction>(top.second, m_AvailableReg, cctx.getVarOffset(top.second)));
+        cctx.addInstruction(std::make_shared<PutVariableInstruction>(top.second, cctx.availableReg(), cctx.getVarOffset(top.second)));
         auto arg = top.first;
         arg->m_IsGoal = true;
         arg->m_IsArg = true;
-        arg->m_AvailableReg = m_AvailableReg;
         if (arg->type() == STRUCT)
         {
-            cctx.addInstruction(std::make_shared<GetStructureInstruction>(arg->name(), m_AvailableReg, arg->arity()));
+            cctx.addInstruction(std::make_shared<GetStructureInstruction>(arg->name(), cctx.availableReg(), arg->arity()));
         }
         else if (arg->type() == LIST)
         {
-            cctx.addInstruction(std::make_shared<GetListInstruction>(arg->name(), m_AvailableReg));
+            cctx.addInstruction(std::make_shared<GetListInstruction>(arg->name(), cctx.availableReg()));
         }
         arg->unifyHead(cctx);
         terms.pop();
@@ -154,7 +151,7 @@ void StructNode::unifyRHS(CompilationContext &cctx)
 {
     if (!hasNestedComplex())
     {
-        cctx.addInstruction(std::make_shared<PutStructureInstruction>(name(), m_AvailableReg, arity()));
+        cctx.addInstruction(std::make_shared<PutStructureInstruction>(name(), cctx.availableReg(), arity()));
         for (const auto &arg : m_Args)
         {
             TermNode::TermType type = arg->type();
@@ -190,14 +187,13 @@ void StructNode::unifyRHS(CompilationContext &cctx)
         for (const auto &n : nested)
         {
             // (b) Select a currently unsued argument register Au - the m_AvailableReg variable is the next available register
-            n->m_AvailableReg = m_AvailableReg;
             // (c) Generate an instruction sequence as in the prior step (put-list or put-structure), but target the result to Au
             n->unifyArguments(cctx, processedComplex);
             // (d) Generate a getv to place Au in a specially allocated clause variable (as was done for nested objects in the clause head)
             // TODO: non collision naming, add some legit name, make a function to remove duplicity
             std::string tempVariable = "__temp" + std::to_string(cctx.allocate()) + "__";
             cctx.noteVariable(tempVariable);
-            cctx.addInstruction(std::make_shared<GetVariableInstruction>(tempVariable, m_AvailableReg, cctx.getVarOffset(tempVariable)));
+            cctx.addInstruction(std::make_shared<GetVariableInstruction>(tempVariable, cctx.availableReg(), cctx.getVarOffset(tempVariable)));
             processedComplex.insert({n, tempVariable});
             // (e) Repeat the above process for the next most nested component, expect that for components that refer to nested structures that have already been processed
         }
@@ -207,7 +203,7 @@ void StructNode::unifyRHS(CompilationContext &cctx)
 void StructNode::unifyArguments(CompilationContext &cctx, ProcessedComplex &processedComplex)
 {
     // (c) Generate an instruction sequence as in the prior step (put-list or put-structure), but target the result to Au
-    cctx.addInstruction(std::make_shared<PutStructureInstruction>(name(), m_AvailableReg, arity()));
+    cctx.addInstruction(std::make_shared<PutStructureInstruction>(name(), cctx.availableReg(), arity()));
     for (const auto &arg : m_Args)
     {
         TermType type = arg->type();
