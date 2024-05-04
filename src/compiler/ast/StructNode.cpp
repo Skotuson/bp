@@ -54,10 +54,6 @@ void StructNode::codegen(CompilationContext &cctx)
 
 TermNode::TermType StructNode::type()
 {
-    if (m_Args.empty())
-    {
-        return TermNode::CONST;
-    }
     return TermNode::STRUCT;
 }
 
