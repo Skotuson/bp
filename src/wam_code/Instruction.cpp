@@ -63,7 +63,6 @@ void Instruction::clearPDL(WAMState &state, std::shared_ptr<Word> X, std::shared
             std::shared_ptr<VariableWord> vw = std::static_pointer_cast<VariableWord>(Y);
             // Trail
             state.trailPush(vw);
-            //*vw->ref() = X->clone();
             vw->bind(X->clone());
         }
 
@@ -73,7 +72,6 @@ void Instruction::clearPDL(WAMState &state, std::shared_ptr<Word> X, std::shared
             std::shared_ptr<VariableWord> vw = std::static_pointer_cast<VariableWord>(X);
             // Trail
             state.trailPush(vw);
-            //*vw->ref() = Y->clone();
             vw->bind(Y->clone());
         }
 
