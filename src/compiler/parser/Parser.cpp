@@ -320,3 +320,8 @@ std::shared_ptr<TermNode> Parser::TermLower(void)
         throw std::runtime_error("Terms Parsing error");
     }
 }
+
+std::string Parser::generateWildcardName(void)
+{
+    return "___" + std::to_string(m_WildcardsGenerated++);
+}
