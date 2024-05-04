@@ -38,26 +38,12 @@ void StructNode::codegen(CompilationContext &cctx)
             std::string callName = m_Name + "/" + std::to_string(m_Args.size());
             cctx.addInstruction(std::make_shared<CallInstruction>(callName));
         }
-        // Treat structs without arguments as constants (if they are an argument)
-        else if (m_Args.empty())
-        {
-            cctx.addInstruction(std::make_shared<PutConstantInstruction>(m_Name, cctx.availableReg()));
-            cctx.setAvailableReg(cctx.availableReg() + 1);
-        }
         // Allocate space for complex structure buried inside other complex structure
         else
         {
             unifyRHS(cctx);
             cctx.setAvailableReg(cctx.availableReg() + 1);
         }
-        return;
-    }
-
-    // Treat struct as a constant if it has no "arguments"
-    if (m_Args.empty())
-    {
-        cctx.addInstruction(std::make_shared<GetConstantInstruction>(m_Name, cctx.availableReg()));
-        cctx.setAvailableReg(cctx.availableReg() + 1);
         return;
     }
 

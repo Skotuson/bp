@@ -164,7 +164,7 @@ std::shared_ptr<TermNode> Parser::BodyLower(void)
     case TOK_EQUAL:
     case TOK_COMMA:
     case TOK_PERIOD:
-        return std::make_shared<ConstNode>(name);
+        return std::make_shared<StructNode>(name);
     case TOK_LPAR:
         m_Lex.match(TOK_LPAR);
         terms = Terms();
@@ -310,7 +310,7 @@ std::shared_ptr<TermNode> Parser::TermLower(void)
     case TOK_RSPAR:
     case TOK_RPAR:
     case TOK_PIPE:
-        return std::make_shared<StructNode>(name);
+        return std::make_shared<ConstNode>(name);
     case TOK_LPAR:
         m_Lex.match(TOK_LPAR);
         terms = Terms();
