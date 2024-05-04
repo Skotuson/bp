@@ -1,6 +1,6 @@
 #include "Instruction.hpp"
 
-#include "../interpreter/data_structures/word/ListWord.hpp"
+#include "../../interpreter/data_structures/word/ListWord.hpp"
 
 #include <iostream>
 #include <cassert>
@@ -147,68 +147,6 @@ std::ostream &operator<<(std::ostream &os, const Instruction &instr)
 
 // Indexing Instructions
 
-std::shared_ptr<Instruction> MarkInstruction::clone(void)
-{
-    return std::make_shared<MarkInstruction>();
-}
-
-BranchInstruction::BranchInstruction(const std::string &label, size_t address)
-    : m_Label(label),
-      m_Address(address)
-{
-}
-
-void BranchInstruction::setAddress(size_t address)
-{
-    m_Address = address;
-}
-
-void MarkInstruction::execute(WAMState &state)
-{
-    // Build a new choice point up to the enviornment
-    auto ncp = std::make_shared<ChoicePoint>(state.m_ArgumentRegisters,
-                                             state.EReg(),
-                                             state.m_ContinuationPointer,
-                                             state.BReg(),
-                                             state.TRReg(),
-                                             state.HReg(),
-                                             state.m_ProgramCounter);
-    state.stackPush(ncp);
-    // Set E and B registers
-    // Make it a current one
-    state.m_BacktrackRegister /*= state.m_EnvironmentRegister*/ = state.SReg() - 1;
-}
-
-void MarkInstruction::print(std::ostream &os) const
-{
-    os << "mark";
-}
-
-RetryMeElseInstruction::RetryMeElseInstruction(const std::string &label, size_t address)
-    : BranchInstruction(label, address)
-{
-}
-
-std::shared_ptr<Instruction> RetryMeElseInstruction::clone(void)
-{
-    return std::make_shared<RetryMeElseInstruction>(m_Label, m_Address);
-}
-
-void RetryMeElseInstruction::execute(WAMState &state)
-{
-    // Set next clause to the L (m_Address)
-    std::shared_ptr<ChoicePoint> cp = state.stackAt(state.BReg());
-    if (cp)
-    {
-        cp->m_FA = m_Address;
-    }
-}
-
-void RetryMeElseInstruction::print(std::ostream &os) const
-{
-    os << "retry-me-else " << m_Label << "[" << m_Address << "]";
-}
-
 std::shared_ptr<Instruction> BacktrackInstruction::clone(void)
 {
     return std::make_shared<BacktrackInstruction>();
@@ -311,29 +249,6 @@ void AllocateInstruction::execute(WAMState &state)
 void AllocateInstruction::print(std::ostream &os) const
 {
     os << "allocate " << m_N;
-}
-
-CallInstruction::CallInstruction(const std::string &label, size_t address)
-    : BranchInstruction(label, address)
-{
-}
-
-std::shared_ptr<Instruction> CallInstruction::clone(void)
-{
-    return std::make_shared<CallInstruction>(m_Label, m_Address);
-}
-
-void CallInstruction::execute(WAMState &state)
-{
-    // Program counter already points to another instruction
-    state.m_ContinuationPointer = state.m_ProgramCounter;
-    // Branch to L (m_Address), with return address in CP.
-    state.m_ProgramCounter = m_Address;
-}
-
-void CallInstruction::print(std::ostream &os) const
-{
-    os << "call " + m_Label << "[" << m_Address << "]";
 }
 
 std::shared_ptr<Instruction> ReturnInstruction::clone(void)

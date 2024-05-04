@@ -3,7 +3,7 @@
 #include "../Renderer.hpp"
 #include "WAMState.hpp"
 #include "../wam_code/WAMCode.hpp"
-#include "../wam_code/Instruction.hpp"
+#include "../wam_code/instruction/Instruction.hpp"
 
 #include <iostream>
 #include <sstream>

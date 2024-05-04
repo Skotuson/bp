@@ -32,6 +32,10 @@ src/interpreter/WAMState.cpp
 src/preprocessor/Preprocessor.cpp
 src/Renderer.cpp
 src/wam_code/instruction/Instruction.cpp
+src/wam_code/instruction/MarkInstruction.cpp
+src/wam_code/instruction/BranchInstruction.cpp
+src/wam_code/instruction/RetryMeElseInstruction.cpp
+src/wam_code/instruction/CallInstruction.cpp
 src/wam_code/WAMCode.cpp)
 
 add_executable(wam src/main.cpp)

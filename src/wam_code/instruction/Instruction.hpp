@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../interpreter/WAMState.hpp"
+#include "../../interpreter/WAMState.hpp"
 
 #include <ostream>
 #include <string>
@@ -20,31 +20,7 @@ struct Instruction
     friend std::ostream &operator<<(std::ostream &os, const Instruction &instr);
 };
 
-struct BranchInstruction : public Instruction
-{
-    BranchInstruction(const std::string &label, size_t address = 0);
-    void setAddress(size_t address);
-
-    std::string m_Label;
-    size_t m_Address = 0;
-};
-
 // Indexing instructions
-struct MarkInstruction : public Instruction
-{
-    std::shared_ptr<Instruction> clone(void) override;
-    void execute(WAMState &state) override;
-    void print(std::ostream &os) const override;
-};
-
-struct RetryMeElseInstruction : public BranchInstruction
-{
-    RetryMeElseInstruction(const std::string &label, size_t address = 0);
-    std::shared_ptr<Instruction> clone(void) override;
-    void execute(WAMState &state) override;
-    void print(std::ostream &os) const override;
-};
-
 struct BacktrackInstruction : public Instruction
 {
     std::shared_ptr<Instruction> clone(void) override;
@@ -67,14 +43,6 @@ struct AllocateInstruction : public Instruction
     void execute(WAMState &state) override;
     void print(std::ostream &os) const override;
     size_t m_N;
-};
-
-struct CallInstruction : public BranchInstruction
-{
-    CallInstruction(const std::string &label, size_t address = 0);
-    std::shared_ptr<Instruction> clone(void) override;
-    void execute(WAMState &state) override;
-    void print(std::ostream &os) const override;
 };
 
 struct ReturnInstruction : public Instruction

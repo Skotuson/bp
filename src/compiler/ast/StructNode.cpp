@@ -1,4 +1,5 @@
 #include "StructNode.hpp"
+#include "../../wam_code/instruction/CallInstruction.hpp"
 
 #include <queue>
 #include <algorithm>
