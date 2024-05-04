@@ -31,7 +31,7 @@ src/interpreter/Interpreter.cpp
 src/interpreter/WAMState.cpp
 src/preprocessor/Preprocessor.cpp
 src/Renderer.cpp
-src/wam_code/Instruction.cpp
+src/wam_code/instruction/Instruction.cpp
 src/wam_code/WAMCode.cpp)
 
 add_executable(wam src/main.cpp)
