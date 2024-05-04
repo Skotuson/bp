@@ -96,8 +96,7 @@ void StructNode::unifyHead(CompilationContext &cctx)
         else
         {
             // Allocate extra local clause variable
-            // TODO: non collision naming, add some legit name
-            std::string tempVariable = "__temp" + std::to_string(cctx.allocate()) + "__";
+            std::string tempVariable = cctx.generateTempVar();
             cctx.noteVariable(tempVariable);
             // Instead of unify-xxx (xxx = struct or list), use the unifyv for the created variable
             cctx.addInstruction(std::make_shared<UnifyVariableInstruction>(tempVariable, cctx.getVarOffset(tempVariable)));
@@ -172,8 +171,7 @@ void StructNode::unifyRHS(CompilationContext &cctx)
             // (c) Generate an instruction sequence as in the prior step (put-list or put-structure), but target the result to Au
             n->unifyArguments(cctx, processedComplex);
             // (d) Generate a getv to place Au in a specially allocated clause variable (as was done for nested objects in the clause head)
-            // TODO: non collision naming, add some legit name, make a function to remove duplicity
-            std::string tempVariable = "__temp" + std::to_string(cctx.allocate()) + "__";
+            std::string tempVariable = cctx.generateTempVar();
             cctx.noteVariable(tempVariable);
             cctx.addInstruction(std::make_shared<GetVariableInstruction>(tempVariable, cctx.availableReg(), cctx.getVarOffset(tempVariable)));
             processedComplex.insert({n, tempVariable});
