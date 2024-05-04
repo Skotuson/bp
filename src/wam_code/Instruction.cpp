@@ -6,6 +6,13 @@
 #include <cassert>
 #include <memory>
 
+ const std::vector<std::vector<size_t>> Instruction::m_ClearPDLTable = {
+    {1, 1, 1, 1, 1},
+    {2, 3, 5, 5, 5},
+    {2, 4, 6, 0, 0},
+    {2, 4, 0, 7, 0},
+    {2, 4, 0, 0, 8}};
+
 void Instruction::fail(WAMState &state)
 {
     std::shared_ptr<FailInstruction> fail = std::make_shared<FailInstruction>();
@@ -14,14 +21,6 @@ void Instruction::fail(WAMState &state)
 
 void Instruction::clearPDL(WAMState &state, std::shared_ptr<Word> X, std::shared_ptr<Word> Y)
 {
-    // TODO: Make static for class
-    std::vector<std::vector<size_t>> table = {
-        {1, 1, 1, 1, 1},
-        {2, 3, 5, 5, 5},
-        {2, 4, 6, 0, 0},
-        {2, 4, 0, 7, 0},
-        {2, 4, 0, 0, 8}};
-
     // TODO: empty the PDL
     while (!state.pdlEmpty())
     {
@@ -30,7 +29,7 @@ void Instruction::clearPDL(WAMState &state, std::shared_ptr<Word> X, std::shared
 
     while (42)
     {
-        size_t branch = table[X->tag()][Y->tag()];
+        size_t branch = m_ClearPDLTable[X->tag()][Y->tag()];
         // X is a ref, dereference:
         if (branch == 1)
         {

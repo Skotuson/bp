@@ -15,6 +15,8 @@ struct Instruction
     static void fail(WAMState &state);
     static void clearPDL(WAMState &state, std::shared_ptr<Word> X, std::shared_ptr<Word> Y);
 
+    static const std::vector<std::vector<size_t>> m_ClearPDLTable;
+
     friend std::ostream &operator<<(std::ostream &os, const Instruction &instr);
 };
 
