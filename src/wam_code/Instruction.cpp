@@ -222,7 +222,7 @@ void BacktrackInstruction::execute(WAMState &state)
     fail(state);
 
     // Discard the choice point (last clause in the chain failed)
-    // TODO: make sure to discard all choice points when cut is encountered.
+    // Discard multiple choice points if cut is encountered
     while ((state.SReg() - 1) && state.SReg() - 1 != state.BReg())
     {
         state.stackPop();
