@@ -22,6 +22,12 @@ void Instruction::clearPDL(WAMState &state, std::shared_ptr<Word> X, std::shared
         {2, 4, 0, 7, 0},
         {2, 4, 0, 0, 8}};
 
+    // TODO: empty the PDL
+    while (!state.pdlEmpty())
+    {
+        state.pdlPop();
+    }
+
     while (42)
     {
         size_t branch = table[X->tag()][Y->tag()];
