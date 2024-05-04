@@ -37,10 +37,9 @@ private:
     std::vector<std::shared_ptr<TermNode>> TermsCont(void);
     std::shared_ptr<TermNode> TermLower(void);
 
-    std::string generateWildcardName(void);
+    std::string generateWildcardName(const std::string &varName);
     //-------------CLASS VARIABLES-------------//
     Lexer m_Lex;
     std::shared_ptr<ProgramNode> m_ASTRoot;
-
     size_t m_WildcardsGenerated = 0;
 };

@@ -137,7 +137,7 @@ std::vector<std::shared_ptr<GoalNode>> Parser::Body(void)
         return body;
     case TOK_VAR:
         m_Lex.match(TOK_VAR);
-        varName = m_Lex.identifier();
+        varName = generateWildcardName(m_Lex.identifier());
         m_Lex.match(TOK_EQUAL);
         term = Term();
         body.push_back(std::make_shared<UnificationNode>(std::make_shared<VarNode>(varName), term));
@@ -206,8 +206,6 @@ std::shared_ptr<TermNode> Parser::BodyTerm(void)
 
 std::shared_ptr<TermNode> Parser::Term(void)
 {
-    std::string name = m_Lex.identifier();
-
     std::shared_ptr<TermNode> list;
     switch (m_Lex.peek())
     {
@@ -224,7 +222,7 @@ std::shared_ptr<TermNode> Parser::Term(void)
         return list;
     case TOK_VAR:
         m_Lex.match(TOK_VAR);
-        return std::make_shared<VarNode>(name);
+        return std::make_shared<VarNode>(generateWildcardName(m_Lex.identifier()));
     default:
         throw std::runtime_error("Term Parsing error");
     }
@@ -321,7 +319,11 @@ std::shared_ptr<TermNode> Parser::TermLower(void)
     }
 }
 
-std::string Parser::generateWildcardName(void)
+std::string Parser::generateWildcardName(const std::string &varName)
 {
+    if(varName != "_")
+    {
+        return varName;
+    }
     return "___" + std::to_string(m_WildcardsGenerated++);
 }
