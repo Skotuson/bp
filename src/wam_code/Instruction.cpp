@@ -14,7 +14,7 @@ void Instruction::fail(WAMState &state)
 
 void Instruction::clearPDL(WAMState &state, std::shared_ptr<Word> X, std::shared_ptr<Word> Y)
 {
-    // Make static for class
+    // TODO: Make static for class
     std::vector<std::vector<size_t>> table = {
         {1, 1, 1, 1, 1},
         {2, 3, 5, 5, 5},
