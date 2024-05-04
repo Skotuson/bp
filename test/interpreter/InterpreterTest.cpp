@@ -17,7 +17,7 @@ TEST_CASE("Interpreter test suite")
         CHECK(r.second.size() == ref.second.size());
         for (const auto &res : ref.second)
         {
-            std::cout << r.second[res.first] << " =?= " << res.second << std::endl;
+            //std::cout << r.second[res.first] << " =?= " << res.second << std::endl;
             CHECK(r.second[res.first] == res.second);
         }
     };
