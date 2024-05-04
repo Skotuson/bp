@@ -356,7 +356,6 @@ void ReturnInstruction::execute(WAMState &state)
         // TODO: mainly debug
         throw std::runtime_error("Invalid stack access");
     }
-    // std::cout << state << std::endl;
 }
 
 void ReturnInstruction::print(std::ostream &os) const
