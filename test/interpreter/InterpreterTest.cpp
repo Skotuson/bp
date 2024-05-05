@@ -17,9 +17,15 @@ TEST_CASE("Interpreter test suite")
         CHECK(r.second.size() == ref.second.size());
         for (const auto &res : ref.second)
         {
-            //std::cout << r.second[res.first] << " =?= " << res.second << std::endl;
+            // std::cout << r.second[res.first] << " =?= " << res.second << std::endl;
             CHECK(r.second[res.first] == res.second);
         }
+    };
+
+    auto nextQuery = [&](Interpreter &i)
+    {
+        std::istringstream iss = std::istringstream(";");
+        i.nextAnswer(iss);
     };
 
     Compiler c;
@@ -419,6 +425,30 @@ TEST_CASE("Interpreter test suite")
             i.setQuery(i.compileQuery(
                 "append([1,2], [3,4], [W,X,Y,Z])."));
             testQuery(i, {true, {{"W", "1"}, {"X", "2"}, {"Y", "3"}, {"Z", "4"}}});
+        }
+
+        SUBCASE("Variables IV")
+        {
+            Interpreter i(c.dump());
+            i.setQuery(i.compileQuery(
+                "append([1,2], X, [1,2,3,4])."));
+            testQuery(i, {true, {{"X", "[3|[4|[]]]"}}});
+        }
+
+        SUBCASE("Variables V - All answers")
+        {
+            Interpreter i(c.dump());
+            i.setQuery(i.compileQuery(
+                "append(X, Y, [1,2,3])."));
+            testQuery(i, {true, {{"X", "[]"}, {"Y", "[1|[2|[3|[]]]]"}}});
+            nextQuery(i);
+            testQuery(i, {true, {{"X", "[1|[]]"}, {"Y", "[2|[3|[]]]"}}});
+            nextQuery(i);
+            testQuery(i, {true, {{"X", "[1|[2|[]]]"}, {"Y", "[3|[]]"}}});
+            nextQuery(i);
+            testQuery(i, {true, {{"X", "[1|[2|[3|[]]]]"}, {"Y", "[]"}}});
+            nextQuery(i);
+            testQuery(i, {false, {}});
         }
     }
 }
