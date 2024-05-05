@@ -7,6 +7,7 @@ set(CMAKE_CXX_FLAGS "-Wall -pedantic ${CMAKE_CXX_FLAGS}")
 add_library(wam_lib STATIC src/compiler/ast/ClauseNode.cpp
 src/compiler/ast/ComplexNode.cpp
 src/compiler/ast/ConstNode.cpp
+src/compiler/ast/CallNode.cpp
 src/compiler/ast/CutNode.cpp
 src/compiler/ast/ListNode.cpp
 src/compiler/ast/ProgramNode.cpp
