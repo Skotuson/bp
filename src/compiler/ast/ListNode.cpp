@@ -145,7 +145,6 @@ void ListNode::unifyHead(CompilationContext &cctx)
         cctx.addInstruction(std::make_shared<PutVariableInstruction>(top.second, cctx.availableReg(), cctx.getVarOffset(top.second)));
         auto arg = top.first;
         arg->m_IsGoal = true;
-        arg->m_IsArg = true;
         if (arg->type() == STRUCT)
         {
             cctx.addInstruction(std::make_shared<GetStructureInstruction>(arg->name(), cctx.availableReg(), arg->arity()));

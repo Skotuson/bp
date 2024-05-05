@@ -28,23 +28,8 @@ void StructNode::codegen(CompilationContext &cctx)
 {
     if (m_IsGoal)
     {
-        if (!m_IsArg)
-        {
-            for (const auto &arg : m_Args)
-            {
-                arg->m_IsGoal = true;
-                arg->m_IsArg = true;
-                arg->codegen(cctx);
-            }
-            std::string callName = m_Name + "/" + std::to_string(m_Args.size());
-            cctx.addInstruction(std::make_shared<CallInstruction>(callName));
-        }
-        // Allocate space for complex structure buried inside other complex structure
-        else
-        {
-            unifyRHS(cctx);
-            cctx.setAvailableReg(cctx.availableReg() + 1);
-        }
+        unifyRHS(cctx);
+        cctx.setAvailableReg(cctx.availableReg() + 1);
         return;
     }
 
@@ -120,7 +105,6 @@ void StructNode::unifyHead(CompilationContext &cctx)
         cctx.addInstruction(std::make_shared<PutVariableInstruction>(top.second, cctx.availableReg(), cctx.getVarOffset(top.second)));
         auto arg = top.first;
         arg->m_IsGoal = true;
-        arg->m_IsArg = true;
         if (arg->type() == STRUCT)
         {
             cctx.addInstruction(std::make_shared<GetStructureInstruction>(arg->name(), cctx.availableReg(), arg->arity()));

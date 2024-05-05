@@ -13,7 +13,6 @@ void CallNode::codegen(CompilationContext &cctx)
     for (const auto &arg : m_Args)
     {
         arg->m_IsGoal = true;
-        arg->m_IsArg = true;
         arg->codegen(cctx);
     }
     std::string callName = m_Name + "/" + std::to_string(m_Args.size());
