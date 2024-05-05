@@ -451,4 +451,75 @@ TEST_CASE("Interpreter test suite")
             testQuery(i, {false, {}});
         }
     }
+
+    SUBCASE("Unification operator")
+    {
+        std::istringstream iss(
+            "__id(A,A).");
+        c.compile(iss);
+
+        SUBCASE("Const unification I")
+        {
+            Interpreter i(c.dump());
+            i.setQuery(i.compileQuery(
+                "elephant = elephant."));
+            testQuery(i, {true, {}});
+        }
+
+        SUBCASE("Const unification II")
+        {
+            Interpreter i(c.dump());
+            i.setQuery(i.compileQuery(
+                "elephant = mouse."));
+            testQuery(i, {false, {}});
+        }
+
+        SUBCASE("Variable unification I")
+        {
+            Interpreter i(c.dump());
+            i.setQuery(i.compileQuery(
+                "X=Y."));
+            testQuery(i, {true, {{"X", "Y"}}});
+        }
+
+        SUBCASE("Variable unification II")
+        {
+            Interpreter i(c.dump());
+            i.setQuery(i.compileQuery(
+                "X=Y,Y=Z,Z=elephant."));
+            testQuery(i, {true, {{"X", "Z"}, {"Y", "Z"}, {"Z", "elephant"}}});
+        }
+
+        SUBCASE("Variable unification III")
+        {
+            Interpreter i(c.dump());
+            i.setQuery(i.compileQuery(
+                "X=f(g([1,2,s(x)]),t(u(o)))."));
+            testQuery(i, {true, {{"X", "f(g([1|[2|[s(x)|[]]]]),t(u(o)))"}}});
+        }
+
+        SUBCASE("List unification I")
+        {
+            Interpreter i(c.dump());
+            i.setQuery(i.compileQuery(
+                "[1,2,3]=[1,2,3]."));
+            testQuery(i, {true, {}});
+        }
+
+        SUBCASE("List unification II")
+        {
+            Interpreter i(c.dump());
+            i.setQuery(i.compileQuery(
+                "[1,2,3]=[1,2,3,4]."));
+            testQuery(i, {false, {}});
+        }
+
+        SUBCASE("Structure unification I")
+        {
+            Interpreter i(c.dump());
+            i.setQuery(i.compileQuery(
+                "f(s(x))=f(s(x))."));
+            testQuery(i, {true, {}});
+        }
+    }
 }
