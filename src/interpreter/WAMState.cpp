@@ -44,6 +44,11 @@ size_t WAMState::HReg(void) const
     return m_Heap.size();
 }
 
+size_t WAMState::CP(void) const
+{
+    return m_ContinuationPointer;
+}
+
 size_t WAMState::PC(void) const
 {
     return m_ProgramCounter;
@@ -181,11 +186,15 @@ std::ostream &operator<<(std::ostream &os, const WAMState &state)
     };
 
     os << ANSI_COLOR_B_MAGENTA << "Mode:" << (state.readMode() ? "READ" : "WRITE") << ANSI_COLOR_DEFAULT;
-    os << " SP:" << state.SPReg();
+    os << " S:" << format(state.SReg());
     os << " E:" << format(state.EReg());
-    os << " B:" << format(state.m_BacktrackRegister);
-    os << " CP:" << format(state.m_ContinuationPointer);
-    os << " PC:" << format(state.m_ProgramCounter) << std::endl;
+    os << " B:" << format(state.BReg());
+    os << " TR:" << format(state.TRReg());
+    os << " PDL:" << format(state.PDLReg());
+    os << " H:" << format(state.HReg());
+    os << " CP:" << format(state.CP());
+    os << " SP:" << state.SPReg();
+    os << " PC:" << format(state.PC()) << std::endl;
     os << ANSI_COLOR_B_YELLOW << state.m_ArgumentRegisters << ANSI_COLOR_DEFAULT << std::endl;
 
     // Print heap
