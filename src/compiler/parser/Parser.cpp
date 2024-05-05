@@ -2,6 +2,7 @@
 
 #include "../ast/UnificationNode.hpp"
 #include "../ast/ConstNode.hpp"
+#include "../ast/CallNode.hpp"
 #include "../ast/VarNode.hpp"
 #include "../ast/CutNode.hpp"
 
@@ -120,11 +121,15 @@ std::vector<std::shared_ptr<GoalNode>> Parser::Body(void)
         // Not a unification, so it is a call
         if (!(term = BodyTerm()))
         {
-            if(compound->type() == TermNode::TermType::CONST)
+            if (compound->type() == TermNode::TermType::CONST)
             {
-                compound = std::make_shared<StructNode>(compound->name());
+                body.push_back(std::make_shared<CallNode>(compound->name()));
             }
-            body.push_back(compound);
+            else
+            {
+                auto snode = std::static_pointer_cast<StructNode>(compound);
+                body.push_back(std::make_shared<CallNode>(snode->name(), snode->args()));
+            }
         }
         else
         {
@@ -168,7 +173,6 @@ std::vector<std::shared_ptr<GoalNode>> Parser::Body(void)
         throw std::runtime_error("Body Parsing error");
     }
 }
-
 
 std::vector<std::shared_ptr<GoalNode>> Parser::BodyCont(void)
 {
