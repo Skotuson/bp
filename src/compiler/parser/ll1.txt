@@ -13,14 +13,11 @@ Predicate -> .
 Predicate -> :- Body .
 
 # Body of an rule
-Body -> lower BodyLower BodyTerm BodyCont
+Body -> lower TermLower BodyTerm BodyCont
 Body -> const = Term BodyCont
 Body -> var = Term BodyCont
+Body -> List = Term BodyCont
 Body -> ! BodyCont
-
-# Allows using predicate with or without arguments in body
-BodyLower -> 
-BodyLower -> ( Terms )
 
 # Allows chaining of goals in a rule
 BodyCont -> 
@@ -32,8 +29,10 @@ BodyTerm -> = Term
 
 Term -> lower TermLower
 Term -> const
-Term -> [ ListInner ]
+Term -> List
 Term -> var
+
+List -> [ ListInner ]
 
 ListInner -> 
 ListInner -> Terms ListCons
