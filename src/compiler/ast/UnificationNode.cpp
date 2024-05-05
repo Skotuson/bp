@@ -1,5 +1,5 @@
 #include "UnificationNode.hpp"
-#include "StructNode.hpp"
+#include "CallNode.hpp"
 
 UnificationNode::UnificationNode(std::shared_ptr<TermNode> x, std::shared_ptr<TermNode> y)
     : m_X(x),
@@ -10,8 +10,8 @@ UnificationNode::UnificationNode(std::shared_ptr<TermNode> x, std::shared_ptr<Te
 void UnificationNode::codegen(CompilationContext &cctx)
 {
   std::vector<std::shared_ptr<TermNode>> args = {m_X, m_Y};
-  std::shared_ptr<StructNode> unifStruct = std::make_shared<StructNode>("__id", args);
-  unifStruct->codegen(cctx);
+  auto unifCall = std::make_shared<CallNode>("__id", args);
+  unifCall->codegen(cctx);
 }
 
 void UnificationNode::print(const std::string &indent)
