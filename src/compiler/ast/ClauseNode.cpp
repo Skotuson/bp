@@ -1,5 +1,7 @@
 #include "ClauseNode.hpp"
 #include "../../wam_code/instruction/MarkInstruction.hpp"
+#include "../../wam_code/instruction/ReturnInstruction.hpp"
+#include "../../wam_code/instruction/AllocateInstruction.hpp"
 #include "../../wam_code/instruction/RetryMeElseInstruction.hpp"
 
 ClauseNode::ClauseNode(const std::string &head,

@@ -36,6 +36,9 @@ src/wam_code/instruction/MarkInstruction.cpp
 src/wam_code/instruction/BranchInstruction.cpp
 src/wam_code/instruction/RetryMeElseInstruction.cpp
 src/wam_code/instruction/CallInstruction.cpp
+src/wam_code/instruction/BacktrackInstruction.cpp
+src/wam_code/instruction/AllocateInstruction.cpp
+src/wam_code/instruction/ReturnInstruction.cpp
 src/wam_code/WAMCode.cpp)
 
 add_executable(wam src/main.cpp)

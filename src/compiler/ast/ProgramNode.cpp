@@ -1,5 +1,7 @@
 #include "ProgramNode.hpp"
 
+#include "../../wam_code/instruction/BacktrackInstruction.hpp"
+
 void ProgramNode::codegen(CompilationContext &cctx)
 {
     // Initialize the symbol table

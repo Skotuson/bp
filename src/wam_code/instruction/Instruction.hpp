@@ -20,32 +20,7 @@ struct Instruction
     friend std::ostream &operator<<(std::ostream &os, const Instruction &instr);
 };
 
-// Indexing instructions
-struct BacktrackInstruction : public Instruction
-{
-    std::shared_ptr<Instruction> clone(void) override;
-    void execute(WAMState &state) override;
-    void print(std::ostream &os) const override;
-};
-
 struct FailInstruction : public Instruction
-{
-    std::shared_ptr<Instruction> clone(void) override;
-    void execute(WAMState &state) override;
-    void print(std::ostream &os) const override;
-};
-
-// Procedural Instructions
-struct AllocateInstruction : public Instruction
-{
-    AllocateInstruction(size_t n);
-    std::shared_ptr<Instruction> clone(void) override;
-    void execute(WAMState &state) override;
-    void print(std::ostream &os) const override;
-    size_t m_N;
-};
-
-struct ReturnInstruction : public Instruction
 {
     std::shared_ptr<Instruction> clone(void) override;
     void execute(WAMState &state) override;
