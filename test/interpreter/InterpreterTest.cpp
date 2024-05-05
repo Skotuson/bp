@@ -522,4 +522,29 @@ TEST_CASE("Interpreter test suite")
             testQuery(i, {true, {}});
         }
     }
+
+    SUBCASE("Predicates without arguments")
+    {
+        std::istringstream iss(
+            "a."
+            "b."
+            "c:-a,b.");
+        c.compile(iss);
+
+        SUBCASE("Simple query")
+        {
+            Interpreter i(c.dump());
+            i.setQuery(i.compileQuery(
+                "c."));
+            testQuery(i, {true, {}});
+        }
+
+        SUBCASE("Non-existing fact")
+        {
+            Interpreter i(c.dump());
+            i.setQuery(i.compileQuery(
+                "d."));
+            testQuery(i, {false, {}});
+        }
+    }
 }
