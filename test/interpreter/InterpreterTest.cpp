@@ -487,7 +487,7 @@ TEST_CASE("Interpreter test suite")
             Interpreter i(c.dump());
             i.setQuery(i.compileQuery(
                 "X=Y,Y=Z,Z=elephant."));
-            testQuery(i, {true, {{"X", "Z"}, {"Y", "Z"}, {"Z", "elephant"}}});
+            testQuery(i, {true, {{"X", "elephant"}, {"Y", "elephant"}, {"Z", "elephant"}}});
         }
 
         SUBCASE("Variable unification III")
