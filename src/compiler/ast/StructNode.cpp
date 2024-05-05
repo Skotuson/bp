@@ -76,6 +76,11 @@ size_t StructNode::arity(void)
     return m_Args.size();
 }
 
+std::vector<std::shared_ptr<TermNode>> StructNode::args(void)
+{
+    return m_Args;
+}
+
 void StructNode::unifyHead(CompilationContext &cctx)
 {
     std::queue<std::pair<ComplexNode *, std::string>> terms;
