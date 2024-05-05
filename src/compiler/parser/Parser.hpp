@@ -27,10 +27,10 @@ private:
     std::shared_ptr<ClauseNode> Pred(const std::string &head);
     std::vector<std::shared_ptr<GoalNode>> Predicate(void);
     std::vector<std::shared_ptr<GoalNode>> Body(void);
-    std::shared_ptr<TermNode> BodyLower(void);
     std::vector<std::shared_ptr<GoalNode>> BodyCont(void);
     std::shared_ptr<TermNode> BodyTerm(void);
     std::shared_ptr<TermNode> Term(void);
+    std::shared_ptr<ListNode> List(void);
     std::shared_ptr<ListNode> ListInner(void);
     std::shared_ptr<TermNode> ListCons(void);
     std::vector<std::shared_ptr<TermNode>> Terms(void);
