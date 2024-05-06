@@ -1,6 +1,7 @@
 #include "ListNode.hpp"
 
 #include "StructNode.hpp"
+#include "ConstNode.hpp"
 
 #include <queue>
 #include <cassert>
@@ -19,7 +20,14 @@ ListNode::ListNode(const std::vector<std::shared_ptr<TermNode>> &head, std::shar
     {
         m_Head = {head.front()};
         std::vector<std::shared_ptr<TermNode>> tail = {head.begin() + 1, head.end()};
-        m_Tail = std::make_shared<ListNode>(tail);
+        if(tail.empty())
+        {
+            m_Tail = std::make_shared<ConstNode>("[]");
+        }
+        else
+        {
+            m_Tail = std::make_shared<ListNode>(tail);
+        }
     }
 
     m_List = m_Head;
@@ -60,10 +68,6 @@ void ListNode::codegen(CompilationContext &cctx)
 
 TermNode::TermType ListNode::type()
 {
-    if (m_Head.empty())
-    {
-        return CONST;
-    }
     return LIST;
 }
 
