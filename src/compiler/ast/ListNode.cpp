@@ -16,7 +16,7 @@ ListNode::ListNode(const std::vector<std::shared_ptr<TermNode>> &head, std::shar
         m_Tail = tail;
     }
 
-    else if (!head.empty())
+    else
     {
         m_Head = {head.front()};
         std::vector<std::shared_ptr<TermNode>> tail = {head.begin() + 1, head.end()};
