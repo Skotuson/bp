@@ -30,8 +30,8 @@ private:
     std::vector<std::shared_ptr<GoalNode>> BodyCont(void);
     std::shared_ptr<TermNode> BodyTerm(void);
     std::shared_ptr<TermNode> Term(void);
-    std::shared_ptr<ListNode> List(void);
-    std::shared_ptr<ListNode> ListInner(void);
+    std::shared_ptr<TermNode> List(void);
+    std::shared_ptr<TermNode> ListInner(void);
     std::shared_ptr<TermNode> ListCons(void);
     std::vector<std::shared_ptr<TermNode>> Terms(void);
     std::vector<std::shared_ptr<TermNode>> TermsCont(void);

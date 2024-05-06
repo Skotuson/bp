@@ -223,9 +223,9 @@ std::shared_ptr<TermNode> Parser::Term(void)
     }
 }
 
-std::shared_ptr<ListNode> Parser::List(void)
+std::shared_ptr<TermNode> Parser::List(void)
 {
-    std::shared_ptr<ListNode> list;
+    std::shared_ptr<TermNode> list;
     switch (m_Lex.peek())
     {
     case TOK_LSPAR:
@@ -238,14 +238,14 @@ std::shared_ptr<ListNode> Parser::List(void)
     }
 }
 
-std::shared_ptr<ListNode> Parser::ListInner(void)
+std::shared_ptr<TermNode> Parser::ListInner(void)
 {
     std::vector<std::shared_ptr<TermNode>> list;
     std::shared_ptr<TermNode> cons = nullptr;
     switch (m_Lex.peek())
     {
     case TOK_RSPAR:
-        return std::make_shared<ListNode>(list);
+        return std::make_shared<ConstNode>("[]");
     case TOK_ATOM_LOWER:
     case TOK_CONST:
     case TOK_LSPAR:
