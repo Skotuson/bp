@@ -4,5 +4,4 @@
 
 struct GoalNode : public Node
 {
-    bool m_IsGoal = true;
 };

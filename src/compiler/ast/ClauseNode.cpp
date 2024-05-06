@@ -39,14 +39,15 @@ void ClauseNode::codegen(CompilationContext &cctx)
     // size_t allocInstrIdx = cctx.getCode().size() - 1;
 
     cctx.setAvailableReg(1);
+    cctx.setHeadGenerationMode();
     for (size_t i = 0; i < m_Args.size(); i++)
     {
-        m_Args[i]->m_IsGoal = false;
         // Load the arguments into argument registers
         m_Args[i]->codegen(cctx);
     }
 
     // All get instructions were carried out
+    cctx.setBodyGenerationMode();
     for (size_t i = 0; i < m_Body.size(); i++)
     {
         cctx.setAvailableReg(1);

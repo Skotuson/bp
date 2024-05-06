@@ -49,7 +49,7 @@ void ListNode::codegen(CompilationContext &cctx)
     std::string code = "";
     if (m_Head.empty())
     {
-        if (!m_IsGoal)
+        if (cctx.mode() == CodeGenerationMode::HEAD)
         {
             cctx.addInstruction(std::make_shared<GetConstantInstruction>("[]", cctx.availableReg()));
         }
@@ -61,7 +61,7 @@ void ListNode::codegen(CompilationContext &cctx)
         return;
     }
 
-    if (m_IsGoal)
+    if (cctx.mode() == CodeGenerationMode::BODY)
     {
         unifyRHS(cctx);
         cctx.setAvailableReg(cctx.availableReg() + 1);
@@ -144,7 +144,6 @@ void ListNode::unifyHead(CompilationContext &cctx)
         // Generate putv instruction to load some unneeded arg. register with the contents of the new variable
         cctx.addInstruction(std::make_shared<PutVariableInstruction>(top.second, cctx.availableReg(), cctx.getVarOffset(top.second)));
         auto arg = top.first;
-        arg->m_IsGoal = true;
         if (arg->type() == STRUCT)
         {
             cctx.addInstruction(std::make_shared<GetStructureInstruction>(arg->name(), cctx.availableReg(), arg->arity()));

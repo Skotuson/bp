@@ -9,7 +9,7 @@ VarNode::VarNode(const std::string &name, bool isWildcard)
 void VarNode::codegen(CompilationContext &cctx)
 {
     cctx.noteVariable(m_Name);
-    if (!m_IsGoal)
+    if (cctx.mode() == CodeGenerationMode::HEAD)
     {
         cctx.addInstruction(
             std::make_shared<GetVariableInstruction>(m_Name, cctx.availableReg(), cctx.getVarOffset(m_Name)));
