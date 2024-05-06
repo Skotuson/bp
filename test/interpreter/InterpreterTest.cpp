@@ -514,12 +514,28 @@ TEST_CASE("Interpreter test suite")
             testQuery(i, {false, {}});
         }
 
+        SUBCASE("List unification III")
+        {
+            Interpreter i(c.dump());
+            i.setQuery(i.compileQuery(
+                "[]=[]."));
+            testQuery(i, {true, {}});
+        }
+
         SUBCASE("Structure unification I")
         {
             Interpreter i(c.dump());
             i.setQuery(i.compileQuery(
                 "f(s(x))=f(s(x))."));
             testQuery(i, {true, {}});
+        }
+
+        SUBCASE("Structure unification II")
+        {
+            Interpreter i(c.dump());
+            i.setQuery(i.compileQuery(
+                "f(s(x))=f(s(z))."));
+            testQuery(i, {false, {}});
         }
     }
 
