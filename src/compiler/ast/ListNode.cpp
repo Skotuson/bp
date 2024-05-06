@@ -10,17 +10,29 @@
 ListNode::ListNode(const std::vector<std::shared_ptr<TermNode>> &head, std::shared_ptr<TermNode> tail)
     : ComplexNode("[]")
 {
+    // List is decomposed using pipe
     if (tail)
     {
-        m_Head = head;
-        m_Tail = tail;
+        // Simple decomposition in the form of [H|T]
+        if (head.size() == 1)
+        {
+            m_Head = head;
+            m_Tail = tail;
+        }
+        // Decomposition in the form of [X1...Xn|T]
+        else
+        {
+            m_Head = {head.front()};
+            std::vector<std::shared_ptr<TermNode>> newHead = {head.begin() + 1, head.end()};    
+            m_Tail = std::make_shared<ListNode>(newHead, tail);
+        }
     }
 
     else
     {
         m_Head = {head.front()};
         std::vector<std::shared_ptr<TermNode>> tail = {head.begin() + 1, head.end()};
-        if(tail.empty())
+        if (tail.empty())
         {
             m_Tail = std::make_shared<ConstNode>("[]");
         }
