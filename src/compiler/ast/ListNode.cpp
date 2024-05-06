@@ -46,21 +46,6 @@ ListNode::ListNode(const std::vector<std::shared_ptr<TermNode>> &head, std::shar
 
 void ListNode::codegen(CompilationContext &cctx)
 {
-    std::string code = "";
-    if (m_Head.empty())
-    {
-        if (cctx.mode() == CodeGenerationMode::HEAD)
-        {
-            cctx.addInstruction(std::make_shared<GetConstantInstruction>("[]", cctx.availableReg()));
-        }
-        else
-        {
-            cctx.addInstruction(std::make_shared<PutConstantInstruction>("[]", cctx.availableReg()));
-        }
-        cctx.setAvailableReg(cctx.availableReg() + 1);
-        return;
-    }
-
     if (cctx.mode() == CodeGenerationMode::BODY)
     {
         unifyRHS(cctx);
