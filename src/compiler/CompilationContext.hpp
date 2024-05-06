@@ -21,6 +21,12 @@ struct TableEntry
     size_t m_Clauses = 1;
 };
 
+enum CodeGenerationMode
+{
+    HEAD,
+    BODY
+};
+
 class CompilationContext
 {
 public:
@@ -46,6 +52,10 @@ public:
     size_t availableReg(void);
     void setAvailableReg(size_t reg);
 
+    CodeGenerationMode mode(void);
+    void setHeadGenerationMode(void);
+    void setBodyGenerationMode(void);
+
 private:
     size_t m_AvailableRegister = 1;
     std::unordered_map<std::string, std::shared_ptr<TableEntry>> m_SymbolTable;
@@ -53,4 +63,6 @@ private:
 
     // Used in Clause-Level compilation
     std::map<std::string, size_t> m_Variables;
+
+    CodeGenerationMode m_CGMode = HEAD;
 };

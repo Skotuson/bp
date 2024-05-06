@@ -85,3 +85,18 @@ void CompilationContext::setAvailableReg(size_t reg)
 {
     m_AvailableRegister = reg;
 }
+
+CodeGenerationMode CompilationContext::mode(void)
+{
+    return m_CGMode;
+}
+
+void CompilationContext::setHeadGenerationMode(void)
+{
+    m_CGMode = HEAD;
+}
+
+void CompilationContext::setBodyGenerationMode(void)
+{
+    m_CGMode = BODY;
+}
