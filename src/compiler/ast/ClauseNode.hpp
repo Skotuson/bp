@@ -1,6 +1,7 @@
 #pragma once
 
 #include "TermNode.hpp"
+#include "GoalNode.hpp"
 
 struct ClauseNode : public Node
 {

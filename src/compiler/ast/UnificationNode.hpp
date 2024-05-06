@@ -1,5 +1,6 @@
 #pragma once
 
+#include "GoalNode.hpp"
 #include "TermNode.hpp"
 
 struct UnificationNode : public GoalNode

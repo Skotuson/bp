@@ -1,8 +1,8 @@
 #pragma once
 
-#include "GoalNode.hpp"
+#include "Node.hpp"
 
-struct TermNode : public GoalNode
+struct TermNode : public Node
 {
 protected:
     TermNode(const std::string &name);
