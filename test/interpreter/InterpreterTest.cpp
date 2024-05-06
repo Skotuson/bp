@@ -594,12 +594,20 @@ TEST_CASE("Interpreter test suite")
             testQuery(i, {true, {{"X", "1"}, {"Y", "[2|[]]"}}});
         }
 
-        /*SUBCASE("Simple query with decomposition and variables")
+        SUBCASE("Simple query with decomposition and variables")
         {
             Interpreter i(c.dump());
             i.setQuery(i.compileQuery(
                 "list([X,Y|Z])."));
             testQuery(i, {true, {{"X", "1"}, {"Y", "2"}, {"Z", "[]"}}});
-        }*/
+        }
+
+        SUBCASE("Simple query with decomposition and variables - fail case")
+        {
+            Interpreter i(c.dump());
+            i.setQuery(i.compileQuery(
+                "list([X,Y,Z|T])."));
+            testQuery(i, {false, {}});
+        }
     }
 }
