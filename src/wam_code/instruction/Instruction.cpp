@@ -211,7 +211,6 @@ void GetConstantInstruction::execute(WAMState &state)
     {
         std::shared_ptr<VariableWord> vw = std::static_pointer_cast<VariableWord>(reg);
         state.trailPush(vw); // Trail
-        //*vw->ref() = cword;
         vw->bind(cword);
     }
     else if (!reg || !reg->compareToConst(cword))
