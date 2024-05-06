@@ -6,7 +6,7 @@
 #include <cassert>
 #include <memory>
 
- const std::vector<std::vector<size_t>> Instruction::m_ClearPDLTable = {
+const std::vector<std::vector<size_t>> Instruction::m_ClearPDLTable = {
     {1, 1, 1, 1, 1},
     {2, 3, 5, 5, 5},
     {2, 4, 6, 0, 0},
@@ -21,7 +21,7 @@ void Instruction::fail(WAMState &state)
 
 void Instruction::clearPDL(WAMState &state, std::shared_ptr<Word> X, std::shared_ptr<Word> Y)
 {
-    // TODO: empty the PDL
+    // Empty the PDL
     while (!state.pdlEmpty())
     {
         state.pdlPop();
