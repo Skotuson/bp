@@ -563,4 +563,43 @@ TEST_CASE("Interpreter test suite")
             testQuery(i, {false, {}});
         }
     }
+
+    SUBCASE("List decomposition")
+    {
+        std::istringstream iss(
+            "list([1,2]).");
+        c.compile(iss);
+
+        SUBCASE("Simple query")
+        {
+            Interpreter i(c.dump());
+            i.setQuery(i.compileQuery(
+                "list([1,2])."));
+            testQuery(i, {true, {}});
+        }
+
+        SUBCASE("Simple query with decomposition")
+        {
+            Interpreter i(c.dump());
+            i.setQuery(i.compileQuery(
+                "list([1|[2|[]]])."));
+            testQuery(i, {true, {}});
+        }
+
+        SUBCASE("Simple query with decomposition and variables")
+        {
+            Interpreter i(c.dump());
+            i.setQuery(i.compileQuery(
+                "list([X|Y])."));
+            testQuery(i, {true, {{"X", "1"}, {"Y", "[2|[]]"}}});
+        }
+
+        /*SUBCASE("Simple query with decomposition and variables")
+        {
+            Interpreter i(c.dump());
+            i.setQuery(i.compileQuery(
+                "list([X,Y|Z])."));
+            testQuery(i, {true, {{"X", "1"}, {"Y", "2"}, {"Z", "[]"}}});
+        }*/
+    }
 }
