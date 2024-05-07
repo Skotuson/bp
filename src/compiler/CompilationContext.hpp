@@ -22,8 +22,8 @@ struct TableEntry
 
     std::string m_Name;
 
-    std::shared_ptr<MarkInstruction> m_InitialMark;
-    std::shared_ptr<RetryMeElseInstruction> m_LastRetryMeElse;
+    std::shared_ptr<MarkInstruction> m_InitialMark = nullptr;
+    std::shared_ptr<RetryMeElseInstruction> m_LastRetryMeElse = nullptr;
     std::vector<std::shared_ptr<CallInstruction>> m_CallReferences;
 
     size_t m_Generated = 0;
