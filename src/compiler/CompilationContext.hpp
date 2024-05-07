@@ -5,9 +5,7 @@
 #include <memory>
 #include <unordered_map>
 
-#include "../wam_code/instruction/MarkInstruction.hpp"
-#include "../wam_code/instruction/CallInstruction.hpp"
-#include "../wam_code/instruction/RetryMeElseInstruction.hpp"
+#include "../wam_code/instruction/Instructions.hpp"
 
 #include "../wam_code/WAMCode.hpp"
 
@@ -42,10 +40,13 @@ public:
     void add(const std::string &symbol,
              std::shared_ptr<TableEntry> entry);
     std::shared_ptr<TableEntry> get(const std::string &symbol);
+    
     void addInstruction(std::shared_ptr<Instruction> instr);
     void addInstructions(const std::vector<std::shared_ptr<Instruction>> &instructions);
+    
     void addLabel(const Label &label);
     size_t getLabelAddress(const Label &label);
+
     WAMCode code(void);
     WAMCode &getCode(void);
 
