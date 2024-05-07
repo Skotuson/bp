@@ -16,5 +16,8 @@
 #include "put/PutListInstruction.hpp"
 #include "put/PutStructureInstruction.hpp"
 
+#include "unify/UnifyConstantInstruction.hpp"
+#include "unify/UnifyVariableInstruction.hpp"
+
 #include "CutInstruction.hpp"
 #include "Instruction.hpp"

@@ -26,30 +26,3 @@ struct FailInstruction : public Instruction
     void execute(WAMState &state) override;
     void print(std::ostream &os) const override;
 };
-
-// Unify Instructions
-
-struct UnifyInstruction : public Instruction
-{
-protected:
-    UnifyInstruction(const std::string &name);
-    std::string m_Name;
-};
-
-struct UnifyConstantInstruction : public UnifyInstruction
-{
-    UnifyConstantInstruction(const std::string &name);
-    std::shared_ptr<Instruction> clone(void) override;
-    void execute(WAMState &state) override;
-    void print(std::ostream &os) const override;
-};
-
-struct UnifyVariableInstruction : public UnifyInstruction
-{
-    UnifyVariableInstruction(const std::string &name, size_t offset);
-    std::shared_ptr<Instruction> clone(void) override;
-    void execute(WAMState &state) override;
-    void print(std::ostream &os) const override;
-
-    size_t m_Offset;
-};
