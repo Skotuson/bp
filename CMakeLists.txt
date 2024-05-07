@@ -33,11 +33,11 @@ src/interpreter/WAMState.cpp
 src/preprocessor/Preprocessor.cpp
 src/Renderer.cpp
 src/wam_code/instruction/Instruction.cpp
-src/wam_code/instruction/indexing/MarkInstruction.cpp
+src/wam_code/instruction/indexing/Mark.cpp
 src/wam_code/instruction/BranchInstruction.cpp
-src/wam_code/instruction/indexing/RetryMeElseInstruction.cpp
+src/wam_code/instruction/indexing/RetryMeElse.cpp
 src/wam_code/instruction/procedural/CallInstruction.cpp
-src/wam_code/instruction/indexing/BacktrackInstruction.cpp
+src/wam_code/instruction/indexing/Backtrack.cpp
 src/wam_code/instruction/procedural/AllocateInstruction.cpp
 src/wam_code/instruction/procedural/ReturnInstruction.cpp
 src/wam_code/instruction/Cut.cpp

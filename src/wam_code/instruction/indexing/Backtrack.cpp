@@ -1,11 +1,11 @@
-#include "BacktrackInstruction.hpp"
+#include "Backtrack.hpp"
 
-std::shared_ptr<Instruction> BacktrackInstruction::clone(void)
+std::shared_ptr<Instruction> Backtrack::clone(void)
 {
-    return std::make_shared<BacktrackInstruction>();
+    return std::make_shared<Backtrack>();
 }
 
-void BacktrackInstruction::execute(WAMState &state)
+void Backtrack::execute(WAMState &state)
 {
     std::shared_ptr<ChoicePoint> cp = state.stackAt(state.m_BacktrackRegister);
     if (cp)
@@ -23,7 +23,7 @@ void BacktrackInstruction::execute(WAMState &state)
     }
 }
 
-void BacktrackInstruction::print(std::ostream &os) const
+void Backtrack::print(std::ostream &os) const
 {
     os << "backtrack";
 }

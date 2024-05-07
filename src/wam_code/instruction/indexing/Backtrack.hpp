@@ -2,7 +2,7 @@
 
 #include "../Instruction.hpp"
 
-struct MarkInstruction : public Instruction
+struct Backtrack : public Instruction
 {
     std::shared_ptr<Instruction> clone(void) override;
     void execute(WAMState &state) override;

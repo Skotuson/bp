@@ -17,7 +17,7 @@ void ClauseNode::codegen(CompilationContext &cctx)
     if (!entry->m_Generated)
     {
         cctx.addLabel(m_Head);
-        cctx.addInstruction(std::make_shared<MarkInstruction>());
+        cctx.addInstruction(std::make_shared<Mark>());
     }
     else
     {
@@ -27,7 +27,7 @@ void ClauseNode::codegen(CompilationContext &cctx)
 
     ++entry->m_Generated;
     std::string retryLabel = entry->m_Generated == entry->m_Clauses ? "quit" : m_Head + std::to_string(entry->m_Generated);
-    cctx.addInstruction(std::make_shared<RetryMeElseInstruction>(retryLabel));
+    cctx.addInstruction(std::make_shared<RetryMeElse>(retryLabel));
 
     // Generate an allocate instruction and count the number of local variables needed during codegen.
     cctx.resetVariables();

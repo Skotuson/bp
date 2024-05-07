@@ -1,11 +1,11 @@
-#include "MarkInstruction.hpp"
+#include "Mark.hpp"
 
-std::shared_ptr<Instruction> MarkInstruction::clone(void)
+std::shared_ptr<Instruction> Mark::clone(void)
 {
-    return std::make_shared<MarkInstruction>();
+    return std::make_shared<Mark>();
 }
 
-void MarkInstruction::execute(WAMState &state)
+void Mark::execute(WAMState &state)
 {
     // Build a new choice point up to the enviornment
     auto ncp = std::make_shared<ChoicePoint>(state.m_ArgumentRegisters,
@@ -21,7 +21,7 @@ void MarkInstruction::execute(WAMState &state)
     state.m_BacktrackRegister /*= state.m_EnvironmentRegister*/ = state.SReg() - 1;
 }
 
-void MarkInstruction::print(std::ostream &os) const
+void Mark::print(std::ostream &os) const
 {
     os << "mark";
 }

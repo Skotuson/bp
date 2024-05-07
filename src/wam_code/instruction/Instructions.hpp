@@ -1,6 +1,6 @@
-#include "indexing/BacktrackInstruction.hpp"
-#include "indexing/MarkInstruction.hpp"
-#include "indexing/RetryMeElseInstruction.hpp"
+#include "indexing/Backtrack.hpp"
+#include "indexing/Mark.hpp"
+#include "indexing/RetryMeElse.hpp"
 
 #include "procedural/AllocateInstruction.hpp"
 #include "procedural/CallInstruction.hpp"
