@@ -45,6 +45,10 @@ src/wam_code/instruction/get/GetConstantInstruction.cpp
 src/wam_code/instruction/get/GetListInstruction.cpp
 src/wam_code/instruction/get/GetStructureInstruction.cpp
 src/wam_code/instruction/get/GetVariableInstruction.cpp
+src/wam_code/instruction/put/PutConstantInstruction.cpp
+src/wam_code/instruction/put/PutVariableInstruction.cpp
+src/wam_code/instruction/put/PutListInstruction.cpp
+src/wam_code/instruction/put/PutStructureInstruction.cpp
 src/wam_code/WAMCode.cpp)
 
 add_executable(wam src/main.cpp)

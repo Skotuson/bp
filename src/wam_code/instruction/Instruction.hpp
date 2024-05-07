@@ -27,50 +27,6 @@ struct FailInstruction : public Instruction
     void print(std::ostream &os) const override;
 };
 
-// Put Instructions
-struct PutInstruction : public Instruction
-{
-protected:
-    PutInstruction(const std::string &name, size_t argumentRegister);
-    std::string m_Name;
-    size_t m_ArgumentRegister;
-};
-struct PutConstantInstruction : public PutInstruction
-{
-    PutConstantInstruction(const std::string &name, size_t argumentRegister);
-    std::shared_ptr<Instruction> clone(void) override;
-    void execute(WAMState &state) override;
-    void print(std::ostream &os) const override;
-};
-
-struct PutVariableInstruction : public PutInstruction
-{
-    PutVariableInstruction(const std::string &name, size_t argumentRegister, size_t offset);
-    std::shared_ptr<Instruction> clone(void) override;
-    void execute(WAMState &state) override;
-    void print(std::ostream &os) const override;
-
-    size_t m_Offset;
-};
-
-struct PutListInstruction : public PutInstruction
-{
-    PutListInstruction(const std::string &name, size_t argumentRegister);
-    std::shared_ptr<Instruction> clone(void) override;
-    void execute(WAMState &state) override;
-    void print(std::ostream &os) const override;
-};
-
-struct PutStructureInstruction : public PutInstruction
-{
-    PutStructureInstruction(const std::string &name, size_t argumentRegister, size_t arity);
-    std::shared_ptr<Instruction> clone(void) override;
-    void execute(WAMState &state) override;
-    void print(std::ostream &os) const override;
-
-    size_t m_Arity;
-};
-
 // Unify Instructions
 
 struct UnifyInstruction : public Instruction

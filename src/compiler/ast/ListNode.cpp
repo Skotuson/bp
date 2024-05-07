@@ -164,7 +164,7 @@ void ListNode::unifyRHS(CompilationContext &cctx)
 {
     if (!hasNestedComplex())
     {
-        cctx.addInstruction(std::make_shared<PutListInstruction>(name(), cctx.availableReg()));
+        cctx.addInstruction(std::make_shared<PutListInstruction>(cctx.availableReg()));
         for (const auto &arg : m_List)
         {
             TermNode::TermType type = arg->type();
@@ -215,7 +215,7 @@ void ListNode::unifyRHS(CompilationContext &cctx)
 void ListNode::unifyArguments(CompilationContext &cctx, ProcessedComplex &processedComplex)
 {
     // (c) Generate an instruction sequence as in the prior step (put-list or put-structure), but target the result to Au
-    cctx.addInstruction(std::make_shared<PutListInstruction>(name(), cctx.availableReg()));
+    cctx.addInstruction(std::make_shared<PutListInstruction>(cctx.availableReg()));
     for (const auto &arg : m_List)
     {
         TermType type = arg->type();
