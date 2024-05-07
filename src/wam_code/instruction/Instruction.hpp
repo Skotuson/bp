@@ -99,7 +99,7 @@ struct PutVariableInstruction : public PutInstruction
 
 struct PutListInstruction : public PutInstruction
 {
-    PutListInstruction(const std::string &name, size_t ArgumentRegister);
+    PutListInstruction(const std::string &name, size_t argumentRegister);
     std::shared_ptr<Instruction> clone(void) override;
     void execute(WAMState &state) override;
     void print(std::ostream &os) const override;
