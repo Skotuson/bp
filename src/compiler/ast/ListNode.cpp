@@ -3,6 +3,8 @@
 #include "StructNode.hpp"
 #include "ConstNode.hpp"
 
+#include "../../wam_code/instruction/GetListInstruction.hpp"
+
 #include <queue>
 #include <cassert>
 #include <algorithm>
@@ -23,7 +25,7 @@ ListNode::ListNode(const std::vector<std::shared_ptr<TermNode>> &head, std::shar
         else
         {
             m_Head = {head.front()};
-            std::vector<std::shared_ptr<TermNode>> newHead = {head.begin() + 1, head.end()};    
+            std::vector<std::shared_ptr<TermNode>> newHead = {head.begin() + 1, head.end()};
             m_Tail = std::make_shared<ListNode>(newHead, tail);
         }
     }
@@ -73,7 +75,7 @@ void ListNode::codegen(CompilationContext &cctx)
         return;
     }
 
-    cctx.addInstruction(std::make_shared<GetListInstruction>(m_Name, cctx.availableReg()));
+    cctx.addInstruction(std::make_shared<GetListInstruction>(cctx.availableReg()));
     unifyHead(cctx);
     cctx.setAvailableReg(cctx.availableReg() + 1);
 }
@@ -151,7 +153,7 @@ void ListNode::unifyHead(CompilationContext &cctx)
         }
         else if (arg->type() == LIST)
         {
-            cctx.addInstruction(std::make_shared<GetListInstruction>(arg->name(), cctx.availableReg()));
+            cctx.addInstruction(std::make_shared<GetListInstruction>(cctx.availableReg()));
         }
         arg->unifyHead(cctx);
         terms.pop();

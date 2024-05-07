@@ -1,5 +1,6 @@
 #include "StructNode.hpp"
 #include "../../wam_code/instruction/CallInstruction.hpp"
+#include "../../wam_code/instruction/GetListInstruction.hpp"
 
 #include <queue>
 #include <algorithm>
@@ -110,7 +111,7 @@ void StructNode::unifyHead(CompilationContext &cctx)
         }
         else if (arg->type() == LIST)
         {
-            cctx.addInstruction(std::make_shared<GetListInstruction>(arg->name(), cctx.availableReg()));
+            cctx.addInstruction(std::make_shared<GetListInstruction>(cctx.availableReg()));
         }
         arg->unifyHead(cctx);
         terms.pop();
