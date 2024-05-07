@@ -1,6 +1,7 @@
 #include "Instruction.hpp"
 
 #include "../../word/ListWord.hpp"
+#include "indexing/Fail.hpp"
 
 #include <iostream>
 #include <cassert>
@@ -13,9 +14,11 @@ const std::vector<std::vector<size_t>> Instruction::m_ClearPDLTable = {
     {2, 4, 0, 7, 0},
     {2, 4, 0, 0, 8}};
 
+
+
 void Instruction::fail(WAMState &state)
 {
-    std::shared_ptr<FailInstruction> fail = std::make_shared<FailInstruction>();
+    std::shared_ptr<Fail> fail = std::make_shared<Fail>();
     fail->execute(state);
 }
 
@@ -143,44 +146,4 @@ std::ostream &operator<<(std::ostream &os, const Instruction &instr)
 {
     instr.print(os);
     return os;
-}
-
-std::shared_ptr<Instruction> FailInstruction::clone(void)
-{
-    return std::make_shared<FailInstruction>();
-}
-
-void FailInstruction::execute(WAMState &state)
-{
-    std::shared_ptr<ChoicePoint> cp = state.stackAt(state.m_BacktrackRegister);
-    if (cp)
-    {
-        // Reload argument registers
-        state.m_ArgumentRegisters = cp->m_ArgumentRegisters;
-
-        // Reset heap
-        while (state.HReg() != cp->m_BH)
-        {
-            state.heapPop();
-        }
-
-        // Reset all variables instantiated since choice point was built
-        while (state.TRReg() != cp->m_BTR)
-        {
-            std::shared_ptr<VariableWord> popped = state.trailTop();
-            popped->unbind();
-            *popped->ref() = popped;
-            state.trailPop();
-        }
-        // Branch to next rule
-        state.m_ProgramCounter = cp->m_FA;
-    }
-    // TODO: Experimental (check when choice point stack is empty)
-    else if (state.m_BacktrackRegister == UNSET_REG)
-        state.m_FailFlag = true;
-}
-
-void FailInstruction::print(std::ostream &os) const
-{
-    os << "__fail__";
 }

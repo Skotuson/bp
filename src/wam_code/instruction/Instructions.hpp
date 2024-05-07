@@ -1,4 +1,5 @@
 #include "indexing/Backtrack.hpp"
+#include "indexing/Fail.hpp"
 #include "indexing/Mark.hpp"
 #include "indexing/RetryMeElse.hpp"
 

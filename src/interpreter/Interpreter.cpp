@@ -133,7 +133,7 @@ bool Interpreter::nextAnswer(std::istream &is)
     {
         return false;
     }
-    std::shared_ptr<FailInstruction> fi = std::make_shared<FailInstruction>();
+    std::shared_ptr<Fail> fi = std::make_shared<Fail>();
     fi->execute(m_State);
     return true;
 }

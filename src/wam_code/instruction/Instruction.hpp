@@ -19,10 +19,3 @@ struct Instruction
 
     friend std::ostream &operator<<(std::ostream &os, const Instruction &instr);
 };
-
-struct FailInstruction : public Instruction
-{
-    std::shared_ptr<Instruction> clone(void) override;
-    void execute(WAMState &state) override;
-    void print(std::ostream &os) const override;
-};
