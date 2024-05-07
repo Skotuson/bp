@@ -74,7 +74,7 @@ void StructNode::unifyHead(CompilationContext &cctx)
         TermNode::TermType type = arg->type();
         if (type == TermNode::CONST)
         {
-            cctx.addInstruction(std::make_shared<UnifyConstantInstruction>(arg->name()));
+            cctx.addInstruction(std::make_shared<UnifyConstant>(arg->name()));
         }
 
         else if (type == TermNode::VAR)
@@ -82,7 +82,7 @@ void StructNode::unifyHead(CompilationContext &cctx)
             // Note variable if it appears in complex structure
             cctx.noteVariable(arg->name());
             cctx.addVariable(arg->name());
-            cctx.addInstruction(std::make_shared<UnifyVariableInstruction>(arg->name(), cctx.getVarOffset(arg->name())));
+            cctx.addInstruction(std::make_shared<UnifyVariable>(arg->name(), cctx.getVarOffset(arg->name())));
         }
         else
         {
@@ -90,7 +90,7 @@ void StructNode::unifyHead(CompilationContext &cctx)
             std::string tempVariable = cctx.generateTempVar();
             cctx.noteVariable(tempVariable);
             // Instead of unify-xxx (xxx = struct or list), use the unifyv for the created variable
-            cctx.addInstruction(std::make_shared<UnifyVariableInstruction>(tempVariable, cctx.getVarOffset(tempVariable)));
+            cctx.addInstruction(std::make_shared<UnifyVariable>(tempVariable, cctx.getVarOffset(tempVariable)));
 
             // Add term to queue to be processed after all the "top level" code has been generated
             terms.push({static_cast<ComplexNode *>(arg.get()), tempVariable});
@@ -127,7 +127,7 @@ void StructNode::unifyRHS(CompilationContext &cctx)
             TermNode::TermType type = arg->type();
             if (type == TermNode::CONST)
             {
-                cctx.addInstruction(std::make_shared<UnifyConstantInstruction>(arg->name()));
+                cctx.addInstruction(std::make_shared<UnifyConstant>(arg->name()));
             }
 
             else if (type == TermNode::VAR)
@@ -135,7 +135,7 @@ void StructNode::unifyRHS(CompilationContext &cctx)
                 // Note variable if it appears in complex structure
                 cctx.noteVariable(arg->name());
                 cctx.addVariable(arg->name());
-                cctx.addInstruction(std::make_shared<UnifyVariableInstruction>(arg->name(), cctx.getVarOffset(arg->name())));
+                cctx.addInstruction(std::make_shared<UnifyVariable>(arg->name(), cctx.getVarOffset(arg->name())));
             }
         }
     }
@@ -178,7 +178,7 @@ void StructNode::unifyArguments(CompilationContext &cctx, ProcessedComplex &proc
         TermType type = arg->type();
         if (type == TermNode::CONST)
         {
-            cctx.addInstruction(std::make_shared<UnifyConstantInstruction>(arg->name()));
+            cctx.addInstruction(std::make_shared<UnifyConstant>(arg->name()));
         }
 
         else if (type == TermNode::VAR)
@@ -186,14 +186,14 @@ void StructNode::unifyArguments(CompilationContext &cctx, ProcessedComplex &proc
             // Note variable if it appears in complex structure
             cctx.noteVariable(arg->name());
             cctx.addVariable(arg->name());
-            cctx.addInstruction(std::make_shared<UnifyVariableInstruction>(arg->name(), cctx.getVarOffset(arg->name())));
+            cctx.addInstruction(std::make_shared<UnifyVariable>(arg->name(), cctx.getVarOffset(arg->name())));
         }
 
         else
         {
             // Use a unifyv instruction with the offset of the clause variable into which they were compiled earlier:
             std::string var = processedComplex[arg.get()];
-            cctx.addInstruction(std::make_shared<UnifyVariableInstruction>(var, cctx.getVarOffset(var)));
+            cctx.addInstruction(std::make_shared<UnifyVariable>(var, cctx.getVarOffset(var)));
         }
     }
 }

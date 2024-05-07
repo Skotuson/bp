@@ -49,8 +49,8 @@ src/wam_code/instruction/put/PutConstant.cpp
 src/wam_code/instruction/put/PutVariable.cpp
 src/wam_code/instruction/put/PutList.cpp
 src/wam_code/instruction/put/PutStructure.cpp
-src/wam_code/instruction/unify/UnifyConstantInstruction.cpp
-src/wam_code/instruction/unify/UnifyVariableInstruction.cpp
+src/wam_code/instruction/unify/UnifyConstant.cpp
+src/wam_code/instruction/unify/UnifyVariable.cpp
 src/wam_code/WAMCode.cpp)
 
 add_executable(wam src/main.cpp)

@@ -2,9 +2,9 @@
 
 #include "../Instruction.hpp"
 
-struct UnifyConstantInstruction : public Instruction
+struct UnifyConstant : public Instruction
 {
-    UnifyConstantInstruction(const std::string &name);
+    UnifyConstant(const std::string &name);
     std::shared_ptr<Instruction> clone(void) override;
     void execute(WAMState &state) override;
     void print(std::ostream &os) const override;

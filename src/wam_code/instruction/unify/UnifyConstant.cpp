@@ -1,16 +1,16 @@
-#include "UnifyConstantInstruction.hpp"
+#include "UnifyConstant.hpp"
 
-UnifyConstantInstruction::UnifyConstantInstruction(const std::string &name)
+UnifyConstant::UnifyConstant(const std::string &name)
     : m_Name(name)
 {
 }
 
-std::shared_ptr<Instruction> UnifyConstantInstruction::clone(void)
+std::shared_ptr<Instruction> UnifyConstant::clone(void)
 {
-    return std::make_shared<UnifyConstantInstruction>(m_Name);
+    return std::make_shared<UnifyConstant>(m_Name);
 }
 
-void UnifyConstantInstruction::execute(WAMState &state)
+void UnifyConstant::execute(WAMState &state)
 {
     if (!state.readMode())
     {
@@ -44,7 +44,7 @@ void UnifyConstantInstruction::execute(WAMState &state)
     }
 }
 
-void UnifyConstantInstruction::print(std::ostream &os) const
+void UnifyConstant::print(std::ostream &os) const
 {
     os << "unify-constant " << m_Name;
 }

@@ -1,17 +1,17 @@
-#include "UnifyVariableInstruction.hpp"
+#include "UnifyVariable.hpp"
 
-UnifyVariableInstruction::UnifyVariableInstruction(const std::string &name, size_t offset)
+UnifyVariable::UnifyVariable(const std::string &name, size_t offset)
     : m_Name(name),
       m_Offset(offset)
 {
 }
 
-std::shared_ptr<Instruction> UnifyVariableInstruction::clone(void)
+std::shared_ptr<Instruction> UnifyVariable::clone(void)
 {
-    return std::make_shared<UnifyVariableInstruction>(m_Name, m_Offset);
+    return std::make_shared<UnifyVariable>(m_Name, m_Offset);
 }
 
-void UnifyVariableInstruction::execute(WAMState &state)
+void UnifyVariable::execute(WAMState &state)
 {
     std::shared_ptr<Word> w = state.stackAt(state.EReg())->m_Variables[m_Offset]->dereference();
     if (!state.readMode())
@@ -26,7 +26,7 @@ void UnifyVariableInstruction::execute(WAMState &state)
     state.m_StructurePointer++;
 }
 
-void UnifyVariableInstruction::print(std::ostream &os) const
+void UnifyVariable::print(std::ostream &os) const
 {
     os << "unifyv " << m_Name << "(" << m_Offset << ")";
 }
