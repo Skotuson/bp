@@ -4,6 +4,7 @@
 #include "ConstNode.hpp"
 
 #include "../../wam_code/instruction/GetListInstruction.hpp"
+#include "../../wam_code/instruction/GetVariableInstruction.hpp"
 #include "../../wam_code/instruction/GetStructureInstruction.hpp"
 
 #include <queue>

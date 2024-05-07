@@ -27,24 +27,6 @@ struct FailInstruction : public Instruction
     void print(std::ostream &os) const override;
 };
 
-// Get Instructions
-struct GetInstruction : public Instruction
-{
-protected:
-    GetInstruction(const std::string &name, size_t argumentRegister);
-    std::string m_Name;
-    size_t m_ArgumentRegister;
-};
-
-struct GetVariableInstruction : public GetInstruction
-{
-    GetVariableInstruction(const std::string &name, size_t argumentRegister, size_t offset);
-    std::shared_ptr<Instruction> clone(void) override;
-    void execute(WAMState &state) override;
-    void print(std::ostream &os) const override;
-
-    size_t m_Offset;
-};
 // Put Instructions
 struct PutInstruction : public Instruction
 {
