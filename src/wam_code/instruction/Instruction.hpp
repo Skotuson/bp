@@ -36,16 +36,6 @@ protected:
     size_t m_ArgumentRegister;
 };
 
-struct GetStructureInstruction : public GetInstruction
-{
-    GetStructureInstruction(const std::string &name, size_t argumentRegister, size_t arity);
-    std::shared_ptr<Instruction> clone(void) override;
-    void execute(WAMState &state) override;
-    void print(std::ostream &os) const override;
-
-    size_t m_Arity;
-};
-
 struct GetVariableInstruction : public GetInstruction
 {
     GetVariableInstruction(const std::string &name, size_t argumentRegister, size_t offset);
