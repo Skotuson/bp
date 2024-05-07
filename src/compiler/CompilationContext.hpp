@@ -5,6 +5,10 @@
 #include <memory>
 #include <unordered_map>
 
+#include "../wam_code/instruction/MarkInstruction.hpp"
+#include "../wam_code/instruction/CallInstruction.hpp"
+#include "../wam_code/instruction/RetryMeElseInstruction.hpp"
+
 #include "../wam_code/WAMCode.hpp"
 
 using Label = std::string;
@@ -17,6 +21,11 @@ struct TableEntry
     }
 
     std::string m_Name;
+
+    std::shared_ptr<MarkInstruction> m_InitialMark;
+    std::shared_ptr<RetryMeElseInstruction> m_LastRetryMeElse;
+    std::vector<std::shared_ptr<CallInstruction>> m_CallReferences;
+
     size_t m_Generated = 0;
     size_t m_Clauses = 1;
 };
