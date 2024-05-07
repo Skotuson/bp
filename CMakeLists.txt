@@ -41,10 +41,10 @@ src/wam_code/instruction/indexing/BacktrackInstruction.cpp
 src/wam_code/instruction/procedural/AllocateInstruction.cpp
 src/wam_code/instruction/procedural/ReturnInstruction.cpp
 src/wam_code/instruction/Cut.cpp
-src/wam_code/instruction/get/GetConstantInstruction.cpp
-src/wam_code/instruction/get/GetListInstruction.cpp
-src/wam_code/instruction/get/GetStructureInstruction.cpp
-src/wam_code/instruction/get/GetVariableInstruction.cpp
+src/wam_code/instruction/get/GetConstant.cpp
+src/wam_code/instruction/get/GetList.cpp
+src/wam_code/instruction/get/GetStructure.cpp
+src/wam_code/instruction/get/GetVariable.cpp
 src/wam_code/instruction/put/PutConstantInstruction.cpp
 src/wam_code/instruction/put/PutVariableInstruction.cpp
 src/wam_code/instruction/put/PutListInstruction.cpp

@@ -13,7 +13,7 @@ void VarNode::codegen(CompilationContext &cctx)
     if (cctx.mode() == CodeGenerationMode::HEAD)
     {
         cctx.addInstruction(
-            std::make_shared<GetVariableInstruction>(m_Name, cctx.availableReg(), cctx.getVarOffset(m_Name)));
+            std::make_shared<GetVariable>(m_Name, cctx.availableReg(), cctx.getVarOffset(m_Name)));
     }
     else
     {

@@ -33,7 +33,7 @@ void StructNode::codegen(CompilationContext &cctx)
         return;
     }
 
-    cctx.addInstruction(std::make_shared<GetStructureInstruction>(m_Name, cctx.availableReg(), m_Args.size()));
+    cctx.addInstruction(std::make_shared<GetStructure>(m_Name, cctx.availableReg(), m_Args.size()));
     unifyHead(cctx);
     cctx.setAvailableReg(cctx.availableReg() + 1);
 }
@@ -106,11 +106,11 @@ void StructNode::unifyHead(CompilationContext &cctx)
         auto arg = top.first;
         if (arg->type() == STRUCT)
         {
-            cctx.addInstruction(std::make_shared<GetStructureInstruction>(arg->name(), cctx.availableReg(), arg->arity()));
+            cctx.addInstruction(std::make_shared<GetStructure>(arg->name(), cctx.availableReg(), arg->arity()));
         }
         else if (arg->type() == LIST)
         {
-            cctx.addInstruction(std::make_shared<GetListInstruction>(cctx.availableReg()));
+            cctx.addInstruction(std::make_shared<GetList>(cctx.availableReg()));
         }
         arg->unifyHead(cctx);
         terms.pop();
@@ -162,7 +162,7 @@ void StructNode::unifyRHS(CompilationContext &cctx)
             // (d) Generate a getv to place Au in a specially allocated clause variable (as was done for nested objects in the clause head)
             std::string tempVariable = cctx.generateTempVar();
             cctx.noteVariable(tempVariable);
-            cctx.addInstruction(std::make_shared<GetVariableInstruction>(tempVariable, cctx.availableReg(), cctx.getVarOffset(tempVariable)));
+            cctx.addInstruction(std::make_shared<GetVariable>(tempVariable, cctx.availableReg(), cctx.getVarOffset(tempVariable)));
             processedComplex.insert({n, tempVariable});
             // (e) Repeat the above process for the next most nested component, expect that for components that refer to nested structures that have already been processed
         }

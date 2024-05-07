@@ -1,17 +1,17 @@
-#include "GetConstantInstruction.hpp"
+#include "GetConstant.hpp"
 
-GetConstantInstruction::GetConstantInstruction(const std::string &name, size_t argumentRegister)
+GetConstant::GetConstant(const std::string &name, size_t argumentRegister)
     : m_Name(name),
       m_ArgumentRegister(argumentRegister)
 {
 }
 
-std::shared_ptr<Instruction> GetConstantInstruction::clone(void)
+std::shared_ptr<Instruction> GetConstant::clone(void)
 {
-    return std::make_shared<GetConstantInstruction>(m_Name, m_ArgumentRegister);
+    return std::make_shared<GetConstant>(m_Name, m_ArgumentRegister);
 }
 
-void GetConstantInstruction::execute(WAMState &state)
+void GetConstant::execute(WAMState &state)
 {
     std::shared_ptr<Word> reg = state.m_ArgumentRegisters.dereferenceRegister(m_ArgumentRegister);
     std::shared_ptr<ConstantWord> cword = std::make_shared<ConstantWord>(m_Name);
@@ -27,7 +27,7 @@ void GetConstantInstruction::execute(WAMState &state)
     }
 }
 
-void GetConstantInstruction::print(std::ostream &os) const
+void GetConstant::print(std::ostream &os) const
 {
     os << "get-constant " << m_Name << " A" << m_ArgumentRegister;
 }

@@ -1,18 +1,18 @@
-#include "GetListInstruction.hpp"
+#include "GetList.hpp"
 
 #include "../../../word/ListWord.hpp"
 
-GetListInstruction::GetListInstruction(size_t argumentRegister)
+GetList::GetList(size_t argumentRegister)
     : m_ArgumentRegister(argumentRegister)
 {
 }
 
-std::shared_ptr<Instruction> GetListInstruction::clone(void)
+std::shared_ptr<Instruction> GetList::clone(void)
 {
-    return std::make_shared<GetListInstruction>(m_ArgumentRegister);
+    return std::make_shared<GetList>(m_ArgumentRegister);
 }
 
-void GetListInstruction::execute(WAMState &state)
+void GetList::execute(WAMState &state)
 {
     std::shared_ptr<Word> w = state.m_ArgumentRegisters.dereferenceRegister(m_ArgumentRegister);
     if (w->tag() == VARIABLE)
@@ -34,7 +34,7 @@ void GetListInstruction::execute(WAMState &state)
     }
 }
 
-void GetListInstruction::print(std::ostream &os) const
+void GetList::print(std::ostream &os) const
 {
     os << "get-list A" << m_ArgumentRegister;
 }

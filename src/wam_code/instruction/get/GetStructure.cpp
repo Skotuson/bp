@@ -1,18 +1,18 @@
-#include "GetStructureInstruction.hpp"
+#include "GetStructure.hpp"
 
-GetStructureInstruction::GetStructureInstruction(const std::string &name, size_t argumentRegister, size_t arity)
+GetStructure::GetStructure(const std::string &name, size_t argumentRegister, size_t arity)
     : m_Name(name),
       m_ArgumentRegister(argumentRegister),
       m_Arity(arity)
 {
 }
 
-std::shared_ptr<Instruction> GetStructureInstruction::clone(void)
+std::shared_ptr<Instruction> GetStructure::clone(void)
 {
-    return std::make_shared<GetStructureInstruction>(m_Name, m_ArgumentRegister, m_Arity);
+    return std::make_shared<GetStructure>(m_Name, m_ArgumentRegister, m_Arity);
 }
 
-void GetStructureInstruction::execute(WAMState &state)
+void GetStructure::execute(WAMState &state)
 {
     std::shared_ptr<Word> w = state.m_ArgumentRegisters.dereferenceRegister(m_ArgumentRegister);
     if (w->tag() == VARIABLE)
@@ -44,7 +44,7 @@ void GetStructureInstruction::execute(WAMState &state)
     }
 }
 
-void GetStructureInstruction::print(std::ostream &os) const
+void GetStructure::print(std::ostream &os) const
 {
     os << "get-structure " << m_Name << "/" << m_Arity << " A" << m_ArgumentRegister;
 }

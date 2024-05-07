@@ -6,10 +6,10 @@
 #include "procedural/CallInstruction.hpp"
 #include "procedural/ReturnInstruction.hpp"
 
-#include "get/GetConstantInstruction.hpp"
-#include "get/GetListInstruction.hpp"
-#include "get/GetStructureInstruction.hpp"
-#include "get/GetVariableInstruction.hpp"
+#include "get/GetConstant.hpp"
+#include "get/GetList.hpp"
+#include "get/GetStructure.hpp"
+#include "get/GetVariable.hpp"
 
 #include "put/PutConstantInstruction.hpp"
 #include "put/PutVariableInstruction.hpp"

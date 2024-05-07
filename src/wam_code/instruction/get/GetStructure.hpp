@@ -2,14 +2,14 @@
 
 #include "../Instruction.hpp"
 
-struct GetVariableInstruction : public Instruction
+struct GetStructure : public Instruction
 {
-    GetVariableInstruction(const std::string &name, size_t argumentRegister, size_t offset);
+    GetStructure(const std::string &name, size_t argumentRegister, size_t arity);
     std::shared_ptr<Instruction> clone(void) override;
     void execute(WAMState &state) override;
     void print(std::ostream &os) const override;
 
     std::string m_Name;
     size_t m_ArgumentRegister;
-    size_t m_Offset;
+    size_t m_Arity;
 };

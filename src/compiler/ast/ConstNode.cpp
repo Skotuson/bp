@@ -11,7 +11,7 @@ void ConstNode::codegen(CompilationContext &cctx)
 {
     if (cctx.mode() == CodeGenerationMode::HEAD)
     {
-        cctx.addInstruction(std::make_shared<GetConstantInstruction>(m_Name, cctx.availableReg()));
+        cctx.addInstruction(std::make_shared<GetConstant>(m_Name, cctx.availableReg()));
     }
     else
     {
