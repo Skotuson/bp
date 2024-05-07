@@ -2,7 +2,7 @@
 
 #include "Instruction.hpp"
 
-struct CutInstruction : public Instruction
+struct Cut : public Instruction
 {
     std::shared_ptr<Instruction> clone(void) override;
     void execute(WAMState &state) override;

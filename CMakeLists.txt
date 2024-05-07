@@ -40,7 +40,7 @@ src/wam_code/instruction/procedural/CallInstruction.cpp
 src/wam_code/instruction/indexing/BacktrackInstruction.cpp
 src/wam_code/instruction/procedural/AllocateInstruction.cpp
 src/wam_code/instruction/procedural/ReturnInstruction.cpp
-src/wam_code/instruction/CutInstruction.cpp
+src/wam_code/instruction/Cut.cpp
 src/wam_code/instruction/get/GetConstantInstruction.cpp
 src/wam_code/instruction/get/GetListInstruction.cpp
 src/wam_code/instruction/get/GetStructureInstruction.cpp

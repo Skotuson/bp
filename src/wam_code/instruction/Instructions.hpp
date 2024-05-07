@@ -19,5 +19,5 @@
 #include "unify/UnifyConstantInstruction.hpp"
 #include "unify/UnifyVariableInstruction.hpp"
 
-#include "CutInstruction.hpp"
+#include "Cut.hpp"
 #include "Instruction.hpp"
