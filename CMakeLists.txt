@@ -41,6 +41,7 @@ src/wam_code/instruction/BacktrackInstruction.cpp
 src/wam_code/instruction/AllocateInstruction.cpp
 src/wam_code/instruction/ReturnInstruction.cpp
 src/wam_code/instruction/CutInstruction.cpp
+src/wam_code/instruction/GetConstantInstruction.cpp
 src/wam_code/WAMCode.cpp)
 
 add_executable(wam src/main.cpp)

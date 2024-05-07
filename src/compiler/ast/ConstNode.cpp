@@ -1,5 +1,7 @@
 #include "ConstNode.hpp"
 
+#include "../../wam_code/instruction/GetConstantInstruction.hpp"
+
 ConstNode::ConstNode(const std::string &name)
     : TermNode(name)
 {
