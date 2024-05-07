@@ -1,6 +1,6 @@
 #include "ProgramNode.hpp"
 
-#include "../../wam_code/instruction/BacktrackInstruction.hpp"
+#include "../../wam_code/instruction/Instructions.hpp"
 
 void ProgramNode::codegen(CompilationContext &cctx)
 {

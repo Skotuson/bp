@@ -1,6 +1,6 @@
 #include "GetListInstruction.hpp"
 
-#include "../../word/ListWord.hpp"
+#include "../../../word/ListWord.hpp"
 
 GetListInstruction::GetListInstruction(size_t argumentRegister)
     : m_ArgumentRegister(argumentRegister)

@@ -3,9 +3,7 @@
 #include "StructNode.hpp"
 #include "ConstNode.hpp"
 
-#include "../../wam_code/instruction/GetListInstruction.hpp"
-#include "../../wam_code/instruction/GetVariableInstruction.hpp"
-#include "../../wam_code/instruction/GetStructureInstruction.hpp"
+#include "../../wam_code/instruction/Instructions.hpp"
 
 #include <queue>
 #include <cassert>

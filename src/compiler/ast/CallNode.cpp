@@ -1,6 +1,6 @@
 #include "CallNode.hpp"
 
-#include "../../wam_code/instruction/CallInstruction.hpp"
+#include "../../wam_code/instruction/Instructions.hpp"
 
 CallNode::CallNode(const std::string &name, std::vector<std::shared_ptr<TermNode>> args)
     : m_Name(name),

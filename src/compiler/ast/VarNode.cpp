@@ -1,5 +1,5 @@
 #include "VarNode.hpp"
-#include "../../wam_code/instruction/GetVariableInstruction.hpp"
+#include "../../wam_code/instruction/Instructions.hpp"
 
 VarNode::VarNode(const std::string &name, bool isWildcard)
     : TermNode(name),

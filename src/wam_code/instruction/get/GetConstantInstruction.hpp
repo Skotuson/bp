@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Instruction.hpp"
+#include "../Instruction.hpp"
 
 struct GetConstantInstruction : public Instruction
 {

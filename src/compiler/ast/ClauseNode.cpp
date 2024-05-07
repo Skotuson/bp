@@ -1,8 +1,5 @@
 #include "ClauseNode.hpp"
-#include "../../wam_code/instruction/MarkInstruction.hpp"
-#include "../../wam_code/instruction/ReturnInstruction.hpp"
-#include "../../wam_code/instruction/AllocateInstruction.hpp"
-#include "../../wam_code/instruction/RetryMeElseInstruction.hpp"
+#include "../../wam_code/instruction/Instructions.hpp"
 
 ClauseNode::ClauseNode(const std::string &head,
                        std::vector<std::shared_ptr<TermNode>> args,

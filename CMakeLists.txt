@@ -33,18 +33,18 @@ src/interpreter/WAMState.cpp
 src/preprocessor/Preprocessor.cpp
 src/Renderer.cpp
 src/wam_code/instruction/Instruction.cpp
-src/wam_code/instruction/MarkInstruction.cpp
+src/wam_code/instruction/indexing/MarkInstruction.cpp
 src/wam_code/instruction/BranchInstruction.cpp
-src/wam_code/instruction/RetryMeElseInstruction.cpp
-src/wam_code/instruction/CallInstruction.cpp
-src/wam_code/instruction/BacktrackInstruction.cpp
-src/wam_code/instruction/AllocateInstruction.cpp
-src/wam_code/instruction/ReturnInstruction.cpp
+src/wam_code/instruction/indexing/RetryMeElseInstruction.cpp
+src/wam_code/instruction/procedural/CallInstruction.cpp
+src/wam_code/instruction/indexing/BacktrackInstruction.cpp
+src/wam_code/instruction/procedural/AllocateInstruction.cpp
+src/wam_code/instruction/procedural/ReturnInstruction.cpp
 src/wam_code/instruction/CutInstruction.cpp
-src/wam_code/instruction/GetConstantInstruction.cpp
-src/wam_code/instruction/GetListInstruction.cpp
-src/wam_code/instruction/GetStructureInstruction.cpp
-src/wam_code/instruction/GetVariableInstruction.cpp
+src/wam_code/instruction/get/GetConstantInstruction.cpp
+src/wam_code/instruction/get/GetListInstruction.cpp
+src/wam_code/instruction/get/GetStructureInstruction.cpp
+src/wam_code/instruction/get/GetVariableInstruction.cpp
 src/wam_code/WAMCode.cpp)
 
 add_executable(wam src/main.cpp)
