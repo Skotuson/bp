@@ -1,6 +1,6 @@
 #include "Instruction.hpp"
 
-#include "../../interpreter/data_structures/word/ListWord.hpp"
+#include "../../word/ListWord.hpp"
 
 #include <iostream>
 #include <cassert>
