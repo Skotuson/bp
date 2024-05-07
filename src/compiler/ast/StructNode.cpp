@@ -102,7 +102,7 @@ void StructNode::unifyHead(CompilationContext &cctx)
     {
         auto top = terms.front();
         // Generate putv instruction to load some unneeded arg. register with the contents of the new variable
-        cctx.addInstruction(std::make_shared<PutVariableInstruction>(top.second, cctx.availableReg(), cctx.getVarOffset(top.second)));
+        cctx.addInstruction(std::make_shared<PutVariable>(top.second, cctx.availableReg(), cctx.getVarOffset(top.second)));
         auto arg = top.first;
         if (arg->type() == STRUCT)
         {
@@ -121,7 +121,7 @@ void StructNode::unifyRHS(CompilationContext &cctx)
 {
     if (!hasNestedComplex())
     {
-        cctx.addInstruction(std::make_shared<PutStructureInstruction>(name(), cctx.availableReg(), arity()));
+        cctx.addInstruction(std::make_shared<PutStructure>(name(), cctx.availableReg(), arity()));
         for (const auto &arg : m_Args)
         {
             TermNode::TermType type = arg->type();
@@ -172,7 +172,7 @@ void StructNode::unifyRHS(CompilationContext &cctx)
 void StructNode::unifyArguments(CompilationContext &cctx, ProcessedComplex &processedComplex)
 {
     // (c) Generate an instruction sequence as in the prior step (put-list or put-structure), but target the result to Au
-    cctx.addInstruction(std::make_shared<PutStructureInstruction>(name(), cctx.availableReg(), arity()));
+    cctx.addInstruction(std::make_shared<PutStructure>(name(), cctx.availableReg(), arity()));
     for (const auto &arg : m_Args)
     {
         TermType type = arg->type();

@@ -45,10 +45,10 @@ src/wam_code/instruction/get/GetConstant.cpp
 src/wam_code/instruction/get/GetList.cpp
 src/wam_code/instruction/get/GetStructure.cpp
 src/wam_code/instruction/get/GetVariable.cpp
-src/wam_code/instruction/put/PutConstantInstruction.cpp
-src/wam_code/instruction/put/PutVariableInstruction.cpp
-src/wam_code/instruction/put/PutListInstruction.cpp
-src/wam_code/instruction/put/PutStructureInstruction.cpp
+src/wam_code/instruction/put/PutConstant.cpp
+src/wam_code/instruction/put/PutVariable.cpp
+src/wam_code/instruction/put/PutList.cpp
+src/wam_code/instruction/put/PutStructure.cpp
 src/wam_code/instruction/unify/UnifyConstantInstruction.cpp
 src/wam_code/instruction/unify/UnifyVariableInstruction.cpp
 src/wam_code/WAMCode.cpp)

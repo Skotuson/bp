@@ -11,10 +11,10 @@
 #include "get/GetStructure.hpp"
 #include "get/GetVariable.hpp"
 
-#include "put/PutConstantInstruction.hpp"
-#include "put/PutVariableInstruction.hpp"
-#include "put/PutListInstruction.hpp"
-#include "put/PutStructureInstruction.hpp"
+#include "put/PutConstant.hpp"
+#include "put/PutVariable.hpp"
+#include "put/PutList.hpp"
+#include "put/PutStructure.hpp"
 
 #include "unify/UnifyConstantInstruction.hpp"
 #include "unify/UnifyVariableInstruction.hpp"

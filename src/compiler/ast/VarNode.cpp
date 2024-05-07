@@ -22,7 +22,7 @@ void VarNode::codegen(CompilationContext &cctx)
             cctx.addVariable(m_Name);
         }
         cctx.addInstruction(
-            std::make_shared<PutVariableInstruction>(m_Name, cctx.availableReg(), cctx.getVarOffset(m_Name)));
+            std::make_shared<PutVariable>(m_Name, cctx.availableReg(), cctx.getVarOffset(m_Name)));
     }
 
     cctx.setAvailableReg(cctx.availableReg() + 1);

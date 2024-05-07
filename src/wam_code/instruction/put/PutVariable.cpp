@@ -1,19 +1,19 @@
-#include "PutVariableInstruction.hpp"
+#include "PutVariable.hpp"
 
-PutVariableInstruction::PutVariableInstruction(const std::string &name,
-                                               size_t argumentRegister, size_t offset)
+PutVariable::PutVariable(const std::string &name,
+                         size_t argumentRegister, size_t offset)
     : m_Name(name),
       m_ArgumentRegister(argumentRegister),
       m_Offset(offset)
 {
 }
 
-std::shared_ptr<Instruction> PutVariableInstruction::clone(void)
+std::shared_ptr<Instruction> PutVariable::clone(void)
 {
-    return std::make_shared<PutVariableInstruction>(m_Name, m_ArgumentRegister, m_Offset);
+    return std::make_shared<PutVariable>(m_Name, m_ArgumentRegister, m_Offset);
 }
 
-void PutVariableInstruction::execute(WAMState &state)
+void PutVariable::execute(WAMState &state)
 {
     std::shared_ptr<ChoicePoint> cp = state.stackAt(state.EReg());
     std::shared_ptr<Word> word = cp->m_Variables[m_Offset]->dereference();
@@ -26,7 +26,7 @@ void PutVariableInstruction::execute(WAMState &state)
         state.fillRegister(word->clone(), m_ArgumentRegister);
 }
 
-void PutVariableInstruction::print(std::ostream &os) const
+void PutVariable::print(std::ostream &os) const
 {
     os << "putv " << m_Name << "(" << m_Offset << ")"
        << " A" << m_ArgumentRegister;
