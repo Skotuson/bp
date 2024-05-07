@@ -33,8 +33,7 @@ void ClauseNode::codegen(CompilationContext &cctx)
     cctx.resetVariables();
     std::shared_ptr<AllocateInstruction> alloc = std::make_shared<AllocateInstruction>(0);
     cctx.addInstruction(alloc);
-    // size_t allocInstrIdx = cctx.getCode().size() - 1;
-
+    
     cctx.setAvailableReg(1);
     cctx.setHeadGenerationMode();
     for (size_t i = 0; i < m_Args.size(); i++)
@@ -50,18 +49,8 @@ void ClauseNode::codegen(CompilationContext &cctx)
         cctx.setAvailableReg(1);
         m_Body[i]->codegen(cctx);
     }
-
-    // Generate allocate only if N is non-zero
-    // if (cctx.allocate())
-    //{
+    // Assign the N to generated allocate instruction
     alloc->m_N = cctx.allocate();
-    //}
-    // No local variables needed, delete the empty allocate instruction.
-    // else
-    //{
-    //    cctx.getCode().deleteInstruction(allocInstrIdx);
-    //}
-
     cctx.addInstruction(std::make_shared<ReturnInstruction>());
 }
 
