@@ -15,7 +15,7 @@ void CallNode::codegen(CompilationContext &cctx)
         arg->codegen(cctx);
     }
     std::string callName = m_Name + "/" + std::to_string(m_Args.size());
-    cctx.addInstruction(std::make_shared<CallInstruction>(callName));
+    cctx.addInstruction(std::make_shared<Call>(callName));
 }
 
 void CallNode::print(const std::string &indent)

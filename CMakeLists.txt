@@ -36,10 +36,10 @@ src/wam_code/instruction/Instruction.cpp
 src/wam_code/instruction/indexing/Mark.cpp
 src/wam_code/instruction/BranchInstruction.cpp
 src/wam_code/instruction/indexing/RetryMeElse.cpp
-src/wam_code/instruction/procedural/CallInstruction.cpp
+src/wam_code/instruction/procedural/Call.cpp
 src/wam_code/instruction/indexing/Backtrack.cpp
-src/wam_code/instruction/procedural/AllocateInstruction.cpp
-src/wam_code/instruction/procedural/ReturnInstruction.cpp
+src/wam_code/instruction/procedural/Allocate.cpp
+src/wam_code/instruction/procedural/Return.cpp
 src/wam_code/instruction/Cut.cpp
 src/wam_code/instruction/get/GetConstant.cpp
 src/wam_code/instruction/get/GetList.cpp

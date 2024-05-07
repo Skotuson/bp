@@ -1,12 +1,11 @@
 #pragma once
 
-#include "../Instruction.hpp"
+#include "../BranchInstruction.hpp"
 
-struct AllocateInstruction : public Instruction
+struct Call : public BranchInstruction
 {
-    AllocateInstruction(size_t n);
+    Call(const std::string &label, size_t address = 0);
     std::shared_ptr<Instruction> clone(void) override;
     void execute(WAMState &state) override;
     void print(std::ostream &os) const override;
-    size_t m_N;
 };

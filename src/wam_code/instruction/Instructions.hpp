@@ -2,9 +2,9 @@
 #include "indexing/Mark.hpp"
 #include "indexing/RetryMeElse.hpp"
 
-#include "procedural/AllocateInstruction.hpp"
-#include "procedural/CallInstruction.hpp"
-#include "procedural/ReturnInstruction.hpp"
+#include "procedural/Allocate.hpp"
+#include "procedural/Call.hpp"
+#include "procedural/Return.hpp"
 
 #include "get/GetConstant.hpp"
 #include "get/GetList.hpp"

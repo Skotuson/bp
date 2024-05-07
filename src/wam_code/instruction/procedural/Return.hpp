@@ -2,7 +2,7 @@
 
 #include "../Instruction.hpp"
 
-struct ReturnInstruction : public Instruction
+struct Return : public Instruction
 {
     std::shared_ptr<Instruction> clone(void) override;
     void execute(WAMState &state) override;

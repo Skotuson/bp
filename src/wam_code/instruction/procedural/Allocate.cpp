@@ -1,16 +1,16 @@
-#include "AllocateInstruction.hpp"
+#include "Allocate.hpp"
 
-AllocateInstruction::AllocateInstruction(size_t n)
+Allocate::Allocate(size_t n)
     : m_N(n)
 {
 }
 
-std::shared_ptr<Instruction> AllocateInstruction::clone(void)
+std::shared_ptr<Instruction> Allocate::clone(void)
 {
-    return std::make_shared<AllocateInstruction>(m_N);
+    return std::make_shared<Allocate>(m_N);
 }
 
-void AllocateInstruction::execute(WAMState &state)
+void Allocate::execute(WAMState &state)
 {
     std::shared_ptr<ChoicePoint> cp = state.stackTop();
     // Allocate new environment to current choice point (Initialize all variables).
@@ -30,7 +30,7 @@ void AllocateInstruction::execute(WAMState &state)
     state.m_EnvironmentRegister = state.BReg();
 }
 
-void AllocateInstruction::print(std::ostream &os) const
+void Allocate::print(std::ostream &os) const
 {
     os << "allocate " << m_N;
 }

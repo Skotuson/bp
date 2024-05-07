@@ -1,11 +1,11 @@
-#include "ReturnInstruction.hpp"
+#include "Return.hpp"
 
-std::shared_ptr<Instruction> ReturnInstruction::clone(void)
+std::shared_ptr<Instruction> Return::clone(void)
 {
-    return std::make_shared<ReturnInstruction>();
+    return std::make_shared<Return>();
 }
 
-void ReturnInstruction::execute(WAMState &state)
+void Return::execute(WAMState &state)
 {
     std::shared_ptr<ChoicePoint> cp = state.stackAt(state.EReg());
     if (cp)
@@ -22,7 +22,7 @@ void ReturnInstruction::execute(WAMState &state)
     }
 }
 
-void ReturnInstruction::print(std::ostream &os) const
+void Return::print(std::ostream &os) const
 {
     os << "return";
 }

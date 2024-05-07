@@ -31,7 +31,7 @@ void ClauseNode::codegen(CompilationContext &cctx)
 
     // Generate an allocate instruction and count the number of local variables needed during codegen.
     cctx.resetVariables();
-    std::shared_ptr<AllocateInstruction> alloc = std::make_shared<AllocateInstruction>(0);
+    std::shared_ptr<Allocate> alloc = std::make_shared<Allocate>(0);
     cctx.addInstruction(alloc);
     
     cctx.setAvailableReg(1);
@@ -51,7 +51,7 @@ void ClauseNode::codegen(CompilationContext &cctx)
     }
     // Assign the N to generated allocate instruction
     alloc->m_N = cctx.allocate();
-    cctx.addInstruction(std::make_shared<ReturnInstruction>());
+    cctx.addInstruction(std::make_shared<Return>());
 }
 
 void ClauseNode::print(const std::string &indent)

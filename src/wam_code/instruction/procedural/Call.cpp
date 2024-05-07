@@ -1,16 +1,16 @@
-#include "CallInstruction.hpp"
+#include "Call.hpp"
 
-CallInstruction::CallInstruction(const std::string &label, size_t address)
+Call::Call(const std::string &label, size_t address)
     : BranchInstruction(label, address)
 {
 }
 
-std::shared_ptr<Instruction> CallInstruction::clone(void)
+std::shared_ptr<Instruction> Call::clone(void)
 {
-    return std::make_shared<CallInstruction>(m_Label, m_Address);
+    return std::make_shared<Call>(m_Label, m_Address);
 }
 
-void CallInstruction::execute(WAMState &state)
+void Call::execute(WAMState &state)
 {
     // Program counter already points to another instruction
     state.m_ContinuationPointer = state.m_ProgramCounter;
@@ -18,7 +18,7 @@ void CallInstruction::execute(WAMState &state)
     state.m_ProgramCounter = m_Address;
 }
 
-void CallInstruction::print(std::ostream &os) const
+void Call::print(std::ostream &os) const
 {
     os << "call " + m_Label << "[" << m_Address << "]";
 }
