@@ -1,5 +1,7 @@
 #include "CutNode.hpp"
 
+#include "../../wam_code/instruction/CutInstruction.hpp"
+
 void CutNode::codegen(CompilationContext &cctx)
 {
     cctx.addInstruction(std::make_shared<CutInstruction>());

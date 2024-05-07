@@ -141,10 +141,3 @@ struct UnifyVariableInstruction : public UnifyInstruction
 
     size_t m_Offset;
 };
-
-struct CutInstruction : public Instruction
-{
-    std::shared_ptr<Instruction> clone(void) override;
-    void execute(WAMState &state) override;
-    void print(std::ostream &os) const override;
-};
