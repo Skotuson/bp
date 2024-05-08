@@ -24,12 +24,12 @@ public:
     WAMCode compileQuery(const std::string &query);
     Result evaluateQuery(void);
 
-    void setDumpOnly(bool dumpOnly);
-
     bool nextAnswer(std::istream &is);
 
     void setQuery(const WAMCode &query);
     void clearQuery(void);
+
+    void setDumpOnly(bool dumpOnly);
 
 private:
     std::shared_ptr<Instruction> fetch(void);
