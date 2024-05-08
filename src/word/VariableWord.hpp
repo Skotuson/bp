@@ -16,7 +16,6 @@ public:
     TAG tag(void) override;
 
     std::shared_ptr<Word> dereference(void) const override;
-
     void bind(std::shared_ptr<Word> w);
     std::shared_ptr<Word> *ref(void) const;
     bool bound(void) const;
