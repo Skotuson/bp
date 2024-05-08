@@ -12,6 +12,12 @@ Interpreter::Interpreter(const WAMCode &wamCode, const Renderer &renderer)
 
 bool Interpreter::run(void)
 {
+    if (m_DumpOnly)
+    {
+        m_Program.dump(std::cout);
+        return false;
+    }
+
     std::cout << "?> ";
 
     std::string query;
@@ -171,4 +177,9 @@ void Interpreter::execute(std::shared_ptr<Instruction> instr)
     //     std::cout << ANSI_COLOR_B_GREEN << *instr << ANSI_COLOR_DEFAULT << std::endl;
     // }
     instr->execute(m_State);
+}
+
+void Interpreter::setDumpOnly(bool dumpOnly)
+{
+    m_DumpOnly = dumpOnly;
 }

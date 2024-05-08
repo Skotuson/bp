@@ -24,6 +24,8 @@ public:
     WAMCode compileQuery(const std::string &query);
     Result evaluateQuery(void);
 
+    void setDumpOnly(bool dumpOnly);
+
     bool nextAnswer(std::istream &is);
 
     void setQuery(const WAMCode &query);
@@ -32,6 +34,8 @@ public:
 private:
     std::shared_ptr<Instruction> fetch(void);
     void execute(std::shared_ptr<Instruction> instr);
+
+    bool m_DumpOnly = false;
 
     WAMState m_State;
     WAMCode m_Program;
