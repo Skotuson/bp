@@ -20,9 +20,9 @@ struct TableEntry
 
     std::string m_Name;
 
-    std::shared_ptr<MarkInstruction> m_InitialMark = nullptr;
-    std::shared_ptr<RetryMeElseInstruction> m_LastRetryMeElse = nullptr;
-    std::vector<std::shared_ptr<CallInstruction>> m_CallReferences;
+    std::shared_ptr<Mark> m_InitialMark = nullptr;
+    std::shared_ptr<RetryMeElse> m_LastRetryMeElse = nullptr;
+    std::vector<std::shared_ptr<Call>> m_CallReferences;
 
     size_t m_Generated = 0;
     size_t m_Clauses = 1;
@@ -51,10 +51,8 @@ public:
     WAMCode &getCode(void);
 
     std::string generateTempVar(void);
-
-    void addVariable(const std::string &variable);
-
     size_t allocate(void);
+    void addVariable(const std::string &variable);
     void noteVariable(const std::string &variable);
     size_t getVarOffset(const std::string &variable);
     void resetVariables(void);
