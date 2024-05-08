@@ -31,6 +31,7 @@ void ClauseNode::codegen(CompilationContext &cctx)
 
     // Generate an allocate instruction and count the number of local variables needed during codegen.
     cctx.resetVariables();
+    // Keep the pointer so the N can be changed after variables were counted.
     std::shared_ptr<Allocate> alloc = std::make_shared<Allocate>(0);
     cctx.addInstruction(alloc);
     
