@@ -23,7 +23,6 @@ void Fail::execute(WAMState &state)
         while (state.TRReg() != cp->m_BTR)
         {
             std::shared_ptr<VariableWord> popped = state.trailTop();
-            popped->unbind();
             *popped->ref() = popped;
             state.trailPop();
         }

@@ -19,7 +19,7 @@ void PutVariable::execute(WAMState &state)
     std::shared_ptr<Word> word = cp->m_Variables[m_Offset]->dereference();
     if (word->tag() == TAG::VARIABLE)
     {
-        std::shared_ptr<VariableWord> vw = std::make_shared<VariableWord>(&cp->m_Variables[m_Offset], "", true);
+        std::shared_ptr<VariableWord> vw = std::make_shared<VariableWord>(&cp->m_Variables[m_Offset], "");
         state.fillRegister(vw, m_ArgumentRegister);
     }
     else

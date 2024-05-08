@@ -1,10 +1,9 @@
 #include "VariableWord.hpp"
 
-VariableWord::VariableWord(std::shared_ptr<Word> *ref, std::string name, bool bound)
+VariableWord::VariableWord(std::shared_ptr<Word> *ref, std::string name)
     : Word(TAG::VARIABLE),
       m_Ref(ref),
-      m_Name(name),
-      m_Bound(bound)
+      m_Name(name)
 {
 }
 
@@ -22,7 +21,7 @@ void VariableWord::print(std::ostream &os) const
 
 std::shared_ptr<Word> VariableWord::clone(void) const
 {
-    return std::make_shared<VariableWord>(m_Ref, m_Name, m_Bound);
+    return std::make_shared<VariableWord>(m_Ref, m_Name);
 }
 
 std::string VariableWord::toString(void)
@@ -49,20 +48,9 @@ TAG VariableWord::tag(void)
     return TAG::VARIABLE;
 }
 
-void VariableWord::bind(void)
-{
-    m_Bound = true;
-}
-
 void VariableWord::bind(std::shared_ptr<Word> w)
 {
     *ref() = w;
-    m_Bound = true;
-}
-
-void VariableWord::unbind(void)
-{
-    m_Bound = false;
 }
 
 std::shared_ptr<Word> VariableWord::dereference(void) const
