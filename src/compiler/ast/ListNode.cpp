@@ -45,10 +45,7 @@ ListNode::ListNode(const std::vector<std::shared_ptr<TermNode>> &head, std::shar
     }
 
     m_List = m_Head;
-    if (m_Tail)
-    {
-        m_List.push_back(m_Tail);
-    }
+    m_List.push_back(m_Tail);
 
     for (const auto &arg : m_List)
     {
