@@ -162,53 +162,29 @@ void ListNode::unifyHead(CompilationContext &cctx)
 
 void ListNode::unifyRHS(CompilationContext &cctx)
 {
-    if (!hasNestedComplex())
+    std::vector<ComplexNode *> nested;
+    ProcessedComplex processedComplex;
+    for (const auto &c : m_Complex)
     {
-        cctx.addInstruction(std::make_shared<PutList>(cctx.availableReg()));
-        for (const auto &arg : m_List)
-        {
-            TermNode::TermType type = arg->type();
-            if (type == TermNode::CONST)
-            {
-                cctx.addInstruction(std::make_shared<UnifyConstant>(arg->name()));
-            }
-
-            else if (type == TermNode::VAR)
-            {
-                // Note variable if it appears in complex structure
-                cctx.noteVariable(arg->name());
-                cctx.addVariable(arg->name());
-                cctx.addInstruction(std::make_shared<UnifyVariable>(arg->name(), cctx.getVarOffset(arg->name())));
-            }
-        }
+        nested.push_back(c.first);
     }
 
-    else // hasNestedComplex()
+    // Sort the nested structures from the most nested to the least nested
+    std::sort(nested.begin(), nested.end(), [&](ComplexNode *&a, ComplexNode *&b)
+              { return m_Complex[a] > m_Complex[b]; });
+
+    // (a) Take the most deeply nested such component
+    for (const auto &n : nested)
     {
-        std::vector<ComplexNode *> nested;
-        ProcessedComplex processedComplex;
-        for (const auto &c : m_Complex)
-        {
-            nested.push_back(c.first);
-        }
-
-        // Sort the nested structures from the most nested to the least nested
-        std::sort(nested.begin(), nested.end(), [&](ComplexNode *&a, ComplexNode *&b)
-                  { return m_Complex[a] > m_Complex[b]; });
-
-        // (a) Take the most deeply nested such component
-        for (const auto &n : nested)
-        {
-            // (b) Select a currently unsued argument register Au - the m_AvailableReg variable is the next available register
-            // (c) Generate an instruction sequence as in the prior step (put-list or put-structure), but target the result to Au
-            n->unifyArguments(cctx, processedComplex);
-            // (d) Generate a getv to place Au in a specially allocated clause variable (as was done for nested objects in the clause head)
-            std::string tempVariable = cctx.generateTempVar();
-            cctx.noteVariable(tempVariable);
-            cctx.addInstruction(std::make_shared<GetVariable>(tempVariable, cctx.availableReg(), cctx.getVarOffset(tempVariable)));
-            processedComplex.insert({n, tempVariable});
-            // (e) Repeat the above process for the next most nested component, expect that for components that refer to nested structures that have already been processed
-        }
+        // (b) Select a currently unsued argument register Au - the m_AvailableReg variable is the next available register
+        // (c) Generate an instruction sequence as in the prior step (put-list or put-structure), but target the result to Au
+        n->unifyArguments(cctx, processedComplex);
+        // (d) Generate a getv to place Au in a specially allocated clause variable (as was done for nested objects in the clause head)
+        std::string tempVariable = cctx.generateTempVar();
+        cctx.noteVariable(tempVariable);
+        cctx.addInstruction(std::make_shared<GetVariable>(tempVariable, cctx.availableReg(), cctx.getVarOffset(tempVariable)));
+        processedComplex.insert({n, tempVariable});
+        // (e) Repeat the above process for the next most nested component, expect that for components that refer to nested structures that have already been processed
     }
 }
 

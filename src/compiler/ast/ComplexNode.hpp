@@ -16,7 +16,6 @@ struct ComplexNode : public TermNode
     virtual void unifyRHS(CompilationContext &cctx) = 0;
     virtual void unifyArguments(CompilationContext &cctx, ProcessedComplex &processedComplex) = 0;
 
-    bool hasNestedComplex(void);
     NestedPairing getNestedComplex(void);
 
     // Used when generating code for nested complex stuctures on the RHS of a goal
