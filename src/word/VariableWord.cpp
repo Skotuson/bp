@@ -30,11 +30,6 @@ std::string VariableWord::toString(void)
     {
         return dereference()->toString();
     }
-    std::shared_ptr<VariableWord> vw = std::static_pointer_cast<VariableWord>(dereference());
-    if (ref() != vw->ref())
-    {
-        return dereference()->toString();
-    }
     return m_Name;
 }
 
