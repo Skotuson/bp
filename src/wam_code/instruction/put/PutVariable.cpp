@@ -17,13 +17,7 @@ void PutVariable::execute(WAMState &state)
 {
     std::shared_ptr<ChoicePoint> cp = state.stackAt(state.EReg());
     std::shared_ptr<Word> word = cp->m_Variables[m_Offset]->dereference();
-    if (word->tag() == TAG::VARIABLE)
-    {
-        std::shared_ptr<VariableWord> vw = std::make_shared<VariableWord>(&cp->m_Variables[m_Offset], "");
-        state.fillRegister(vw, m_ArgumentRegister);
-    }
-    else
-        state.fillRegister(word->clone(), m_ArgumentRegister);
+    state.fillRegister(word->clone(), m_ArgumentRegister);
 }
 
 void PutVariable::print(std::ostream &os) const
