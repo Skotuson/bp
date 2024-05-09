@@ -610,4 +610,73 @@ TEST_CASE("Interpreter test suite")
             testQuery(i, {false, {}});
         }
     }
+
+    SUBCASE("List - deletion (no cuts)")
+    {
+        std::istringstream iss(
+            "delete([], _, []).\n"
+            "delete([H|T], H, R) :- delete(T, H, R).\n"
+            "delete([H|T], E, [H|R]) :- delete(T, E, R).\n");
+        c.compile(iss);
+
+        SUBCASE("Simple query")
+        {
+            Interpreter i(c.dump());
+            i.setQuery(i.compileQuery(
+                "delete([], 42, [])."));
+            testQuery(i, {true, {}});
+        }
+
+        SUBCASE("Delete first element")
+        {
+            Interpreter i(c.dump());
+            i.setQuery(i.compileQuery(
+                "delete([1,2,3], 1, R)."));
+            testQuery(i, {true, {{"R", "[2|[3|[]]]"}}});
+        }
+
+        SUBCASE("Delete second element")
+        {
+            Interpreter i(c.dump());
+            i.setQuery(i.compileQuery(
+                "delete([1,2,3], 2, R)."));
+            testQuery(i, {true, {{"R", "[1|[3|[]]]"}}});
+        }
+
+        SUBCASE("Delete third element")
+        {
+            Interpreter i(c.dump());
+            i.setQuery(i.compileQuery(
+                "delete([1,2,3], 3, R)."));
+            testQuery(i, {true, {{"R", "[1|[2|[]]]"}}});
+        }
+
+        SUBCASE("Delete first and second element")
+        {
+            Interpreter i(c.dump());
+            i.setQuery(i.compileQuery(
+                "delete([1,2,3], 1, R1),delete(R1, 2, R2)."));
+            testQuery(i, {true, {{"R1", "[2|[3|[]]]"}, {"R2", "[3|[]]"}}});
+        }
+
+        SUBCASE("Delete multiple occurences")
+        {
+            Interpreter i(c.dump());
+            i.setQuery(i.compileQuery(
+                "delete([1,2,3,2,3,2,2,2,2,4,9], 2, R)."));
+            testQuery(i, {true, {{"R", "[1|[3|[3|[4|[9|[]]]]]]"}}});
+        }
+
+        SUBCASE("More answers (no cuts)")
+        {
+            Interpreter i(c.dump());
+            i.setQuery(i.compileQuery(
+                "delete([1,2,3], 2, R)."));
+            testQuery(i, {true, {{"R", "[1|[3|[]]]"}}});
+            nextQuery(i);
+            testQuery(i, {true, {{"R", "[1|[2|[3|[]]]]"}}});
+            nextQuery(i);
+            testQuery(i, {false, {}});
+        }
+    }
 }
