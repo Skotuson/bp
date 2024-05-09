@@ -96,7 +96,7 @@ WAMCode Interpreter::compileQuery(const std::string &query)
 Result Interpreter::evaluateQuery(void)
 {
     std::shared_ptr<Instruction> instr;
-    while ((instr = fetch()) && !m_State.m_FailFlag)
+    while ((instr = fetch()) && !m_State.fail())
     {
         if (m_Renderer.step())
         {
@@ -111,7 +111,7 @@ Result Interpreter::evaluateQuery(void)
     }
 
     Result r;
-    if (m_State.m_FailFlag)
+    if (m_State.fail())
     {
         r = {false, {}};
     }
