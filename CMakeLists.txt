@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.22.1)
 project(wam)
 
 set(CMAKE_CXX_STANDARD 20)
-set(CMAKE_CXX_FLAGS "-Wall -pedantic ${CMAKE_CXX_FLAGS}")
+set(CMAKE_CXX_FLAGS "-Wall -pedantic -g ${CMAKE_CXX_FLAGS}")
 
 add_library(wam_lib STATIC src/compiler/ast/ClauseNode.cpp
 src/compiler/ast/ComplexNode.cpp
