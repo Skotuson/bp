@@ -775,4 +775,42 @@ TEST_CASE("Interpreter test suite")
             testQuery(i, {false, {}});
         }
     }
+
+    SUBCASE("Result variable found in the result")
+    {
+        std::istringstream iss(
+            "__id(A,A).");
+        c.compile(iss);
+
+        SUBCASE("Simple case")
+        {
+            Interpreter i(c.dump());
+            i.setQuery(i.compileQuery(
+                "X=foo(X)."));
+            testQuery(i, {true, {{"X", "foo(X)"}}});
+        }
+    }
+
+    SUBCASE("Query variable found in the result (recursive)")
+    {
+        std::istringstream iss(
+            "__id(A,A).");
+        c.compile(iss);
+
+        SUBCASE("Simple case")
+        {
+            Interpreter i(c.dump());
+            i.setQuery(i.compileQuery(
+                "X=foo(X)."));
+            testQuery(i, {true, {{"X", "foo(X)"}}});
+        }
+
+        SUBCASE("Case with two variables")
+        {
+            Interpreter i(c.dump());
+            i.setQuery(i.compileQuery(
+                "Y=X,X=foo(Y)."));
+            testQuery(i, {true, {{"X", "foo(X)"}, {"Y", "foo(X)"}}});
+        }
+    }
 }
