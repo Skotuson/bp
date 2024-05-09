@@ -64,7 +64,6 @@ struct WAMState
     bool pdlEmpty(void);
     PDLTriple pdlTop(void);
 
-    bool containsCycle(size_t offset, size_t choicePoint = 0);
     std::string variableToString(size_t offset, size_t choicePoint = 0);
 
     friend std::ostream &operator<<(std::ostream &os, const WAMState &state);
