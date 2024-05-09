@@ -17,13 +17,14 @@ void Allocate::execute(WAMState &state)
     cp->m_Variables.resize(m_N, nullptr);
     for (size_t i = 0; i < m_N; i++)
     {
-        if (state.m_QueryVariables.count(i))
+        // In case the variable is a query variable and the environment is the first choice point, add the name.
+        if (state.m_QueryVariables.count(i) && state.SReg() == 1)
         {
             cp->m_Variables[i] = std::make_shared<VariableWord>(&cp->m_Variables[i], state.m_QueryVariables[i]);
         }
         else
         {
-            cp->m_Variables[i] = std::make_shared<VariableWord>(&cp->m_Variables[i]);
+            cp->m_Variables[i] = std::make_shared<VariableWord>(&cp->m_Variables[i], "__" + std::to_string(state.m_AllocatedVariables++));
         }
     }
     // Set E to this choice point

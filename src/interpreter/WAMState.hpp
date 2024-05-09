@@ -87,4 +87,6 @@ struct WAMState
     bool m_ReadMode = false;
     bool m_FailFlag = false;
     bool m_HaltFlag = false;
+
+    size_t m_AllocatedVariables = 0;
 };

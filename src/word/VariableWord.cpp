@@ -15,7 +15,7 @@ void VariableWord::print(std::ostream &os) const
     }
     else
     {
-        os << "variable -> " << m_Ref;
+        os << "variable -> " << m_Ref << "(" << m_Name << ")";
     }
 }
 
