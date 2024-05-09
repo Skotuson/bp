@@ -22,7 +22,6 @@ public:
 private:
     //--------RECURSIVE DESCENT METHODS--------//
     void Start(void);
-    void Next(void);
     std::shared_ptr<ClauseNode> Predicates(void);
     std::shared_ptr<ClauseNode> Pred(const std::string &head);
     std::vector<std::shared_ptr<GoalNode>> Predicate(void);

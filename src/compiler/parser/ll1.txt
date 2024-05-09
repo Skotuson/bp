@@ -1,7 +1,5 @@
-Start -> lower Predicates Next
-
-Next -> 
-Next -> Start
+Start ->
+Start -> lower Predicates Start
 
 Predicates -> Predicate
 Predicates -> ( Pred
@@ -48,3 +46,25 @@ TermsCont -> , Terms
 
 TermLower -> 
 TermLower -> ( Terms )
+
+# Expressions for the is operator
+Expr3 -> Expr2 Expr3R
+Expr3R -> < Expr2 Expr3R 
+Expr3R -> > Expr2 Expr3R
+Expr3R -> <= Expr2 Expr3R
+Expr3R -> >= Expr2 Expr3R
+Expr3R ->
+
+Expr2 -> Expr1 Expr2R
+Expr2R -> + Expr1 Expr2R
+Expr2R -> - Expr1 Expr2R
+Expr2R ->
+
+Expr1 -> Expr0 Expr1R
+Expr1R -> * Expr0 Expr1R
+Expr1R -> / Expr0 Expr1R
+Expr1R ->
+
+Expr -> number
+Expr -> ( Expr6 )
+Expr -> identifier ExprR

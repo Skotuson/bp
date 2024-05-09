@@ -28,27 +28,15 @@ void Parser::Start(void)
 {
     switch (m_Lex.peek())
     {
-    case TOK_ATOM_LOWER:
-        m_Lex.match(TOK_ATOM_LOWER);
-        m_ASTRoot->m_Clauses.push_back(Predicates());
-        Next();
-        break;
-    default:
-        throw std::runtime_error("Start Parsing error");
-    }
-}
-
-void Parser::Next(void)
-{
-    switch (m_Lex.peek())
-    {
     case TOK_EOF:
         break;
     case TOK_ATOM_LOWER:
+        m_Lex.match(TOK_ATOM_LOWER);
+        m_ASTRoot->m_Clauses.push_back(Predicates());
         Start();
         break;
     default:
-        throw std::runtime_error("Next Parsing error");
+        throw std::runtime_error("Start Parsing error");
     }
 }
 
