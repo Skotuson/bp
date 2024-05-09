@@ -120,7 +120,7 @@ Result Interpreter::evaluateQuery(void)
         std::map<std::string, std::string> vars;
         for (const auto &v : m_CurrentQuery.getVariables())
         {
-            std::string value = m_State.variableToString(0, v.first);
+            std::string value = m_State.variableToString(v.first);
             if (v.second != value)
             {
                 vars.insert({v.second, value});

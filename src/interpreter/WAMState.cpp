@@ -172,7 +172,12 @@ PDLTriple WAMState::pdlTop(void)
     return m_PushDownList[PDLReg() - 1];
 }
 
-std::string WAMState::variableToString(size_t choicePoint, size_t offset)
+bool WAMState::containsCycle(size_t offset, size_t choicePoint)
+{
+    return false;
+}
+
+std::string WAMState::variableToString(size_t offset, size_t choicePoint)
 {
     auto cp = stackAt(choicePoint);
     return cp->m_Variables[offset]->toString();
