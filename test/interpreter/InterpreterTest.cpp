@@ -679,4 +679,100 @@ TEST_CASE("Interpreter test suite")
             testQuery(i, {false, {}});
         }
     }
+
+    SUBCASE("List - deletion (cuts)")
+    {
+        std::istringstream iss(
+            "delete([], _, []).\n"
+            "delete([H|T], H, R) :- delete(T, H, R), !.\n"
+            "delete([H|T], E, [H|R]) :- delete(T, E, R).\n");
+        c.compile(iss);
+
+        SUBCASE("Simple query")
+        {
+            Interpreter i(c.dump());
+            i.setQuery(i.compileQuery(
+                "delete([], 42, [])."));
+            testQuery(i, {true, {}});
+        }
+
+        SUBCASE("Delete first element")
+        {
+            Interpreter i(c.dump());
+            i.setQuery(i.compileQuery(
+                "delete([1,2,3], 1, R)."));
+            testQuery(i, {true, {{"R", "[2|[3|[]]]"}}});
+        }
+
+        SUBCASE("Delete second element")
+        {
+            Interpreter i(c.dump());
+            i.setQuery(i.compileQuery(
+                "delete([1,2,3], 2, R)."));
+            testQuery(i, {true, {{"R", "[1|[3|[]]]"}}});
+        }
+
+        SUBCASE("Delete third element")
+        {
+            Interpreter i(c.dump());
+            i.setQuery(i.compileQuery(
+                "delete([1,2,3], 3, R)."));
+            testQuery(i, {true, {{"R", "[1|[2|[]]]"}}});
+        }
+
+        SUBCASE("Delete first and second element")
+        {
+            Interpreter i(c.dump());
+            i.setQuery(i.compileQuery(
+                "delete([1,2,3], 1, R1),delete(R1, 2, R2)."));
+            testQuery(i, {true, {{"R1", "[2|[3|[]]]"}, {"R2", "[3|[]]"}}});
+        }
+
+        SUBCASE("Delete multiple occurences")
+        {
+            Interpreter i(c.dump());
+            i.setQuery(i.compileQuery(
+                "delete([1,2,3,2,3,2,2,2,2,4,9], 2, R)."));
+            testQuery(i, {true, {{"R", "[1|[3|[3|[4|[9|[]]]]]]"}}});
+        }
+
+        SUBCASE("More answers (cuts)")
+        {
+            Interpreter i(c.dump());
+            i.setQuery(i.compileQuery(
+                "delete([1,2,3], 2, R)."));
+            testQuery(i, {true, {{"R", "[1|[3|[]]]"}}});
+            nextQuery(i);
+            testQuery(i, {false, {}});
+        }
+    }
+
+    SUBCASE("Cuts")
+    {
+        std::istringstream iss(
+            "a(1).\n"
+            "a(2).\n"
+            "b(3).\n"
+            "b(4).\n"
+            "c(5).\n"
+            "c(6).\n"
+            "d(X,Y,Z):- a(X),!,b(Y),c(Z).");
+        c.compile(iss);
+
+        SUBCASE("All possibilities")
+        {
+            Interpreter i(c.dump());
+            i.setQuery(i.compileQuery(
+                "d(X,Y,Z)."));
+            testQuery(i, {true, {{"X", "1"}, {"Y", "3"}, {"Z", "5"}}});
+            nextQuery(i);
+            testQuery(i, {true, {{"X", "1"}, {"Y", "3"}, {"Z", "6"}}});
+            nextQuery(i);
+            testQuery(i, {true, {{"X", "1"}, {"Y", "4"}, {"Z", "5"}}});
+            nextQuery(i);
+            testQuery(i, {true, {{"X", "1"}, {"Y", "4"}, {"Z", "6"}}});
+            nextQuery(i);
+            testQuery(i, {false, {}});
+        }
+    }
 }
