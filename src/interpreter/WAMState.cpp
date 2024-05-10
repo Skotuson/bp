@@ -152,6 +152,11 @@ std::shared_ptr<VariableWord> WAMState::trailTop(void)
     return m_Trail[TRReg() - 1];
 }
 
+std::shared_ptr<VariableWord> WAMState::trailAt(size_t address)
+{
+    return m_Trail[address];
+}
+
 void WAMState::pdlPush(const PDLTriple &pdlTriple)
 {
     m_PushDownList.push_back(pdlTriple);
@@ -175,7 +180,15 @@ PDLTriple WAMState::pdlTop(void)
 std::string WAMState::variableToString(size_t offset, size_t choicePoint)
 {
     auto cp = stackAt(choicePoint);
-    return cp->m_Variables[offset]->toString();
+    m_QueryWords[offset]->setVisited(true);
+    std::string result = cp->m_Variables[offset]->toString();
+
+    for (size_t i = 0; i < TRReg(); i++)
+    {
+        trailAt(i)->setVisited(false);
+    }
+
+    return result;
 }
 
 std::ostream &operator<<(std::ostream &os, const WAMState &state)

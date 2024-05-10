@@ -26,8 +26,9 @@ std::shared_ptr<Word> VariableWord::clone(void) const
 
 std::string VariableWord::toString(void)
 {
-    if (dereference()->tag() != VARIABLE)
+    if (!m_Visited && dereference()->tag() != VARIABLE)
     {
+        setVisited(true);
         return dereference()->toString();
     }
     return m_Name;
@@ -62,4 +63,9 @@ bool VariableWord::bound(void) const
 {
     std::shared_ptr<VariableWord> vw = std::static_pointer_cast<VariableWord>(dereference());
     return ref() != vw->ref();
+}
+
+void VariableWord::setVisited(bool visited)
+{
+    m_Visited = visited;
 }

@@ -20,7 +20,9 @@ void Allocate::execute(WAMState &state)
         // In case the variable is a query variable and the environment is the first choice point, add the name.
         if (state.m_QueryVariables.count(i) && state.SReg() == 1)
         {
-            cp->m_Variables[i] = std::make_shared<VariableWord>(&cp->m_Variables[i], state.m_QueryVariables[i]);
+            auto vw = std::make_shared<VariableWord>(&cp->m_Variables[i], state.m_QueryVariables[i]);
+            cp->m_Variables[i] = vw;
+            state.m_QueryWords.insert({i,vw});
         }
         else
         {

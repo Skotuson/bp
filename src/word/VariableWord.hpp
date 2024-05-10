@@ -20,7 +20,10 @@ public:
     std::shared_ptr<Word> *ref(void) const;
     bool bound(void) const;
 
+    void setVisited(bool visited);
+
 private:
     std::shared_ptr<Word> *m_Ref;
     std::string m_Name;
+    bool m_Visited = false;
 };

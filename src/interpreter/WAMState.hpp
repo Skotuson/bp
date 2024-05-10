@@ -57,6 +57,7 @@ struct WAMState
     void trailPush(std::shared_ptr<VariableWord> word);
     void trailPop(void);
     std::shared_ptr<VariableWord> trailTop(void);
+    std::shared_ptr<VariableWord> trailAt(size_t address);
 
     // PDL operations
     void pdlPush(const PDLTriple &pdlTriple);
@@ -83,6 +84,7 @@ struct WAMState
     ArgumentRegisters m_ArgumentRegisters;
 
     std::map<size_t, std::string> m_QueryVariables;
+    std::map<size_t, std::shared_ptr<VariableWord>> m_QueryWords;
 
     bool m_ReadMode = false;
     bool m_FailFlag = false;
