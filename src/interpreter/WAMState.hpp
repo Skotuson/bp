@@ -1,12 +1,12 @@
 #pragma once
 
-#include "data_structures/word/Word.hpp"
+#include "../word/Word.hpp"
 #include "data_structures/ChoicePoint.hpp"
-#include "data_structures/word/ConstantWord.hpp"
-#include "data_structures/word/VariableWord.hpp"
+#include "../word/ConstantWord.hpp"
+#include "../word/VariableWord.hpp"
 #include "data_structures/ArgumentRegisters.hpp"
-#include "data_structures/word/StructureWord.hpp"
-#include "data_structures/word/StructurePointerWord.hpp"
+#include "../word/StructureWord.hpp"
+#include "../word/StructurePointerWord.hpp"
 
 #include <map>
 #include <stack>
@@ -30,6 +30,7 @@ struct WAMState
     size_t PDLReg(void) const;
     size_t SPReg(void) const;
     size_t HReg(void) const;
+    size_t CP(void) const;
     size_t PC(void) const;
 
     void setWriteMode(void);
@@ -56,6 +57,7 @@ struct WAMState
     void trailPush(std::shared_ptr<VariableWord> word);
     void trailPop(void);
     std::shared_ptr<VariableWord> trailTop(void);
+    std::shared_ptr<VariableWord> trailAt(size_t address);
 
     // PDL operations
     void pdlPush(const PDLTriple &pdlTriple);
@@ -63,7 +65,7 @@ struct WAMState
     bool pdlEmpty(void);
     PDLTriple pdlTop(void);
 
-    std::string variableToString(size_t choicePoint, size_t offset);
+    std::string variableToString(size_t offset, size_t choicePoint = 0);
 
     friend std::ostream &operator<<(std::ostream &os, const WAMState &state);
 
@@ -82,8 +84,11 @@ struct WAMState
     ArgumentRegisters m_ArgumentRegisters;
 
     std::map<size_t, std::string> m_QueryVariables;
+    std::map<size_t, std::shared_ptr<VariableWord>> m_QueryWords;
 
     bool m_ReadMode = false;
     bool m_FailFlag = false;
     bool m_HaltFlag = false;
+
+    size_t m_AllocatedVariables = 0;
 };

@@ -3,7 +3,7 @@
 #include "../Renderer.hpp"
 #include "WAMState.hpp"
 #include "../wam_code/WAMCode.hpp"
-#include "../wam_code/Instruction.hpp"
+#include "../wam_code/instruction/Instruction.hpp"
 
 #include <iostream>
 #include <sstream>
@@ -29,9 +29,13 @@ public:
     void setQuery(const WAMCode &query);
     void clearQuery(void);
 
+    void setDumpOnly(bool dumpOnly);
+
 private:
     std::shared_ptr<Instruction> fetch(void);
     void execute(std::shared_ptr<Instruction> instr);
+
+    bool m_DumpOnly = false;
 
     WAMState m_State;
     WAMCode m_Program;

@@ -1,9 +1,7 @@
 #include "UnificationNode.hpp"
-#include "StructNode.hpp"
+#include "CallNode.hpp"
 
-#include "../../preprocessor/Preprocessor.hpp"
-
-UnificationNode::UnificationNode(TermNode *x, TermNode *y)
+UnificationNode::UnificationNode(std::shared_ptr<TermNode> x, std::shared_ptr<TermNode> y)
     : m_X(x),
       m_Y(y)
 {
@@ -11,9 +9,9 @@ UnificationNode::UnificationNode(TermNode *x, TermNode *y)
 
 void UnificationNode::codegen(CompilationContext &cctx)
 {
-  StructNode* unifStruct = new StructNode("__id", {m_X, m_Y});
-  unifStruct->m_AvailableReg = m_AvailableReg;
-  unifStruct->codegen(cctx);
+  std::vector<std::shared_ptr<TermNode>> args = {m_X, m_Y};
+  auto unifCall = std::make_shared<CallNode>("__id", args);
+  unifCall->codegen(cctx);
 }
 
 void UnificationNode::print(const std::string &indent)

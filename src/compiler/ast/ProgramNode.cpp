@@ -1,5 +1,7 @@
 #include "ProgramNode.hpp"
 
+#include "../../wam_code/instruction/Instructions.hpp"
+
 void ProgramNode::codegen(CompilationContext &cctx)
 {
     // Initialize the symbol table
@@ -9,7 +11,7 @@ void ProgramNode::codegen(CompilationContext &cctx)
         auto entry = cctx.get(clause->m_Head);
         if (!entry)
         {
-            cctx.add(clause->m_Head, new TableEntry(clause->m_Head));
+            cctx.add(clause->m_Head, std::make_shared<TableEntry>(clause->m_Head));
         }
         else
         {
@@ -24,7 +26,7 @@ void ProgramNode::codegen(CompilationContext &cctx)
 
     // Generate the "quit" label
     cctx.addLabel("quit");
-    cctx.addInstruction(std::make_shared<BacktrackInstruction>());
+    cctx.addInstruction(std::make_shared<Backtrack>());
 
     cctx.getCode().updateJumpInstructions();
 }

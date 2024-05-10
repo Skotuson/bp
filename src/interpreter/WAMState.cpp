@@ -44,6 +44,11 @@ size_t WAMState::HReg(void) const
     return m_Heap.size();
 }
 
+size_t WAMState::CP(void) const
+{
+    return m_ContinuationPointer;
+}
+
 size_t WAMState::PC(void) const
 {
     return m_ProgramCounter;
@@ -147,6 +152,11 @@ std::shared_ptr<VariableWord> WAMState::trailTop(void)
     return m_Trail[TRReg() - 1];
 }
 
+std::shared_ptr<VariableWord> WAMState::trailAt(size_t address)
+{
+    return m_Trail[address];
+}
+
 void WAMState::pdlPush(const PDLTriple &pdlTriple)
 {
     m_PushDownList.push_back(pdlTriple);
@@ -167,10 +177,18 @@ PDLTriple WAMState::pdlTop(void)
     return m_PushDownList[PDLReg() - 1];
 }
 
-std::string WAMState::variableToString(size_t choicePoint, size_t offset)
+std::string WAMState::variableToString(size_t offset, size_t choicePoint)
 {
     auto cp = stackAt(choicePoint);
-    return cp->m_Variables[offset]->toString();
+    m_QueryWords[offset]->setVisited(true);
+    std::string result = cp->m_Variables[offset]->toString();
+
+    for (size_t i = 0; i < TRReg(); i++)
+    {
+        trailAt(i)->setVisited(false);
+    }
+
+    return result;
 }
 
 std::ostream &operator<<(std::ostream &os, const WAMState &state)
@@ -181,11 +199,15 @@ std::ostream &operator<<(std::ostream &os, const WAMState &state)
     };
 
     os << ANSI_COLOR_B_MAGENTA << "Mode:" << (state.readMode() ? "READ" : "WRITE") << ANSI_COLOR_DEFAULT;
-    os << " SP:" << state.SPReg();
+    os << " S:" << format(state.SReg());
     os << " E:" << format(state.EReg());
-    os << " B:" << format(state.m_BacktrackRegister);
-    os << " CP:" << format(state.m_ContinuationPointer);
-    os << " PC:" << format(state.m_ProgramCounter) << std::endl;
+    os << " B:" << format(state.BReg());
+    os << " TR:" << format(state.TRReg());
+    os << " PDL:" << format(state.PDLReg());
+    os << " H:" << format(state.HReg());
+    os << " CP:" << format(state.CP());
+    os << " SP:" << state.SPReg();
+    os << " PC:" << format(state.PC()) << std::endl;
     os << ANSI_COLOR_B_YELLOW << state.m_ArgumentRegisters << ANSI_COLOR_DEFAULT << std::endl;
 
     // Print heap

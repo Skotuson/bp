@@ -1,84 +1,58 @@
 #include "ClauseNode.hpp"
+#include "../../wam_code/instruction/Instructions.hpp"
 
 ClauseNode::ClauseNode(const std::string &head,
-                       std::vector<TermNode *> args,
-                       std::vector<GoalNode *> body)
+                       std::vector<std::shared_ptr<TermNode>> args,
+                       std::vector<std::shared_ptr<GoalNode>> body)
     : m_Head(head + "/" + std::to_string(args.size())),
-      // m_Head(head),
       m_Args(args),
       m_Body(body)
 {
 }
 
-ClauseNode::~ClauseNode(void)
-{
-    for (TermNode *arg : m_Args)
-        delete arg;
-    for (GoalNode *goal : m_Body)
-        delete goal;
-}
-
 void ClauseNode::codegen(CompilationContext &cctx)
 {
-    std::string code = "";
-    TableEntry *entry = cctx.get(m_Head);
+    std::shared_ptr<TableEntry> entry = cctx.get(m_Head);
     // Generate the initial mark instruction for first clause of the predicate name
     if (!entry->m_Generated)
     {
         cctx.addLabel(m_Head);
-        cctx.addInstruction(std::make_shared<MarkInstruction>());
-        code += m_Head + ":\tmark\n";
+        cctx.addInstruction(std::make_shared<Mark>());
     }
     else
     {
         std::string label = m_Head + std::to_string(entry->m_Generated);
-        code += label + ":";
         cctx.addLabel(label);
     }
 
     ++entry->m_Generated;
     std::string retryLabel = entry->m_Generated == entry->m_Clauses ? "quit" : m_Head + std::to_string(entry->m_Generated);
-    code += "\tretry-me-else " + retryLabel + "\n";
-    cctx.addInstruction(std::make_shared<RetryMeElseInstruction>(retryLabel));
+    cctx.addInstruction(std::make_shared<RetryMeElse>(retryLabel));
 
     // Generate an allocate instruction and count the number of local variables needed during codegen.
     cctx.resetVariables();
-    std::shared_ptr<AllocateInstruction> alloc = std::make_shared<AllocateInstruction>(0);
+    // Keep the pointer so the N can be changed after variables were counted.
+    std::shared_ptr<Allocate> alloc = std::make_shared<Allocate>(0);
     cctx.addInstruction(alloc);
-    //size_t allocInstrIdx = cctx.getCode().size() - 1;
-
-    size_t currentArgumentRegister = 1;
+    
+    cctx.setAvailableReg(1);
+    cctx.setHeadGenerationMode();
     for (size_t i = 0; i < m_Args.size(); i++)
     {
-        m_Args[i]->m_IsGoal = false;
-        m_Args[i]->m_AvailableReg = currentArgumentRegister;
         // Load the arguments into argument registers
         m_Args[i]->codegen(cctx);
-        currentArgumentRegister = m_Args[i]->m_AvailableReg;
     }
 
     // All get instructions were carried out
-    currentArgumentRegister = 1;
-
+    cctx.setBodyGenerationMode();
     for (size_t i = 0; i < m_Body.size(); i++)
     {
-        m_Body[i]->m_AvailableReg = currentArgumentRegister;
+        cctx.setAvailableReg(1);
         m_Body[i]->codegen(cctx);
-        currentArgumentRegister = m_Body[i]->m_AvailableReg;
     }
-
-    // Generate allocate only if N is non-zero
-    // if (cctx.allocate())
-    //{
+    // Assign the N to generated allocate instruction
     alloc->m_N = cctx.allocate();
-    //}
-    // No local variables needed, delete the empty allocate instruction.
-    //else
-    //{
-    //    cctx.getCode().deleteInstruction(allocInstrIdx);
-    //}
-
-    cctx.addInstruction(std::make_shared<ReturnInstruction>());
+    cctx.addInstruction(std::make_shared<Return>());
 }
 
 void ClauseNode::print(const std::string &indent)

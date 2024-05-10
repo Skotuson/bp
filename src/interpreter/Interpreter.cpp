@@ -12,6 +12,12 @@ Interpreter::Interpreter(const WAMCode &wamCode, const Renderer &renderer)
 
 bool Interpreter::run(void)
 {
+    if (m_DumpOnly)
+    {
+        m_Program.dump(std::cout);
+        return false;
+    }
+
     std::cout << "?> ";
 
     std::string query;
@@ -90,7 +96,7 @@ WAMCode Interpreter::compileQuery(const std::string &query)
 Result Interpreter::evaluateQuery(void)
 {
     std::shared_ptr<Instruction> instr;
-    while ((instr = fetch()) && !m_State.m_FailFlag)
+    while ((instr = fetch()) && !m_State.fail())
     {
         if (m_Renderer.step())
         {
@@ -105,7 +111,7 @@ Result Interpreter::evaluateQuery(void)
     }
 
     Result r;
-    if (m_State.m_FailFlag)
+    if (m_State.fail())
     {
         r = {false, {}};
     }
@@ -114,7 +120,7 @@ Result Interpreter::evaluateQuery(void)
         std::map<std::string, std::string> vars;
         for (const auto &v : m_CurrentQuery.getVariables())
         {
-            std::string value = m_State.variableToString(0, v.first);
+            std::string value = m_State.variableToString(v.first);
             if (v.second != value)
             {
                 vars.insert({v.second, value});
@@ -133,7 +139,7 @@ bool Interpreter::nextAnswer(std::istream &is)
     {
         return false;
     }
-    std::shared_ptr<FailInstruction> fi = std::make_shared<FailInstruction>();
+    std::shared_ptr<Fail> fi = std::make_shared<Fail>();
     fi->execute(m_State);
     return true;
 }
@@ -171,4 +177,9 @@ void Interpreter::execute(std::shared_ptr<Instruction> instr)
     //     std::cout << ANSI_COLOR_B_GREEN << *instr << ANSI_COLOR_DEFAULT << std::endl;
     // }
     instr->execute(m_State);
+}
+
+void Interpreter::setDumpOnly(bool dumpOnly)
+{
+    m_DumpOnly = dumpOnly;
 }

@@ -1,9 +1,13 @@
 #pragma once
 
 #include <string>
+#include <memory>
 
 #include "../CompilationContext.hpp"
 
+/**
+ * @brief Abstract class representing an AST node. Specifies that every node needs to implement a codegen method, i.e. a way to generate code for itself.
+ */
 struct Node
 {
     virtual ~Node(void) = default;

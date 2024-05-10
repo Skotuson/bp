@@ -1,31 +1,31 @@
 #include "VarNode.hpp"
+#include "../../wam_code/instruction/Instructions.hpp"
 
-VarNode::VarNode(const std::string &name)
-    : TermNode(name)
+VarNode::VarNode(const std::string &name, bool isWildcard)
+    : TermNode(name),
+      m_IsWildcard(isWildcard)
 {
 }
 
 void VarNode::codegen(CompilationContext &cctx)
 {
-    bool isWildcard = false;
-    std::string name = m_Name;
-    if (m_Name == "_")
+    cctx.noteVariable(m_Name);
+    if (cctx.mode() == CodeGenerationMode::HEAD)
     {
-        name = cctx.generateTempVar();
-    }
-    cctx.noteVariable(name);
-    if (!m_IsGoal)
         cctx.addInstruction(
-            std::make_shared<GetVariableInstruction>(name, m_AvailableReg++, cctx.getVarOffset(name)));
+            std::make_shared<GetVariable>(m_Name, cctx.availableReg(), cctx.getVarOffset(m_Name)));
+    }
     else
     {
-        if (!isWildcard)
+        if (!m_IsWildcard)
         {
-            cctx.addVariable(name);
+            cctx.addVariable(m_Name);
         }
         cctx.addInstruction(
-            std::make_shared<PutVariableInstruction>(name, m_AvailableReg++, cctx.getVarOffset(name)));
+            std::make_shared<PutVariable>(m_Name, cctx.availableReg(), cctx.getVarOffset(m_Name)));
     }
+
+    cctx.setAvailableReg(cctx.availableReg() + 1);
 }
 
 TermNode::TermType VarNode::type()

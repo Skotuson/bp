@@ -13,6 +13,7 @@ int main(int argc, const char **argv)
 {
     Renderer renderer;
     Filepath sourceCodePath = "";
+    bool dumpOnly = false;
     int i = 0;
     for (; i < argc; i++)
     {
@@ -30,6 +31,10 @@ int main(int argc, const char **argv)
         {
             renderer.setStepper(true);
         }
+        if (!strcmp(argv[i], "--dump"))
+        {
+            dumpOnly = true;
+        }
     }
 
     if (sourceCodePath.empty())
@@ -40,9 +45,8 @@ int main(int argc, const char **argv)
 
     Preprocessor preprocessor;
     std::istringstream iss(
-                           "__id(A, A).\n"
-                           "__zero(0)."
-    );
+        "__id(A, A).\n"
+        "__zero(0).");
     Filepath fp = preprocessor.linkLibrary(sourceCodePath, iss);
 
     std::ifstream ifs(fp);
@@ -51,6 +55,7 @@ int main(int argc, const char **argv)
     comp.compile(ifs);
 
     Interpreter intp(comp.dump(), renderer);
+    intp.setDumpOnly(dumpOnly);
 
     while (intp.run())
         ;

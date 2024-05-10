@@ -4,9 +4,8 @@
 
 struct ConstNode : public TermNode
 {
-    ConstNode(size_t value);
+    ConstNode(const std::string &name);
     void codegen(CompilationContext &cctx) override;
     TermType type() override;
     void print(const std::string &indent = "") override;
-    int m_Value;
 };

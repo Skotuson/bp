@@ -1,17 +1,24 @@
 #include "ConstNode.hpp"
 
-ConstNode::ConstNode(size_t value)
-    : TermNode(std::to_string(value)),
-      m_Value(value)
+#include "../../wam_code/instruction/Instructions.hpp"
+
+ConstNode::ConstNode(const std::string &name)
+    : TermNode(name)
 {
 }
 
 void ConstNode::codegen(CompilationContext &cctx)
 {
-    if (!m_IsGoal)
-        cctx.addInstruction(std::make_shared<GetConstantInstruction>(m_Name, m_AvailableReg++));
+    if (cctx.mode() == CodeGenerationMode::HEAD)
+    {
+        cctx.addInstruction(std::make_shared<GetConstant>(m_Name, cctx.availableReg()));
+    }
     else
-        cctx.addInstruction(std::make_shared<PutConstantInstruction>(m_Name, m_AvailableReg++));
+    {
+        cctx.addInstruction(std::make_shared<PutConstant>(m_Name, cctx.availableReg()));
+    }
+
+    cctx.setAvailableReg(cctx.availableReg() + 1);
 }
 
 TermNode::TermType ConstNode::type()
@@ -22,6 +29,6 @@ TermNode::TermType ConstNode::type()
 void ConstNode::print(const std::string &indent)
 {
     std::cout << indent << "=======[Start ConstNode]======" << std::endl;
-    std::cout << indent << "Value: " << m_Value << std::endl;
+    std::cout << indent << "Value: " << m_Name << std::endl;
     std::cout << indent << "=======[End ConstNode]======" << std::endl;
 }

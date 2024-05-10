@@ -1,5 +1,7 @@
 #include "WAMCode.hpp"
 
+#include "instruction/BranchInstruction.hpp"
+
 WAMCode::WAMCode(const WAMCode &wamCode)
     : m_AddressToLabel(wamCode.m_AddressToLabel),
       m_LabelToAddress(wamCode.m_LabelToAddress),

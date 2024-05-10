@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Instruction.hpp"
+#include "instruction/Instruction.hpp"
 
 #include <map>
 #include <vector>

@@ -1,7 +1,5 @@
-Start -> lower Predicates Next
-
-Next -> 
-Next -> Start
+Start ->
+Start -> lower Predicates Start
 
 Predicates -> Predicate
 Predicates -> ( Pred
@@ -13,14 +11,11 @@ Predicate -> .
 Predicate -> :- Body .
 
 # Body of an rule
-Body -> lower BodyLower BodyTerm BodyCont
+Body -> lower TermLower BodyTerm BodyCont
 Body -> const = Term BodyCont
 Body -> var = Term BodyCont
+Body -> List = Term BodyCont
 Body -> ! BodyCont
-
-# Allows using predicate with or without arguments in body
-BodyLower -> 
-BodyLower -> ( Terms )
 
 # Allows chaining of goals in a rule
 BodyCont -> 
@@ -32,8 +27,10 @@ BodyTerm -> = Term
 
 Term -> lower TermLower
 Term -> const
-Term -> [ ListInner ]
+Term -> List
 Term -> var
+
+List -> [ ListInner ]
 
 ListInner -> 
 ListInner -> Terms ListCons
@@ -49,3 +46,25 @@ TermsCont -> , Terms
 
 TermLower -> 
 TermLower -> ( Terms )
+
+# Expressions for the is operator
+Expr3 -> Expr2 Expr3R
+Expr3R -> < Expr2 Expr3R 
+Expr3R -> > Expr2 Expr3R
+Expr3R -> <= Expr2 Expr3R
+Expr3R -> >= Expr2 Expr3R
+Expr3R ->
+
+Expr2 -> Expr1 Expr2R
+Expr2R -> + Expr1 Expr2R
+Expr2R -> - Expr1 Expr2R
+Expr2R ->
+
+Expr1 -> Expr0 Expr1R
+Expr1R -> * Expr0 Expr1R
+Expr1R -> / Expr0 Expr1R
+Expr1R ->
+
+Expr -> number
+Expr -> ( Expr6 )
+Expr -> identifier ExprR

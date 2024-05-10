@@ -5,11 +5,6 @@ ComplexNode::ComplexNode(const std::string &name)
 {
 }
 
-bool ComplexNode::hasNestedComplex(void)
-{
-    return m_Complex.size();
-}
-
 NestedPairing ComplexNode::getNestedComplex(void)
 {
     return m_Complex;

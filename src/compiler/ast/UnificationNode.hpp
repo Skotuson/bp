@@ -1,11 +1,12 @@
 #pragma once
 
+#include "GoalNode.hpp"
 #include "TermNode.hpp"
 
 struct UnificationNode : public GoalNode
 {
-    UnificationNode(TermNode *x, TermNode *y);
+    UnificationNode(std::shared_ptr<TermNode> x, std::shared_ptr<TermNode> y);
     void codegen(CompilationContext &cctx) override;
     void print(const std::string &indent = "") override;
-    TermNode *m_X, *m_Y;
+    std::shared_ptr<TermNode> m_X, m_Y;
 };

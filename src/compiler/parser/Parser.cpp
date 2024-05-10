@@ -2,6 +2,7 @@
 
 #include "../ast/UnificationNode.hpp"
 #include "../ast/ConstNode.hpp"
+#include "../ast/CallNode.hpp"
 #include "../ast/VarNode.hpp"
 #include "../ast/CutNode.hpp"
 
@@ -27,27 +28,15 @@ void Parser::Start(void)
 {
     switch (m_Lex.peek())
     {
-    case TOK_ATOM_LOWER:
-        m_Lex.match(TOK_ATOM_LOWER);
-        m_ASTRoot->m_Clauses.push_back(Predicates());
-        Next();
-        break;
-    default:
-        throw std::runtime_error("Start Parsing error");
-    }
-}
-
-void Parser::Next(void)
-{
-    switch (m_Lex.peek())
-    {
     case TOK_EOF:
         break;
     case TOK_ATOM_LOWER:
+        m_Lex.match(TOK_ATOM_LOWER);
+        m_ASTRoot->m_Clauses.push_back(Predicates());
         Start();
         break;
     default:
-        throw std::runtime_error("Next Parsing error");
+        throw std::runtime_error("Start Parsing error");
     }
 }
 
@@ -58,7 +47,7 @@ std::shared_ptr<ClauseNode> Parser::Predicates(void)
     {
     case TOK_PERIOD:
     case TOK_IF:
-        return std::make_shared<ClauseNode>(head, std::vector<TermNode *>(), Predicate());
+        return std::make_shared<ClauseNode>(head, std::vector<std::shared_ptr<TermNode>>(), Predicate());
     case TOK_LPAR:
         m_Lex.match(TOK_LPAR);
         return Pred(head);
@@ -69,8 +58,8 @@ std::shared_ptr<ClauseNode> Parser::Predicates(void)
 
 std::shared_ptr<ClauseNode> Parser::Pred(const std::string &head)
 {
-    std::vector<TermNode *> args;
-    std::vector<GoalNode *> body;
+    std::vector<std::shared_ptr<TermNode>> args;
+    std::vector<std::shared_ptr<GoalNode>> body;
 
     switch (m_Lex.peek())
     {
@@ -87,14 +76,14 @@ std::shared_ptr<ClauseNode> Parser::Pred(const std::string &head)
     }
 }
 
-std::vector<GoalNode *> Parser::Predicate(void)
+std::vector<std::shared_ptr<GoalNode>> Parser::Predicate(void)
 {
-    std::vector<GoalNode *> body;
+    std::vector<std::shared_ptr<GoalNode>> body;
     switch (m_Lex.peek())
     {
     case TOK_PERIOD:
         m_Lex.match(TOK_PERIOD);
-        return std::vector<GoalNode *>();
+        return std::vector<std::shared_ptr<GoalNode>>();
     case TOK_IF:
         m_Lex.match(TOK_IF);
         body = Body();
@@ -105,24 +94,34 @@ std::vector<GoalNode *> Parser::Predicate(void)
     }
 }
 
-std::vector<GoalNode *> Parser::Body(void)
+std::vector<std::shared_ptr<GoalNode>> Parser::Body(void)
 {
-    std::vector<GoalNode *> body, bodyCont;
-    StructNode *compound;
-    TermNode *term;
+    std::vector<std::shared_ptr<GoalNode>> body, bodyCont;
+    std::shared_ptr<TermNode> compound;
+    std::shared_ptr<TermNode> term;
+    std::shared_ptr<TermNode> list;
     std::string varName = "";
     switch (m_Lex.peek())
     {
     case TOK_ATOM_LOWER:
         m_Lex.match(TOK_ATOM_LOWER);
-        compound = BodyLower();
+        compound = TermLower();
+        // Not a unification, so it is a call
         if (!(term = BodyTerm()))
         {
-            body.push_back(compound);
+            if (compound->type() == TermNode::TermType::CONST)
+            {
+                body.push_back(std::make_shared<CallNode>(compound->name()));
+            }
+            else
+            {
+                auto snode = std::static_pointer_cast<StructNode>(compound);
+                body.push_back(std::make_shared<CallNode>(snode->name(), snode->args()));
+            }
         }
         else
         {
-            body.push_back(new UnificationNode(compound, term));
+            body.push_back(std::make_shared<UnificationNode>(compound, term));
         }
         bodyCont = BodyCont();
         body.insert(body.end(), bodyCont.begin(), bodyCont.end());
@@ -131,22 +130,30 @@ std::vector<GoalNode *> Parser::Body(void)
         m_Lex.match(TOK_CONST);
         m_Lex.match(TOK_EQUAL);
         term = Term();
-        body.push_back(new UnificationNode(new ConstNode(m_Lex.numericValue()), term));
+        body.push_back(std::make_shared<UnificationNode>(std::make_shared<ConstNode>(std::to_string(m_Lex.numericValue())), term));
         bodyCont = BodyCont();
         body.insert(body.end(), bodyCont.begin(), bodyCont.end());
         return body;
     case TOK_VAR:
         m_Lex.match(TOK_VAR);
-        varName = m_Lex.identifier();
+        varName = generateWildcardName(m_Lex.identifier());
         m_Lex.match(TOK_EQUAL);
         term = Term();
-        body.push_back(new UnificationNode(new VarNode(varName), term));
+        body.push_back(std::make_shared<UnificationNode>(std::make_shared<VarNode>(varName), term));
+        bodyCont = BodyCont();
+        body.insert(body.end(), bodyCont.begin(), bodyCont.end());
+        return body;
+    case TOK_LSPAR:
+        list = List();
+        m_Lex.match(TOK_EQUAL);
+        term = Term();
+        body.push_back(std::make_shared<UnificationNode>(list, term));
         bodyCont = BodyCont();
         body.insert(body.end(), bodyCont.begin(), bodyCont.end());
         return body;
     case TOK_CUT:
         m_Lex.match(TOK_CUT);
-        body.push_back(new CutNode());
+        body.push_back(std::make_shared<CutNode>());
         bodyCont = BodyCont();
         body.insert(body.end(), bodyCont.begin(), bodyCont.end());
         return body;
@@ -155,32 +162,12 @@ std::vector<GoalNode *> Parser::Body(void)
     }
 }
 
-StructNode *Parser::BodyLower(void)
-{
-    std::vector<TermNode *> terms;
-    std::string name = m_Lex.identifier();
-    switch (m_Lex.peek())
-    {
-    case TOK_EQUAL:
-    case TOK_COMMA:
-    case TOK_PERIOD:
-        return new StructNode(name);
-    case TOK_LPAR:
-        m_Lex.match(TOK_LPAR);
-        terms = Terms();
-        m_Lex.match(TOK_RPAR);
-        return new StructNode(name, terms);
-    default:
-        throw std::runtime_error("BodyLower Parsing error");
-    }
-}
-
-std::vector<GoalNode *> Parser::BodyCont(void)
+std::vector<std::shared_ptr<GoalNode>> Parser::BodyCont(void)
 {
     switch (m_Lex.peek())
     {
     case TOK_PERIOD:
-        return std::vector<GoalNode *>();
+        return std::vector<std::shared_ptr<GoalNode>>();
     case TOK_COMMA:
         m_Lex.match(TOK_COMMA);
         return Body();
@@ -189,7 +176,7 @@ std::vector<GoalNode *> Parser::BodyCont(void)
     }
 }
 
-TermNode *Parser::BodyTerm(void)
+std::shared_ptr<TermNode> Parser::BodyTerm(void)
 {
     switch (m_Lex.peek())
     {
@@ -204,11 +191,8 @@ TermNode *Parser::BodyTerm(void)
     }
 }
 
-TermNode *Parser::Term(void)
+std::shared_ptr<TermNode> Parser::Term(void)
 {
-    std::string name = m_Lex.identifier();
-
-    TermNode *list;
     switch (m_Lex.peek())
     {
     case TOK_ATOM_LOWER:
@@ -216,28 +200,40 @@ TermNode *Parser::Term(void)
         return TermLower();
     case TOK_CONST:
         m_Lex.match(TOK_CONST);
-        return new ConstNode(m_Lex.numericValue());
+        return std::make_shared<ConstNode>(std::to_string(m_Lex.numericValue()));
     case TOK_LSPAR:
-        m_Lex.match(TOK_LSPAR);
-        list = ListInner();
-        m_Lex.match(TOK_RSPAR);
-        return list;
+        return List();
     case TOK_VAR:
         m_Lex.match(TOK_VAR);
-        return new VarNode(name);
+        return std::make_shared<VarNode>(generateWildcardName(m_Lex.identifier()));
     default:
         throw std::runtime_error("Term Parsing error");
     }
 }
 
-ListNode *Parser::ListInner(void)
+std::shared_ptr<TermNode> Parser::List(void)
 {
-    std::vector<TermNode *> list;
-    TermNode *cons = nullptr;
+    std::shared_ptr<TermNode> list;
+    switch (m_Lex.peek())
+    {
+    case TOK_LSPAR:
+        m_Lex.match(TOK_LSPAR);
+        list = ListInner();
+        m_Lex.match(TOK_RSPAR);
+        return list;
+    default:
+        throw std::runtime_error("Term Parsing error");
+    }
+}
+
+std::shared_ptr<TermNode> Parser::ListInner(void)
+{
+    std::vector<std::shared_ptr<TermNode>> list;
+    std::shared_ptr<TermNode> cons = nullptr;
     switch (m_Lex.peek())
     {
     case TOK_RSPAR:
-        return new ListNode(list);
+        return std::make_shared<ConstNode>("[]");
     case TOK_ATOM_LOWER:
     case TOK_CONST:
     case TOK_LSPAR:
@@ -245,13 +241,13 @@ ListNode *Parser::ListInner(void)
         list = Terms();
         // Cons is nullptr if the list is not being decomposed into [H|T]
         cons = ListCons();
-        return new ListNode(list, cons);
+        return std::make_shared<ListNode>(list, cons);
     default:
         throw std::runtime_error("ListInner Parsing error");
     }
 }
 
-TermNode *Parser::ListCons(void)
+std::shared_ptr<TermNode> Parser::ListCons(void)
 {
     switch (m_Lex.peek())
     {
@@ -265,9 +261,9 @@ TermNode *Parser::ListCons(void)
     }
 }
 
-std::vector<TermNode *> Parser::Terms(void)
+std::vector<std::shared_ptr<TermNode>> Parser::Terms(void)
 {
-    std::vector<TermNode *> terms, termsCont;
+    std::vector<std::shared_ptr<TermNode>> terms, termsCont;
     switch (m_Lex.peek())
     {
     case TOK_ATOM_LOWER:
@@ -283,14 +279,14 @@ std::vector<TermNode *> Parser::Terms(void)
     }
 }
 
-std::vector<TermNode *> Parser::TermsCont(void)
+std::vector<std::shared_ptr<TermNode>> Parser::TermsCont(void)
 {
     switch (m_Lex.peek())
     {
     case TOK_RPAR:
     case TOK_PIPE:
     case TOK_RSPAR:
-        return std::vector<TermNode *>(0);
+        return std::vector<std::shared_ptr<TermNode>>(0);
     case TOK_COMMA:
         m_Lex.match(TOK_COMMA);
         return Terms();
@@ -299,24 +295,34 @@ std::vector<TermNode *> Parser::TermsCont(void)
     }
 }
 
-TermNode *Parser::TermLower(void)
+std::shared_ptr<TermNode> Parser::TermLower(void)
 {
-    std::vector<TermNode *> terms;
+    std::vector<std::shared_ptr<TermNode>> terms;
     std::string name = m_Lex.identifier();
     switch (m_Lex.peek())
     {
+    case TOK_EQUAL:
     case TOK_COMMA:
     case TOK_PERIOD:
     case TOK_RSPAR:
     case TOK_RPAR:
     case TOK_PIPE:
-        return new StructNode(name);
+        return std::make_shared<ConstNode>(name);
     case TOK_LPAR:
         m_Lex.match(TOK_LPAR);
         terms = Terms();
         m_Lex.match(TOK_RPAR);
-        return new StructNode(name, terms);
+        return std::make_shared<StructNode>(name, terms);
     default:
         throw std::runtime_error("Terms Parsing error");
     }
+}
+
+std::string Parser::generateWildcardName(const std::string &varName)
+{
+    if (varName != "_")
+    {
+        return varName;
+    }
+    return "___" + std::to_string(m_WildcardsGenerated++);
 }

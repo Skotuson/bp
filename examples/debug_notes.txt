@@ -38,3 +38,11 @@ add(X,s(X),s(0)).
 0. query
 1. is_bigger(1)
 2. bigger(0)
+
+a(Z).
+a(Y) :- X = foo(X), X = Y.
+b(Z) :- X = Y, X = foo(X).
+
+Y = Z
+X = foo(X)
+X = Y = Z.
