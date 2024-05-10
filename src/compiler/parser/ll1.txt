@@ -29,6 +29,7 @@ Term -> lower TermLower
 Term -> const
 Term -> List
 Term -> var
+Term -> Expr3
 
 List -> [ ListInner ]
 
@@ -65,5 +66,6 @@ Expr1R -> * Expr Expr1R
 Expr1R -> / Expr Expr1R
 Expr1R ->
 
-Expr -> Term
+Expr -> number
+Expr -> variable
 Expr -> ( Expr3 )
