@@ -326,3 +326,31 @@ std::string Parser::generateWildcardName(const std::string &varName)
     }
     return "___" + std::to_string(m_WildcardsGenerated++);
 }
+
+void Expr3(void)
+{
+}
+
+void Expr3R(void)
+{
+}
+
+void Expr2(void)
+{
+}
+
+void Expr2R(void)
+{
+}
+
+void Expr1(void)
+{
+}
+
+void Expr1R(void)
+{
+}
+
+void Expr(void)
+{
+}

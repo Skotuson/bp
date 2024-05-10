@@ -69,6 +69,34 @@ Token Lexer::lexSymbol(void)
         }
     case '!':
         return TOK_CUT;
+    case '<':
+        c = m_Source.get();
+        switch (c)
+        {
+        case '=':
+            return TOK_LESSEQ;
+        default:
+            m_Source.unget();
+            return TOK_LESS;
+        }
+    case '>':
+        c = m_Source.get();
+        switch (c)
+        {
+        case '=':
+            return TOK_GREATEREQ;
+        default:
+            m_Source.unget();
+            return TOK_GREATER;
+        }
+    case '+':
+        return TOK_PLUS;
+    case '-':
+        return TOK_PLUS;
+    case '*':
+        return TOK_MUL;
+    case '/':
+        return TOK_DIV;
     default:
         return TOK_ERROR;
     }
@@ -167,6 +195,24 @@ std::ostream &operator<<(std::ostream &os, const Token &tok)
         return os << "CUT";
     case TOK_IF:
         return os << "IF";
+    case TOK_LESS:
+        return os << "LESS";
+    case TOK_LESSEQ:
+        return os << "LESSEQ";
+    case TOK_GREATER:
+        return os << "GREATER";
+    case TOK_GREATEREQ:
+        return os << "GREATEREQ";
+    case TOK_PLUS:
+        return os << "PLUS";
+    case TOK_MINUS:
+        return os << "MINUS";
+    case TOK_MUL:
+        return os << "MUL";
+    case TOK_DIV:
+        return os << "DIV";
+    case TOK_IS:
+        return os << "IS";
     }
     return os << "UNKNOWN TOKEN";
 }

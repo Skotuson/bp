@@ -60,11 +60,11 @@ Expr2R -> + Expr1 Expr2R
 Expr2R -> - Expr1 Expr2R
 Expr2R ->
 
-Expr1 -> Expr0 Expr1R
-Expr1R -> * Expr0 Expr1R
-Expr1R -> / Expr0 Expr1R
+Expr1 -> Expr Expr1R
+Expr1R -> * Expr Expr1R
+Expr1R -> / Expr Expr1R
 Expr1R ->
 
 Expr -> number
-Expr -> ( Expr6 )
-Expr -> identifier ExprR
+Expr -> ( Expr3 )
+Expr -> identifier

@@ -36,6 +36,14 @@ private:
     std::vector<std::shared_ptr<TermNode>> TermsCont(void);
     std::shared_ptr<TermNode> TermLower(void);
 
+    void Expr3(void);
+    void Expr3R(void);
+    void Expr2(void);
+    void Expr2R(void);
+    void Expr1(void);
+    void Expr1R(void);
+    void Expr(void);
+
     std::string generateWildcardName(const std::string &varName);
     //-------------CLASS VARIABLES-------------//
     Lexer m_Lex;

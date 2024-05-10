@@ -21,7 +21,18 @@ enum Token
     TOK_PIPE,       // |
     TOK_EQUAL,      // =
     TOK_CUT,        // !
-    TOK_IF          // :-
+    TOK_IF,         // :-
+
+    // Arithmetic Tokens
+    TOK_LESS,
+    TOK_LESSEQ,
+    TOK_GREATER,
+    TOK_GREATEREQ,
+    TOK_PLUS,
+    TOK_MINUS,
+    TOK_MUL,
+    TOK_DIV,
+    TOK_IS
 };
 
 class Lexer
