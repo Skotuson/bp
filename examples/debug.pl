@@ -1,5 +1,2 @@
-a(a).
-a(b).
-b(b).
-
-c(X) :- a(X),b(X).
+a(Y) :- X = foo(X), X = Y.
+b(Y) :- X = Y, X = foo(X).
