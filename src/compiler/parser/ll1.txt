@@ -65,6 +65,5 @@ Expr1R -> * Expr Expr1R
 Expr1R -> / Expr Expr1R
 Expr1R ->
 
-Expr -> number
+Expr -> Term
 Expr -> ( Expr3 )
-Expr -> identifier
