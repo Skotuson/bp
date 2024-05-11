@@ -195,4 +195,18 @@ TEST_CASE("Lexer test suite")
         CHECK(lex.get() == TOK_CONST);
         CHECK(lex.numericValue() == 2);
     }
+
+    SUBCASE("Lex Expression: X is 1 < 2")
+    {
+        std::istringstream iss("X is 1 < 2");
+        Lexer lex(iss);
+        CHECK(lex.get() == TOK_VAR);
+        CHECK(lex.identifier() == "X");
+        CHECK(lex.get() == TOK_IS);
+        CHECK(lex.get() == TOK_CONST);
+        CHECK(lex.numericValue() == 1);
+        CHECK(lex.get() == TOK_LESS);
+        CHECK(lex.get() == TOK_CONST);
+        CHECK(lex.numericValue() == 2);
+    }
 }

@@ -26,6 +26,11 @@ Token Lexer::lexIdentifier(void)
 
     m_Source.unget();
 
+    if (m_Identifier == "is")
+    {
+        return TOK_IS;
+    }
+
     if (islower(m_Identifier.front()) || (m_Identifier.front() == '_' && m_Identifier.length() > 1))
     {
         return TOK_ATOM_LOWER;
