@@ -25,7 +25,7 @@ bool Interpreter::run(void)
     std::string query;
     std::getline(std::cin >> std::ws, query);
 
-    if(query.back() != '.')
+    if (query.back() != '.')
     {
         query += ".";
     }
@@ -51,7 +51,7 @@ bool Interpreter::run(void)
             m_Renderer.clearScreen(std::cout);
         }
 
-        std::cout << m_State << std::endl;
+        // std::cout << m_State << std::endl;
 
         if (!success)
         {
@@ -133,10 +133,10 @@ Result Interpreter::evaluateQuery(void)
                 std::string desugared = Desugar::replacePeano(value);
                 value = desugared;
             }
-            catch(const std::runtime_error& e)
+            catch (const std::runtime_error &e)
             {
             }
-            
+
             if (v.second != value)
             {
                 vars.insert({v.second, value});
