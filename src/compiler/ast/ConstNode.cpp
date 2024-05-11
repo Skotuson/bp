@@ -1,5 +1,7 @@
 #include "ConstNode.hpp"
 
+#include "VarNode.hpp"
+#include "UnificationNode.hpp"
 #include "../../wam_code/instruction/Instructions.hpp"
 
 ConstNode::ConstNode(const std::string &name)
@@ -19,6 +21,15 @@ void ConstNode::codegen(CompilationContext &cctx)
     }
 
     cctx.setAvailableReg(cctx.availableReg() + 1);
+}
+
+std::string ConstNode::codegen_arithmetic(CompilationContext &cctx)
+{
+    std::string varName = cctx.getAvailableArithmeticVariable();
+    auto unif = std::make_shared<UnificationNode>(std::make_shared<VarNode>(varName, true), std::make_shared<ConstNode>(m_Name));
+    cctx.incrementAvailableArithmeticVariable();
+    unif->codegen(cctx);
+    return varName;
 }
 
 TermNode::TermType ConstNode::type()
