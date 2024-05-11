@@ -43,4 +43,13 @@ TEST_CASE("Desugar test suite")
         CHECK(Desugar::fromPeano("__s(__s(__s(0)))", true) == 3);
         CHECK(Desugar::fromPeano("__s(__s(__s(__s(__s(__s(__s(0)))))))", true) == 7);
     }
+
+    SUBCASE("Peano number replacing with natural numbers: ")
+    {
+        CHECK(Desugar::replacePeano("0") == "0");
+        CHECK(Desugar::replacePeano("__s(0)") == "1");
+        CHECK(Desugar::replacePeano("__s(__s(0))") == "2");
+        CHECK(Desugar::replacePeano("f(__s(0),__s(__s(0)))") == "f(1,2)");
+        CHECK(Desugar::replacePeano("[__s(0)|[__s(__s(0))|[__s(__s(__s(0)))|[]]]]") == "[1|[2|[3|[]]]]");
+    }
 }
