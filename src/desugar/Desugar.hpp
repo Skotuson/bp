@@ -2,9 +2,13 @@
 
 #include <string>
 
+#include "../compiler/ast/StructNode.hpp"
+
 class Desugar
 {
 public:
     static std::string toPeano(size_t num, bool underscores = false);
     static size_t fromPeano(const std::string &num);
+
+    static std::shared_ptr<TermNode> toPeanoNode(size_t num, bool underscores = false);
 };
