@@ -71,7 +71,7 @@ size_t Desugar::fromPeano(const std::string &num, bool underscores)
     std::string successor = "s";
     if (underscores)
     {
-        successor = "_" + successor;
+        successor = "__" + successor;
     }
 
     for (const auto &c : split)
