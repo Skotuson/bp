@@ -1,7 +1,9 @@
 #include "StructNode.hpp"
 
 #include "VarNode.hpp"
+#include "CallNode.hpp"
 #include "UnificationNode.hpp"
+#include "../../desugar/Desugar.hpp"
 #include "../../wam_code/instruction/Instructions.hpp"
 
 #include <queue>
@@ -43,12 +45,42 @@ void StructNode::codegen(CompilationContext &cctx)
 
 std::string StructNode::codegen_arithmetic(CompilationContext &cctx)
 {
-    if(m_Name == "+" || m_Name == "*" || m_Name == "-" || m_Name == "/")
+    if (isBinaryOperator())
     {
-        
-        return "";
+        std::string varLHS = m_Args[0]->codegen_arithmetic(cctx);
+        std::string varRHS = m_Args[1]->codegen_arithmetic(cctx);
+
+        std::string resultVar = cctx.getAvailableArithmeticVariable();
+        cctx.incrementAvailableArithmeticVariable();
+
+        std::vector<std::shared_ptr<TermNode>> callArgs = {
+            std::make_shared<VarNode>(varLHS, true),
+            std::make_shared<VarNode>(varRHS, true),
+            std::make_shared<VarNode>(resultVar, true)};
+
+        std::shared_ptr<CallNode> call;
+
+        switch (m_Name.front())
+        {
+        case '+':
+            call = std::make_shared<CallNode>("__add", callArgs);
+            break;
+        case '-':
+            call = std::make_shared<CallNode>("__sub", callArgs);
+            break;
+        case '*':
+            call = std::make_shared<CallNode>("__mul", callArgs);
+            break;
+        case '/':
+            call = std::make_shared<CallNode>("__div", callArgs);
+            break;
+        default:
+            break;
+        }
+        call->codegen(cctx);
+        return resultVar;
     }
-    
+
     std::string varName = cctx.getAvailableArithmeticVariable();
     auto unif = std::make_shared<UnificationNode>(std::make_shared<VarNode>(varName, true), std::make_shared<StructNode>(m_Name, m_Args));
     cctx.incrementAvailableArithmeticVariable();
@@ -190,4 +222,9 @@ void StructNode::unifyArguments(CompilationContext &cctx, ProcessedComplex &proc
             cctx.addInstruction(std::make_shared<UnifyVariable>(var, cctx.getVarOffset(var)));
         }
     }
+}
+
+bool StructNode::isBinaryOperator(void)
+{
+    return m_Name == "+" || m_Name == "*" || m_Name == "-" || m_Name == "/";
 }
