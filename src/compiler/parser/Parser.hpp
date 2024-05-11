@@ -35,7 +35,7 @@ private:
     std::shared_ptr<TermNode> ListCons(void);
     std::vector<std::shared_ptr<TermNode>> Terms(void);
     std::vector<std::shared_ptr<TermNode>> TermsCont(void);
-    std::shared_ptr<TermNode> TermLower(void);
+    std::shared_ptr<TermNode> TermLower(const std::string &name);
 
     std::shared_ptr<TermNode> Expr2(void);
     std::shared_ptr<TermNode> Expr2R(std::shared_ptr<TermNode> lhs);

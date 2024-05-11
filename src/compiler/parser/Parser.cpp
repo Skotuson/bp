@@ -118,6 +118,7 @@ std::vector<std::shared_ptr<GoalNode>> Parser::Body(void)
     std::shared_ptr<GoalNode> expr;
     std::shared_ptr<TermNode> list;
     std::string varName = "";
+    std::string constant = "";
     Token tok;
 
     auto getGoal = [](Token tok, std::shared_ptr<TermNode> lhs, std::shared_ptr<TermNode> rhs) -> std::shared_ptr<GoalNode>
@@ -136,8 +137,9 @@ std::vector<std::shared_ptr<GoalNode>> Parser::Body(void)
     switch (m_Lex.peek())
     {
     case TOK_ATOM_LOWER:
+        constant = m_Lex.identifier();
         m_Lex.match(TOK_ATOM_LOWER);
-        compound = TermLower();
+        compound = TermLower(constant);
         // Not a unification, so it is a call
         if (!(expr = BodyTerm(compound)))
         {
@@ -160,14 +162,15 @@ std::vector<std::shared_ptr<GoalNode>> Parser::Body(void)
         return body;
     case TOK_CONST:
         m_Lex.match(TOK_CONST);
+        constant = std::to_string(m_Lex.numericValue());
         tok = Operator();
-        body.push_back(getGoal(tok, std::make_shared<ConstNode>(std::to_string(m_Lex.numericValue())), Expr2()));
+        body.push_back(getGoal(tok, std::make_shared<ConstNode>(constant), Expr2()));
         bodyCont = BodyCont();
         body.insert(body.end(), bodyCont.begin(), bodyCont.end());
         return body;
     case TOK_VAR:
-        m_Lex.match(TOK_VAR);
         varName = generateWildcardName(m_Lex.identifier());
+        m_Lex.match(TOK_VAR);
         tok = Operator();
         body.push_back(getGoal(tok, std::make_shared<VarNode>(varName), Expr2()));
         bodyCont = BodyCont();
@@ -315,23 +318,19 @@ std::vector<std::shared_ptr<TermNode>> Parser::TermsCont(void)
     }
 }
 
-std::shared_ptr<TermNode> Parser::TermLower(void)
+std::shared_ptr<TermNode> Parser::TermLower(const std::string &name)
 {
     std::vector<std::shared_ptr<TermNode>> terms;
-    std::string name = m_Lex.identifier();
     switch (m_Lex.peek())
     {
     case TOK_EQUAL:
+    case TOK_IS:
     case TOK_COMMA:
     case TOK_PERIOD:
     case TOK_MUL:
     case TOK_DIV:
     case TOK_PLUS:
     case TOK_MINUS:
-    case TOK_LESS:
-    case TOK_GREATER:
-    case TOK_LESSEQ:
-    case TOK_GREATEREQ:
     case TOK_RSPAR:
     case TOK_RPAR:
     case TOK_PIPE:
@@ -437,12 +436,14 @@ std::shared_ptr<TermNode> Parser::Expr1R(std::shared_ptr<TermNode> lhs)
 
 std::shared_ptr<TermNode> Parser::Expr(void)
 {
+    std::string number;
     std::shared_ptr<TermNode> expr;
     switch (m_Lex.peek())
     {
     case TOK_ATOM_LOWER:
+        number = m_Lex.identifier();
         m_Lex.match(TOK_ATOM_LOWER);
-        return TermLower();
+        return TermLower(number);
     case TOK_CONST:
         m_Lex.match(TOK_CONST);
         return std::make_shared<ConstNode>(std::to_string(m_Lex.numericValue()));
