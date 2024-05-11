@@ -16,8 +16,10 @@ enum BinaryOperator
 
 struct BinaryOperatorNode : public ExpressionNode
 {
-protected:
+public:
     BinaryOperatorNode(BinaryOperator op, std::shared_ptr<ExpressionNode> lhs, std::shared_ptr<ExpressionNode> rhs);
+    void codegen(CompilationContext &cctx) override;
+    void print(const std::string &indent = "") override;
 
 private:
     BinaryOperator m_Operator;

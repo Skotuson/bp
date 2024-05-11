@@ -6,3 +6,16 @@ BinaryOperatorNode::BinaryOperatorNode(BinaryOperator op, std::shared_ptr<Expres
       m_RHS(rhs)
 {
 }
+
+void BinaryOperatorNode::codegen(CompilationContext &cctx)
+{
+}
+
+void BinaryOperatorNode::print(const std::string &indent)
+{
+    std::cout << indent << "=======[Start BinaryOperator]======" << std::endl;
+    m_LHS->print(indent + " ");
+    std::cout << m_Operator << std::endl;
+    m_RHS->print(indent + " ");
+    std::cout << indent << "=======[End BinaryOperator]======" << std::endl;
+}
