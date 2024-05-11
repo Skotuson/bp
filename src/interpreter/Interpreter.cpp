@@ -23,6 +23,11 @@ bool Interpreter::run(void)
     std::string query;
     std::getline(std::cin >> std::ws, query);
 
+    if(query.back() != '.')
+    {
+        query += ".";
+    }
+
     setQuery(compileQuery(query));
 
     if (m_State.halt())
