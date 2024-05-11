@@ -40,10 +40,10 @@ public:
     void add(const std::string &symbol,
              std::shared_ptr<TableEntry> entry);
     std::shared_ptr<TableEntry> get(const std::string &symbol);
-    
+
     void addInstruction(std::shared_ptr<Instruction> instr);
     void addInstructions(const std::vector<std::shared_ptr<Instruction>> &instructions);
-    
+
     void addLabel(const Label &label);
     size_t getLabelAddress(const Label &label);
 
@@ -60,11 +60,16 @@ public:
     size_t availableReg(void);
     void setAvailableReg(size_t reg);
 
+    std::string getAvailableArithmeticVariable(void);
+    void resetAvailableArithmeticVariable(void);
+    void incrementAvailableArithmeticVariable(void);
+    
     CodeGenerationMode mode(void);
     void setHeadGenerationMode(void);
     void setBodyGenerationMode(void);
 
 private:
+    size_t m_AvailableArithmeticVariable = 0;
     size_t m_AvailableRegister = 1;
     std::unordered_map<std::string, std::shared_ptr<TableEntry>> m_SymbolTable;
     WAMCode m_GeneratedCode;

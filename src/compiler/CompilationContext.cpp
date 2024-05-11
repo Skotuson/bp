@@ -86,6 +86,20 @@ void CompilationContext::setAvailableReg(size_t reg)
     m_AvailableRegister = reg;
 }
 
+std::string CompilationContext::getAvailableArithmeticVariable(void)
+{
+    return "__arithmetic" + std::to_string(m_AvailableArithmeticVariable);
+}
+
+void CompilationContext::resetAvailableArithmeticVariable(void)
+{
+    m_AvailableArithmeticVariable = 0;
+}
+void CompilationContext::incrementAvailableArithmeticVariable(void)
+{
+    m_AvailableArithmeticVariable++;
+}
+
 CodeGenerationMode CompilationContext::mode(void)
 {
     return m_CGMode;
