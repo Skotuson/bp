@@ -1,7 +1,9 @@
 #include "Interpreter.hpp"
 
 #include <sstream>
+#include <stdexcept>
 
+#include "../desugar/Desugar.hpp"
 #include "../compiler/Compiler.hpp"
 
 Interpreter::Interpreter(const WAMCode &wamCode, const Renderer &renderer)
@@ -126,6 +128,15 @@ Result Interpreter::evaluateQuery(void)
         for (const auto &v : m_CurrentQuery.getVariables())
         {
             std::string value = m_State.variableToString(v.first);
+            try
+            {
+                std::string desugared = std::to_string(Desugar::fromPeano(value, true));
+                value = desugared;
+            }
+            catch(const std::runtime_error& e)
+            {
+            }
+            
             if (v.second != value)
             {
                 vars.insert({v.second, value});
