@@ -2,6 +2,7 @@
 
 #include "VarNode.hpp"
 #include "UnificationNode.hpp"
+#include "../../desugar/Desugar.hpp"
 #include "../../wam_code/instruction/Instructions.hpp"
 
 ConstNode::ConstNode(const std::string &name)
@@ -26,7 +27,26 @@ void ConstNode::codegen(CompilationContext &cctx)
 std::string ConstNode::codegen_arithmetic(CompilationContext &cctx)
 {
     std::string varName = cctx.getAvailableArithmeticVariable();
-    auto unif = std::make_shared<UnificationNode>(std::make_shared<VarNode>(varName, true), std::make_shared<ConstNode>(m_Name));
+    std::shared_ptr<TermNode> constant = std::make_shared<ConstNode>(m_Name);
+
+    auto isNumber = [](const std::string &str)
+    {
+        for (const auto &c : str)
+        {
+            if (!isdigit(c))
+            {
+                return false;
+            }
+        }
+        return true;
+    };
+
+    if (isNumber(m_Name))
+    {
+        constant = Desugar::toPeanoNode(std::stoi(m_Name), true);
+    }
+
+    auto unif = std::make_shared<UnificationNode>(std::make_shared<VarNode>(varName, true), constant);
     cctx.incrementAvailableArithmeticVariable();
     unif->codegen(cctx);
     return varName;
