@@ -130,7 +130,7 @@ std::vector<std::shared_ptr<GoalNode>> Parser::Body(void)
     case TOK_CONST:
         m_Lex.match(TOK_CONST);
         m_Lex.match(TOK_EQUAL);
-        expr = Expr3();
+        expr = Expr2();
         body.push_back(std::make_shared<UnificationNode>(std::make_shared<ConstNode>(std::to_string(m_Lex.numericValue())), expr));
         bodyCont = BodyCont();
         body.insert(body.end(), bodyCont.begin(), bodyCont.end());
@@ -139,7 +139,7 @@ std::vector<std::shared_ptr<GoalNode>> Parser::Body(void)
         m_Lex.match(TOK_VAR);
         varName = generateWildcardName(m_Lex.identifier());
         m_Lex.match(TOK_EQUAL);
-        expr = Expr3();
+        expr = Expr2();
         body.push_back(std::make_shared<UnificationNode>(std::make_shared<VarNode>(varName), expr));
         bodyCont = BodyCont();
         body.insert(body.end(), bodyCont.begin(), bodyCont.end());
@@ -147,7 +147,7 @@ std::vector<std::shared_ptr<GoalNode>> Parser::Body(void)
     case TOK_LSPAR:
         list = List();
         m_Lex.match(TOK_EQUAL);
-        expr = Expr3();
+        expr = Expr2();
         body.push_back(std::make_shared<UnificationNode>(list, expr));
         bodyCont = BodyCont();
         body.insert(body.end(), bodyCont.begin(), bodyCont.end());
@@ -186,31 +186,11 @@ std::shared_ptr<TermNode> Parser::BodyTerm(void)
         return nullptr;
     case TOK_EQUAL:
         m_Lex.match(TOK_EQUAL);
-        return Expr3();
+        return Expr2();
     default:
         throw std::runtime_error("BodyTerm Parsing error");
     }
 }
-
-// std::shared_ptr<TermNode> Parser::Term(void)
-//{
-//     switch (m_Lex.peek())
-//     {
-//     case TOK_ATOM_LOWER:
-//         m_Lex.match(TOK_ATOM_LOWER);
-//         return TermLower();
-//     case TOK_CONST:
-//         m_Lex.match(TOK_CONST);
-//         return std::make_shared<ConstNode>(std::to_string(m_Lex.numericValue()));
-//     case TOK_LSPAR:
-//         return List();
-//     case TOK_VAR:
-//         m_Lex.match(TOK_VAR);
-//         return std::make_shared<VarNode>(generateWildcardName(m_Lex.identifier()));
-//     default:
-//         throw std::runtime_error("Term Parsing error");
-//     }
-// }
 
 std::shared_ptr<TermNode> Parser::List(void)
 {
@@ -257,7 +237,7 @@ std::shared_ptr<TermNode> Parser::ListCons(void)
         return nullptr;
     case TOK_PIPE:
         m_Lex.match(TOK_PIPE);
-        return Expr3();
+        return Expr2();
     default:
         throw std::runtime_error("ListCons Parsing error");
     }
@@ -338,54 +318,6 @@ std::string Parser::generateWildcardName(const std::string &varName)
     return "___" + std::to_string(m_WildcardsGenerated++);
 }
 
-std::shared_ptr<TermNode> Parser::Expr3(void)
-{
-    switch (m_Lex.peek())
-    {
-    case TOK_ATOM_LOWER:
-    case TOK_CONST:
-    case TOK_LSPAR:
-    case TOK_VAR:
-    case TOK_LPAR:
-        return Expr3R(Expr2());
-        break;
-    default:
-        throw std::runtime_error("Expr3 Parsing error");
-    }
-}
-
-std::shared_ptr<TermNode> Parser::Expr3R(std::shared_ptr<TermNode> lhs)
-{
-    std::vector<std::shared_ptr<TermNode>> args = {lhs};
-    switch (m_Lex.peek())
-    {
-    case TOK_LESS:
-        m_Lex.match(TOK_LESS);
-        args.push_back(Expr3R(Expr2()));
-        return std::make_shared<StructNode>("<", args);
-    case TOK_GREATER:
-        m_Lex.match(TOK_GREATER);
-        args.push_back(Expr3R(Expr2()));
-        return std::make_shared<StructNode>(">", args);
-    case TOK_LESSEQ:
-        m_Lex.match(TOK_LESSEQ);
-        args.push_back(Expr3R(Expr2()));
-        return std::make_shared<StructNode>("<=", args);
-    case TOK_GREATEREQ:
-        m_Lex.match(TOK_GREATEREQ);
-        args.push_back(Expr3R(Expr2()));
-        return std::make_shared<StructNode>(">=", args);
-    case TOK_COMMA:
-    case TOK_PERIOD:
-    case TOK_RSPAR:
-    case TOK_RPAR:
-    case TOK_PIPE:
-        return lhs;
-    default:
-        throw std::runtime_error("Expr3R Parsing error");
-    }
-}
-
 std::shared_ptr<TermNode> Parser::Expr2(void)
 {
     switch (m_Lex.peek())
@@ -414,10 +346,6 @@ std::shared_ptr<TermNode> Parser::Expr2R(std::shared_ptr<TermNode> lhs)
         m_Lex.match(TOK_MINUS);
         args.push_back(Expr2R(Expr1()));
         return std::make_shared<StructNode>("-", args);
-    case TOK_LESS:
-    case TOK_GREATER:
-    case TOK_LESSEQ:
-    case TOK_GREATEREQ:
     case TOK_COMMA:
     case TOK_PERIOD:
     case TOK_RSPAR:
@@ -459,10 +387,6 @@ std::shared_ptr<TermNode> Parser::Expr1R(std::shared_ptr<TermNode> lhs)
         return std::make_shared<StructNode>("/", args);
     case TOK_PLUS:
     case TOK_MINUS:
-    case TOK_LESS:
-    case TOK_GREATER:
-    case TOK_LESSEQ:
-    case TOK_GREATEREQ:
     case TOK_COMMA:
     case TOK_PERIOD:
     case TOK_RSPAR:
@@ -492,7 +416,7 @@ std::shared_ptr<TermNode> Parser::Expr(void)
         return std::make_shared<VarNode>(generateWildcardName(m_Lex.identifier()));
     case TOK_LPAR:
         m_Lex.match(TOK_LPAR);
-        expr = Expr3();
+        expr = Expr2();
         m_Lex.match(TOK_RPAR);
         return expr;
     default:
