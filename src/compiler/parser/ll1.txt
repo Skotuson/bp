@@ -12,9 +12,9 @@ Predicate -> :- Body .
 
 # Body of an rule
 Body -> lower TermLower BodyTerm BodyCont
-Body -> const = Expr3 BodyCont
-Body -> var = Expr3 BodyCont
-Body -> List = Expr3 BodyCont
+Body -> const = Expr2 BodyCont
+Body -> var = Expr2 BodyCont
+Body -> List = Expr2 BodyCont
 Body -> ! BodyCont
 
 # Allows chaining of goals in a rule
@@ -23,7 +23,7 @@ BodyCont -> , Body
 
 # Allows unifying two compounds or using one compound as a goal
 BodyTerm ->
-BodyTerm -> = Expr3 
+BodyTerm -> = Expr2 
 
 List -> [ ListInner ]
 
@@ -32,9 +32,9 @@ ListInner -> Terms ListCons
 
 # Allows for splitting array, e.g. [Head | Tail], [H1, H2 | Tail] etc.
 ListCons ->
-ListCons -> | Expr3
+ListCons -> | Expr2
 
-Terms -> Expr3 TermsCont
+Terms -> Expr2 TermsCont
 
 TermsCont ->
 TermsCont -> , Terms
@@ -43,13 +43,6 @@ TermLower ->
 TermLower -> ( Terms )
 
 # Expressions for the is operator
-Expr3 -> Expr2 Expr3R
-Expr3R -> < Expr2 Expr3R 
-Expr3R -> > Expr2 Expr3R
-Expr3R -> <= Expr2 Expr3R
-Expr3R -> >= Expr2 Expr3R
-Expr3R ->
-
 Expr2 -> Expr1 Expr2R
 Expr2R -> + Expr1 Expr2R
 Expr2R -> - Expr1 Expr2R
