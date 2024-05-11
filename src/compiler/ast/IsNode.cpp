@@ -6,11 +6,11 @@ IsNode::IsNode(std::shared_ptr<TermNode> x, std::shared_ptr<TermNode> y)
 {
 }
 
-void IsNode::codegen(CompilationContext &cctx) override
+void IsNode::codegen(CompilationContext &cctx)
 {
 }
 
-void IsNode::print(const std::string &indent = "") override
+void IsNode::print(const std::string &indent)
 {
     std::cout << indent << "=======[Start IsNode]======" << std::endl;
     m_X->print(indent + " ");
