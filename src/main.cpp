@@ -37,11 +37,11 @@ int main(int argc, const char **argv)
         }
     }
 
-    if (sourceCodePath.empty())
-    {
-        std::cout << "Missing mandatory --file parameter" << std::endl;
-        return 1;
-    }
+    //if (sourceCodePath.empty())
+    //{
+    //    std::cout << "Missing mandatory --file parameter" << std::endl;
+    //    return 1;
+    //}
 
     Preprocessor preprocessor;
     std::istringstream iss(

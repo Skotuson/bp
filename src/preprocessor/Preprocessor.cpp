@@ -16,13 +16,16 @@ Filepath Preprocessor::linkLibrary(const Filepath &filepath, std::istream &is)
     }
     ofs << std::endl;
 
-    std::ifstream ifs(filepath);
-    line = "";
-    while (std::getline(ifs, line))
+    if (!filepath.empty())
     {
-        ofs << line;
+        std::ifstream ifs(filepath);
+        line = "";
+        while (std::getline(ifs, line))
+        {
+            ofs << line;
+        }
+        ifs.close();
     }
-    ifs.close();
     ofs.close();
     return linkedFilePath;
 }
