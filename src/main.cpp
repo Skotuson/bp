@@ -21,7 +21,7 @@ int main(int argc, const char **argv)
         {
             if (i >= argc - 1)
             {
-                std::cout << "Missing mandatory --file parameter" << std::endl;
+                std::cout << "Missing --file parameter" << std::endl;
                 return 1;
             }
 
