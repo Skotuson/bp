@@ -1,4 +1,6 @@
 #include "VarNode.hpp"
+
+#include "UnificationNode.hpp"
 #include "../../wam_code/instruction/Instructions.hpp"
 
 VarNode::VarNode(const std::string &name, bool isWildcard)
@@ -26,6 +28,15 @@ void VarNode::codegen(CompilationContext &cctx)
     }
 
     cctx.setAvailableReg(cctx.availableReg() + 1);
+}
+
+std::string VarNode::codegen_arithmetic(CompilationContext &cctx)
+{
+    std::string varName = cctx.getAvailableArithmeticVariable();
+    auto unif = std::make_shared<UnificationNode>(std::make_shared<VarNode>(varName, true), std::make_shared<VarNode>(m_Name, m_IsWildcard));
+    cctx.incrementAvailableArithmeticVariable();
+    unif->codegen(cctx);
+    return varName;
 }
 
 TermNode::TermType VarNode::type()
