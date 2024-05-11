@@ -1,7 +1,9 @@
 #include "ListNode.hpp"
 
+#include "UnificationNode.hpp"
 #include "StructNode.hpp"
 #include "ConstNode.hpp"
+#include "VarNode.hpp"
 
 #include "../../wam_code/instruction/Instructions.hpp"
 
@@ -75,6 +77,15 @@ void ListNode::codegen(CompilationContext &cctx)
     cctx.addInstruction(std::make_shared<GetList>(cctx.availableReg()));
     unifyHead(cctx);
     cctx.setAvailableReg(cctx.availableReg() + 1);
+}
+
+std::string ListNode::codegen_arithmetic(CompilationContext &cctx)
+{
+    std::string varName = cctx.getAvailableArithmeticVariable();
+    auto unif = std::make_shared<UnificationNode>(std::make_shared<VarNode>(varName, true), std::make_shared<ListNode>(m_Head, m_Tail));
+    cctx.incrementAvailableArithmeticVariable();
+    unif->codegen(cctx);
+    return varName;
 }
 
 TermNode::TermType ListNode::type()

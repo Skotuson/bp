@@ -7,6 +7,7 @@ struct ListNode : public ComplexNode
     ListNode(const std::vector<std::shared_ptr<TermNode>> &head,
              std::shared_ptr<TermNode> tail = nullptr);
     void codegen(CompilationContext &cctx) override;
+    std::string codegen_arithmetic(CompilationContext &cctx) override;
     TermType type() override;
     void print(const std::string &indent = "") override;
 
