@@ -26,42 +26,61 @@ std::string Desugar::toPeano(size_t num, bool underscores)
     return peano;
 }
 
-size_t Desugar::fromPeano(const std::string &num)
+size_t Desugar::fromPeano(const std::string &num, bool underscores)
 {
-    auto removeUnderscores = [](const std::string &str)
-    {
-        std::string r = "";
-        for (const auto &c : str)
-        {
-            if (c != '_')
-            {
-                r += c;
-            }
-        }
-        return r;
-    };
-
-    std::string n = removeUnderscores(num);
-
-    size_t peano = 0;
+    std::string str = "";
     size_t parenCnt = 0;
 
-    bool fail = false;
-    for (const auto &c : n)
+    for (const auto &c : num)
     {
-        if (c == 's')
-        {
-            peano++;
-        }
-        else if (c == '(')
+        if (c == '(')
         {
             parenCnt++;
         }
-        else if (c == ')')
+        if (c == ')')
         {
             parenCnt--;
+            continue;
         }
-        else if (c != '0')
+        str += c;
+    }
+
+    auto split_string = [](const std::string &str, const char delim)
+    {
+        std::vector<std::string> r;
+        std::string tmp = "";
+        for (const auto &c : str)
+        {
+            if (c == delim)
+            {
+                r.push_back(tmp);
+                tmp = "";
+            }
+            else
+                tmp += c;
+        }
+        r.push_back(tmp);
+        return r;
+    };
+
+    std::vector<std::string> split = split_string(str, '(');
+
+    size_t peano = 0;
+    bool fail = false;
+
+    std::string successor = "s";
+    if (underscores)
+    {
+        successor = "_" + successor;
+    }
+
+    for (const auto &c : split)
+    {
+        if (c == successor)
+        {
+            peano++;
+        }
+        else if (c != "0")
         {
             fail = true;
             break;

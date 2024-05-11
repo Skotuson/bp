@@ -8,7 +8,7 @@ class Desugar
 {
 public:
     static std::string toPeano(size_t num, bool underscores = false);
-    static size_t fromPeano(const std::string &num);
+    static size_t fromPeano(const std::string &num, bool underscores = false);
 
     static std::shared_ptr<TermNode> toPeanoNode(size_t num, bool underscores = false);
 };
