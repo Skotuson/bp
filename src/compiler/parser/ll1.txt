@@ -10,11 +10,14 @@ Pred -> Terms ) Predicate
 Predicate -> .
 Predicate -> :- Body .
 
+Operator -> =
+Operator -> is
+
 # Body of an rule
 Body -> lower TermLower BodyTerm BodyCont
-Body -> const = Expr2 BodyCont
-Body -> var = Expr2 BodyCont
-Body -> List = Expr2 BodyCont
+Body -> const Operator Expr2 BodyCont
+Body -> var Operator Expr2 BodyCont
+Body -> List Operator Expr2 BodyCont
 Body -> ! BodyCont
 
 # Allows chaining of goals in a rule
@@ -23,7 +26,7 @@ BodyCont -> , Body
 
 # Allows unifying two compounds or using one compound as a goal
 BodyTerm ->
-BodyTerm -> = Expr2 
+BodyTerm -> Operator Expr2 
 
 List -> [ ListInner ]
 
