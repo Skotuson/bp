@@ -28,7 +28,7 @@ private:
     std::vector<std::shared_ptr<GoalNode>> Body(void);
     std::vector<std::shared_ptr<GoalNode>> BodyCont(void);
     std::shared_ptr<TermNode> BodyTerm(void);
-    std::shared_ptr<TermNode> Term(void);
+    //std::shared_ptr<TermNode> Term(void);
     std::shared_ptr<TermNode> List(void);
     std::shared_ptr<TermNode> ListInner(void);
     std::shared_ptr<TermNode> ListCons(void);
@@ -36,13 +36,13 @@ private:
     std::vector<std::shared_ptr<TermNode>> TermsCont(void);
     std::shared_ptr<TermNode> TermLower(void);
 
-    void Expr3(void);
-    void Expr3R(void);
-    void Expr2(void);
-    void Expr2R(void);
-    void Expr1(void);
-    void Expr1R(void);
-    void Expr(void);
+    std::shared_ptr<TermNode> Expr3(void);
+    std::shared_ptr<TermNode> Expr3R(std::shared_ptr<TermNode> lhs);
+    std::shared_ptr<TermNode> Expr2(void);
+    std::shared_ptr<TermNode> Expr2R(std::shared_ptr<TermNode> lhs);
+    std::shared_ptr<TermNode> Expr1(void);
+    std::shared_ptr<TermNode> Expr1R(std::shared_ptr<TermNode> lhs);
+    std::shared_ptr<TermNode> Expr(void);
 
     std::string generateWildcardName(const std::string &varName);
     //-------------CLASS VARIABLES-------------//
