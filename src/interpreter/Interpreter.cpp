@@ -130,7 +130,7 @@ Result Interpreter::evaluateQuery(void)
             std::string value = m_State.variableToString(v.first);
             try
             {
-                std::string desugared = std::to_string(Desugar::fromPeano(value, true));
+                std::string desugared = Desugar::replacePeano(value);
                 value = desugared;
             }
             catch(const std::runtime_error& e)
