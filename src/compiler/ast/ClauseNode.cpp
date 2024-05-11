@@ -36,6 +36,7 @@ void ClauseNode::codegen(CompilationContext &cctx)
     cctx.addInstruction(alloc);
     
     cctx.setAvailableReg(1);
+    cctx.resetAvailableArithmeticVariable();
     cctx.setHeadGenerationMode();
     for (size_t i = 0; i < m_Args.size(); i++)
     {

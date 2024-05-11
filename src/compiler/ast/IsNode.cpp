@@ -11,7 +11,6 @@ IsNode::IsNode(std::shared_ptr<TermNode> x, std::shared_ptr<TermNode> y)
 
 void IsNode::codegen(CompilationContext &cctx)
 {
-    cctx.resetAvailableArithmeticVariable();
     std::string varX, varY;
     varX = m_X->codegen_arithmetic(cctx);
     varY = m_Y->codegen_arithmetic(cctx);
