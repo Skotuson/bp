@@ -38,10 +38,7 @@ int main(int argc, const char **argv)
     }
 
     Preprocessor preprocessor;
-    std::istringstream iss(
-        "__id(A, A).\n"
-        "__zero(0).");
-    Filepath fp = preprocessor.linkLibrary(sourceCodePath, iss);
+    Filepath fp = preprocessor.linkStandard(sourceCodePath);
 
     std::ifstream ifs(fp);
 

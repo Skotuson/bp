@@ -1,8 +1,18 @@
 #include "Preprocessor.hpp"
 
+#include <sstream>
 #include <fstream>
 #include <iostream>
 #include <filesystem>
+
+Filepath Preprocessor::linkStandard(const Filepath &filepath)
+{
+    std::istringstream iss(
+        "__id(A, A).\n"
+        "__zero(0).");
+
+    return linkLibrary(filepath, iss);
+}
 
 Filepath Preprocessor::linkLibrary(const Filepath &filepath, std::istream &is)
 {
