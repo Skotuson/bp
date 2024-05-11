@@ -97,7 +97,7 @@ Token Lexer::lexSymbol(void)
     case '+':
         return TOK_PLUS;
     case '-':
-        return TOK_PLUS;
+        return TOK_MINUS;
     case '*':
         return TOK_MUL;
     case '/':
