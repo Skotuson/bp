@@ -298,7 +298,7 @@ std::vector<std::shared_ptr<TermNode>> Parser::Terms(void)
     case TOK_LSPAR:
     case TOK_VAR:
     case TOK_LPAR:
-        terms.push_back(Expr());
+        terms.push_back(Expr2());
         termsCont = TermsCont();
         terms.insert(terms.end(), termsCont.begin(), termsCont.end());
         return terms;
