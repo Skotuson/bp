@@ -19,7 +19,6 @@ void GetStructure::execute(WAMState &state)
     {
         std::shared_ptr<VariableWord> vw = std::static_pointer_cast<VariableWord>(w);
         state.trailPush(vw);
-        //*vw->ref() = new StructurePointerWord(state.HReg(), state.m_Heap);
         vw->bind(std::make_shared<StructurePointerWord>(state.HReg(), state.m_Heap));
         state.heapPush(std::make_shared<StructureWord>(m_Name, m_Arity, state.m_Heap, state.HReg()));
         state.setWriteMode();
