@@ -5,6 +5,7 @@
 #include "../ast/CallNode.hpp"
 #include "../ast/VarNode.hpp"
 #include "../ast/CutNode.hpp"
+#include "../ast/IsNode.hpp"
 
 bool Parser::parse(void)
 {
@@ -95,20 +96,50 @@ std::vector<std::shared_ptr<GoalNode>> Parser::Predicate(void)
     }
 }
 
+Token Parser::Operator(void)
+{
+    switch (m_Lex.peek())
+    {
+    case TOK_EQUAL:
+        m_Lex.match(TOK_EQUAL);
+        return TOK_EQUAL;
+    case TOK_IS:
+        m_Lex.match(TOK_IS);
+        return TOK_IS;
+    default:
+        throw std::runtime_error("Operator Parsing error");
+    }
+}
+
 std::vector<std::shared_ptr<GoalNode>> Parser::Body(void)
 {
     std::vector<std::shared_ptr<GoalNode>> body, bodyCont;
     std::shared_ptr<TermNode> compound;
-    std::shared_ptr<TermNode> expr;
+    std::shared_ptr<GoalNode> expr;
     std::shared_ptr<TermNode> list;
     std::string varName = "";
+    Token tok;
+
+    auto getGoal = [](Token tok, std::shared_ptr<TermNode> lhs, std::shared_ptr<TermNode> rhs) -> std::shared_ptr<GoalNode>
+    {
+        switch (tok)
+        {
+        case TOK_EQUAL:
+            return std::make_shared<UnificationNode>(lhs, rhs);
+        case TOK_IS:
+            return std::make_shared<IsNode>(lhs, rhs);
+        default:
+            return nullptr;
+        }
+    };
+
     switch (m_Lex.peek())
     {
     case TOK_ATOM_LOWER:
         m_Lex.match(TOK_ATOM_LOWER);
         compound = TermLower();
         // Not a unification, so it is a call
-        if (!(expr = BodyTerm()))
+        if (!(expr = BodyTerm(compound)))
         {
             if (compound->type() == TermNode::TermType::CONST)
             {
@@ -122,33 +153,30 @@ std::vector<std::shared_ptr<GoalNode>> Parser::Body(void)
         }
         else
         {
-            body.push_back(std::make_shared<UnificationNode>(compound, expr));
+            body.push_back(expr);
         }
         bodyCont = BodyCont();
         body.insert(body.end(), bodyCont.begin(), bodyCont.end());
         return body;
     case TOK_CONST:
         m_Lex.match(TOK_CONST);
-        m_Lex.match(TOK_EQUAL);
-        expr = Expr2();
-        body.push_back(std::make_shared<UnificationNode>(std::make_shared<ConstNode>(std::to_string(m_Lex.numericValue())), expr));
+        tok = Operator();
+        body.push_back(getGoal(tok, std::make_shared<ConstNode>(std::to_string(m_Lex.numericValue())), Expr2()));
         bodyCont = BodyCont();
         body.insert(body.end(), bodyCont.begin(), bodyCont.end());
         return body;
     case TOK_VAR:
         m_Lex.match(TOK_VAR);
         varName = generateWildcardName(m_Lex.identifier());
-        m_Lex.match(TOK_EQUAL);
-        expr = Expr2();
-        body.push_back(std::make_shared<UnificationNode>(std::make_shared<VarNode>(varName), expr));
+        tok = Operator();
+        body.push_back(getGoal(tok, std::make_shared<VarNode>(varName), Expr2()));
         bodyCont = BodyCont();
         body.insert(body.end(), bodyCont.begin(), bodyCont.end());
         return body;
     case TOK_LSPAR:
         list = List();
-        m_Lex.match(TOK_EQUAL);
-        expr = Expr2();
-        body.push_back(std::make_shared<UnificationNode>(list, expr));
+        tok = Operator();
+        body.push_back(getGoal(tok, list, Expr2()));
         bodyCont = BodyCont();
         body.insert(body.end(), bodyCont.begin(), bodyCont.end());
         return body;
@@ -177,16 +205,25 @@ std::vector<std::shared_ptr<GoalNode>> Parser::BodyCont(void)
     }
 }
 
-std::shared_ptr<TermNode> Parser::BodyTerm(void)
+std::shared_ptr<GoalNode> Parser::BodyTerm(std::shared_ptr<TermNode> lhs)
 {
+    Token tok;
     switch (m_Lex.peek())
     {
     case TOK_COMMA:
     case TOK_PERIOD:
         return nullptr;
     case TOK_EQUAL:
-        m_Lex.match(TOK_EQUAL);
-        return Expr2();
+    case TOK_IS:
+        tok = Operator();
+        if (tok == TOK_EQUAL)
+        {
+            return std::make_shared<UnificationNode>(lhs, Expr2());
+        }
+        else if (tok == TOK_IS)
+        {
+            return std::make_shared<IsNode>(lhs, Expr2());
+        }
     default:
         throw std::runtime_error("BodyTerm Parsing error");
     }
