@@ -15,6 +15,8 @@ src/compiler/ast/StructNode.cpp
 src/compiler/ast/TermNode.cpp
 src/compiler/ast/UnificationNode.cpp
 src/compiler/ast/VarNode.cpp
+src/compiler/ast/ExpressionNode.cpp
+src/compiler/ast/BinaryOperatorNode.cpp
 src/compiler/CompilationContext.cpp
 src/compiler/Compiler.cpp
 src/compiler/lexer/Lexer.cpp

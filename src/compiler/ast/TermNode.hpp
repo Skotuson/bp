@@ -1,8 +1,8 @@
 #pragma once
 
-#include "Node.hpp"
+#include "ExpressionNode.hpp"
 
-struct TermNode : public Node
+struct TermNode : public ExpressionNode
 {
 protected:
     TermNode(const std::string &name);
