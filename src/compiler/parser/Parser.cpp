@@ -1,6 +1,7 @@
 #include "Parser.hpp"
 
 #include "../ast/UnificationNode.hpp"
+#include "../../desugar/Desugar.hpp"
 #include "../ast/ConstNode.hpp"
 #include "../ast/CallNode.hpp"
 #include "../ast/VarNode.hpp"
