@@ -11,4 +11,6 @@ public:
     static size_t fromPeano(const std::string &num, bool underscores = false);
 
     static std::shared_ptr<TermNode> toPeanoNode(size_t num, bool underscores = false);
+
+    static std::string replacePeano(const std::string &str);
 };

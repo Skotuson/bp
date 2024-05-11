@@ -126,3 +126,30 @@ std::shared_ptr<TermNode> Desugar::toPeanoNode(size_t num, bool underscores)
     }
     return peano;
 }
+
+std::string Desugar::replacePeano(const std::string &str)
+{
+    std::string needle = "__s(";
+    std::string r = str;
+    size_t pos = r.find(needle);
+    while (pos != std::string::npos)
+    {
+        size_t pcount = 1;
+        size_t end = pos + needle.length();
+        for (; end < r.length() && pcount; end++)
+        {
+            if (r[end] == '(')
+            {
+                pcount++;
+            }
+
+            if (r[end] == ')')
+            {
+                pcount--;
+            }
+        }
+        r.replace(pos, end - pos, std::to_string(fromPeano(r.substr(pos, end - pos), true)));
+        pos = r.find("__s(");
+    }
+    return r;
+}
