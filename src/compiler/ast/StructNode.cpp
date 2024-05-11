@@ -1,4 +1,7 @@
 #include "StructNode.hpp"
+
+#include "VarNode.hpp"
+#include "UnificationNode.hpp"
 #include "../../wam_code/instruction/Instructions.hpp"
 
 #include <queue>
@@ -36,6 +39,21 @@ void StructNode::codegen(CompilationContext &cctx)
     cctx.addInstruction(std::make_shared<GetStructure>(m_Name, cctx.availableReg(), m_Args.size()));
     unifyHead(cctx);
     cctx.setAvailableReg(cctx.availableReg() + 1);
+}
+
+std::string StructNode::codegen_arithmetic(CompilationContext &cctx)
+{
+    if(m_Name == "+" || m_Name == "*" || m_Name == "-" || m_Name == "/")
+    {
+        
+        return "";
+    }
+    
+    std::string varName = cctx.getAvailableArithmeticVariable();
+    auto unif = std::make_shared<UnificationNode>(std::make_shared<VarNode>(varName, true), std::make_shared<StructNode>(m_Name, m_Args));
+    cctx.incrementAvailableArithmeticVariable();
+    unif->codegen(cctx);
+    return varName;
 }
 
 TermNode::TermType StructNode::type()
