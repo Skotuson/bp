@@ -115,11 +115,6 @@ Token Parser::Operator(void)
 std::vector<std::shared_ptr<GoalNode>> Parser::Body(void)
 {
     std::vector<std::shared_ptr<GoalNode>> body, bodyCont;
-    std::shared_ptr<TermNode> compound;
-    std::shared_ptr<GoalNode> expr;
-    std::shared_ptr<TermNode> list;
-    std::string varName = "";
-    std::string constant = "";
     Token tok;
 
     auto getGoal = [](Token tok, std::shared_ptr<TermNode> lhs, std::shared_ptr<TermNode> rhs) -> std::shared_ptr<GoalNode>
@@ -138,9 +133,11 @@ std::vector<std::shared_ptr<GoalNode>> Parser::Body(void)
     switch (m_Lex.peek())
     {
     case TOK_ATOM_LOWER:
-        constant = m_Lex.identifier();
+    {
+        std::string constant = m_Lex.identifier();
         m_Lex.match(TOK_ATOM_LOWER);
-        compound = TermLower(constant);
+        std::shared_ptr<TermNode> compound = TermLower(constant);
+        std::shared_ptr<GoalNode> expr;
         // Not a unification, so it is a call
         if (!(expr = BodyTerm(compound)))
         {
@@ -161,29 +158,36 @@ std::vector<std::shared_ptr<GoalNode>> Parser::Body(void)
         bodyCont = BodyCont();
         body.insert(body.end(), bodyCont.begin(), bodyCont.end());
         return body;
+    }
     case TOK_CONST:
+    {
         m_Lex.match(TOK_CONST);
-        constant = std::to_string(m_Lex.numericValue());
+        std::shared_ptr<TermNode> peanoConst = Desugar::toPeanoNode(m_Lex.numericValue(), true);
         tok = Operator();
-        body.push_back(getGoal(tok, std::make_shared<ConstNode>(constant), Expr2()));
+        body.push_back(getGoal(tok, peanoConst, Expr2()));
         bodyCont = BodyCont();
         body.insert(body.end(), bodyCont.begin(), bodyCont.end());
         return body;
+    }
     case TOK_VAR:
-        varName = generateWildcardName(m_Lex.identifier());
+    {
+        std::string varName = generateWildcardName(m_Lex.identifier());
         m_Lex.match(TOK_VAR);
         tok = Operator();
         body.push_back(getGoal(tok, std::make_shared<VarNode>(varName), Expr2()));
         bodyCont = BodyCont();
         body.insert(body.end(), bodyCont.begin(), bodyCont.end());
         return body;
+    }
     case TOK_LSPAR:
-        list = List();
+    {
+        std::shared_ptr<TermNode> list = List();
         tok = Operator();
         body.push_back(getGoal(tok, list, Expr2()));
         bodyCont = BodyCont();
         body.insert(body.end(), bodyCont.begin(), bodyCont.end());
         return body;
+    }
     case TOK_CUT:
         m_Lex.match(TOK_CUT);
         body.push_back(std::make_shared<CutNode>());
@@ -446,8 +450,10 @@ std::shared_ptr<TermNode> Parser::Expr(void)
         m_Lex.match(TOK_ATOM_LOWER);
         return TermLower(number);
     case TOK_CONST:
+    {
         m_Lex.match(TOK_CONST);
-        return std::make_shared<ConstNode>(std::to_string(m_Lex.numericValue()));
+        return Desugar::toPeanoNode(m_Lex.numericValue(), true);
+    }
     case TOK_LSPAR:
         return List();
     case TOK_VAR:
