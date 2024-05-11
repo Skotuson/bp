@@ -18,5 +18,7 @@ struct StructNode : public ComplexNode
     void unifyRHS(CompilationContext &cctx) override;
     void unifyArguments(CompilationContext &cctx, ProcessedComplex &processedComplex) override;
 
+private:
+    bool isBinaryOperator(void);
     std::vector<std::shared_ptr<TermNode>> m_Args;
 };
