@@ -36,7 +36,11 @@ public:
     size_t getLabelAddress(const Label &label);
 
     WAMCode code(void);
-    WAMCode &getCode(void);
+    
+    /**
+     * @brief Update jump instructions in WAMCode 
+     */
+    void updateJumpInstructions(void);
 
     std::string generateTempVar(void);
     size_t allocate(void);
@@ -51,7 +55,7 @@ public:
     std::string getAvailableArithmeticVariable(void);
     void resetAvailableArithmeticVariable(void);
     void incrementAvailableArithmeticVariable(void);
-    
+
     CodeGenerationMode mode(void);
     void setHeadGenerationMode(void);
     void setBodyGenerationMode(void);

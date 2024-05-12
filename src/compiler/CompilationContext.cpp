@@ -39,9 +39,9 @@ WAMCode CompilationContext::code()
     return m_GeneratedCode;
 }
 
-WAMCode &CompilationContext::getCode()
+void CompilationContext::updateJumpInstructions(void)
 {
-    return m_GeneratedCode;
+    m_GeneratedCode.updateJumpInstructions();
 }
 
 std::string CompilationContext::generateTempVar(void)

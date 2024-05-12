@@ -29,7 +29,7 @@ void ProgramNode::codegen(CompilationContext &cctx)
     cctx.addInstruction(std::make_shared<Backtrack>());
 
     // Update the addresses of branch instructions
-    cctx.getCode().updateJumpInstructions();
+    cctx.updateJumpInstructions();
 }
 
 void ProgramNode::print(const std::string &indent)
