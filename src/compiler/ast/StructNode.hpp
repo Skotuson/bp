@@ -14,6 +14,7 @@ struct StructNode : public ComplexNode
     size_t arity(void) override;
     std::vector<std::shared_ptr<TermNode>> args(void);
 
+protected:
     void unifyHead(CompilationContext &cctx) override;
     void unifyRHS(CompilationContext &cctx) override;
     void unifyArguments(CompilationContext &cctx, ProcessedComplex &processedComplex) override;

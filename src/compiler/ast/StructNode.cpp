@@ -47,12 +47,15 @@ std::string StructNode::codegen_arithmetic(CompilationContext &cctx)
 {
     if (isBinaryOperator())
     {
+        // Generate arithmetic operations for LHS and RHS
         std::string varLHS = m_Args[0]->codegen_arithmetic(cctx);
         std::string varRHS = m_Args[1]->codegen_arithmetic(cctx);
 
+        // Get next available arithmetic variable
         std::string resultVar = cctx.getAvailableArithmeticVariable();
         cctx.incrementAvailableArithmeticVariable();
 
+        // Create arguments for arithmetic operation call
         std::vector<std::shared_ptr<TermNode>> callArgs = {
             std::make_shared<VarNode>(varLHS, true),
             std::make_shared<VarNode>(varRHS, true),
@@ -60,6 +63,7 @@ std::string StructNode::codegen_arithmetic(CompilationContext &cctx)
 
         std::shared_ptr<CallNode> call;
 
+        // Depending on the operator, create a call to an respective operation
         switch (m_Name.front())
         {
         case '+':
@@ -81,6 +85,7 @@ std::string StructNode::codegen_arithmetic(CompilationContext &cctx)
         return resultVar;
     }
 
+    // Struct doesn't represent an binary operation, generate an = operator instruction
     std::string varName = cctx.getAvailableArithmeticVariable();
     auto unif = std::make_shared<UnificationNode>(std::make_shared<VarNode>(varName, true), std::make_shared<StructNode>(m_Name, m_Args));
     cctx.incrementAvailableArithmeticVariable();
