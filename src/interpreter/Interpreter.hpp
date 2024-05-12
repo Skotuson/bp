@@ -19,16 +19,12 @@ class Interpreter
 {
 public:
     Interpreter(const WAMCode &wamCode, const Renderer &renderer = Renderer());
-
     bool run(void);
     WAMCode compileQuery(const std::string &query);
     Result evaluateQuery(void);
-
     bool nextAnswer(std::istream &is);
-
     void setQuery(const WAMCode &query);
     void clearQuery(void);
-
     void setDumpOnly(bool dumpOnly);
 
 private:

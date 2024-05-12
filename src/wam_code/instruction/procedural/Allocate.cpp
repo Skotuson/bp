@@ -26,7 +26,8 @@ void Allocate::execute(WAMState &state)
         }
         else
         {
-            cp->m_Variables[i] = std::make_shared<VariableWord>(&cp->m_Variables[i], "__" + std::to_string(state.m_AllocatedVariables++));
+            cp->m_Variables[i] = std::make_shared<VariableWord>(&cp->m_Variables[i], "__" + std::to_string(state.getAllocatedVariables()));
+            state.setAllocatedVariables(state.getAllocatedVariables() + 1);
         }
     }
     // Set E to this choice point

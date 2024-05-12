@@ -88,7 +88,7 @@ WAMCode Interpreter::compileQuery(const std::string &query)
     // TODO: will add as an instruction
     if (query == "halt.")
     {
-        m_State.m_HaltFlag = true;
+        m_State.setHaltFlag(true);
         return WAMCode();
     }
 
@@ -184,7 +184,7 @@ std::shared_ptr<Instruction> Interpreter::fetch(void)
 {
     if (m_State.PC() == BAD_ADDRESS)
     {
-        m_State.m_FailFlag = true;
+        m_State.setFailFlag(true);
     }
     return m_Program.getInstruction(m_State.m_ProgramCounter++);
 }

@@ -38,7 +38,9 @@ struct WAMState
     bool readMode(void) const;
 
     bool fail(void) const;
+    void setFailFlag(bool failFlag);
     bool halt(void) const;
+    void setHaltFlag(bool failFlag);
 
     // Heap operations
     void heapPush(std::shared_ptr<Word> word);
@@ -67,6 +69,9 @@ struct WAMState
 
     std::string variableToString(size_t offset, size_t choicePoint = 0);
 
+    size_t getAllocatedVariables(void);
+    void setAllocatedVariables(size_t allocatedVariables);
+
     friend std::ostream &operator<<(std::ostream &os, const WAMState &state);
 
     size_t m_StructurePointer = 0;
@@ -86,6 +91,7 @@ struct WAMState
     std::map<size_t, std::string> m_QueryVariables;
     std::map<size_t, std::shared_ptr<VariableWord>> m_QueryWords;
 
+private:
     bool m_ReadMode = false;
     bool m_FailFlag = false;
     bool m_HaltFlag = false;

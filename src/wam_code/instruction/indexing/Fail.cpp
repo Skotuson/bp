@@ -31,7 +31,9 @@ void Fail::execute(WAMState &state)
     }
     // Backtracking to an empty stack -> fail.
     else if (state.m_BacktrackRegister == UNSET_REG)
-        state.m_FailFlag = true;
+    {
+        state.setFailFlag(true);
+    }
 }
 
 void Fail::print(std::ostream &os) const

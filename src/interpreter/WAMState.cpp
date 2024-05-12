@@ -74,9 +74,19 @@ bool WAMState::fail(void) const
     return m_FailFlag;
 }
 
+void WAMState::setFailFlag(bool failFlag)
+{
+    m_FailFlag = failFlag;
+}
+
 bool WAMState::halt(void) const
 {
     return m_HaltFlag;
+}
+
+void WAMState::setHaltFlag(bool haltFlag)
+{
+    m_HaltFlag = haltFlag;
 }
 
 void WAMState::heapPush(std::shared_ptr<Word> word)
@@ -189,6 +199,15 @@ std::string WAMState::variableToString(size_t offset, size_t choicePoint)
     }
 
     return result;
+}
+
+size_t WAMState::getAllocatedVariables(void)
+{
+    return m_AllocatedVariables;
+}
+void WAMState::setAllocatedVariables(size_t allocatedVariables)
+{
+    m_AllocatedVariables = allocatedVariables;
 }
 
 std::ostream &operator<<(std::ostream &os, const WAMState &state)
