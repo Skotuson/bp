@@ -5,8 +5,8 @@
 
 struct IsNode : public GoalNode
 {
-    IsNode(std::shared_ptr<TermNode> x, std::shared_ptr<TermNode> y);
+    IsNode(std::shared_ptr<TermNode> lhs, std::shared_ptr<TermNode> rhs);
     void codegen(CompilationContext &cctx) override;
     void print(const std::string &indent = "") override;
-    std::shared_ptr<TermNode> m_X, m_Y;
+    std::shared_ptr<TermNode> m_LHS, m_RHS;
 };

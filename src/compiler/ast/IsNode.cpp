@@ -11,17 +11,21 @@ IsNode::IsNode(std::shared_ptr<TermNode> x, std::shared_ptr<TermNode> y)
 
 void IsNode::codegen(CompilationContext &cctx)
 {
-    std::string varX, varY;
-    varX = m_X->codegen_arithmetic(cctx);
-    varY = m_Y->codegen_arithmetic(cctx);
-    auto unif = std::make_shared<UnificationNode>(std::make_shared<VarNode>(varX, true), std::make_shared<VarNode>(varY, true));
+    std::string varLHS, varRHS;
+    // Generate the sequence of arithmetic operations for left-hand side
+    varLHS = m_LHS->codegen_arithmetic(cctx);
+    // Generate the sequence of arithmetic operations for right-hand side
+    varRHS = m_RHS->codegen_arithmetic(cctx);
+
+    // Check if both sides of the is operator are unifiable
+    auto unif = std::make_shared<UnificationNode>(std::make_shared<VarNode>(varLHS, true), std::make_shared<VarNode>(varRHS, true));
     unif->codegen(cctx);
 }
 
 void IsNode::print(const std::string &indent)
 {
     std::cout << indent << "=======[Start IsNode]======" << std::endl;
-    m_X->print(indent + " ");
-    m_Y->print(indent + " ");
+    m_LHS->print(indent + " ");
+    m_RHS->print(indent + " ");
     std::cout << indent << "=======[End IsNode]======" << std::endl;
 }
