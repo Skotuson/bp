@@ -46,7 +46,7 @@ void CompilationContext::updateJumpInstructions(void)
 
 std::string CompilationContext::generateTempVar(void)
 {
-    return "__T" + std::to_string(allocate());
+    return "__T" + std::to_string(allocated());
 }
 
 void CompilationContext::addVariable(const std::string &variable)
@@ -54,7 +54,7 @@ void CompilationContext::addVariable(const std::string &variable)
     m_GeneratedCode.addVariable({getVarOffset(variable), variable});
 }
 
-size_t CompilationContext::allocate(void)
+size_t CompilationContext::allocated(void)
 {
     return m_Variables.size();
 }
