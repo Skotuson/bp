@@ -112,9 +112,6 @@ Token Parser::Operator(void)
 
 std::vector<std::shared_ptr<GoalNode>> Parser::Body(void)
 {
-    std::vector<std::shared_ptr<GoalNode>> body, bodyCont;
-    Token tok;
-
     // Returns either a unification or is node for the lhs and rhs, depending on the operator type
     auto getGoal = [](Token tok, std::shared_ptr<TermNode> lhs, std::shared_ptr<TermNode> rhs) -> std::shared_ptr<GoalNode>
     {
@@ -128,6 +125,8 @@ std::vector<std::shared_ptr<GoalNode>> Parser::Body(void)
             return nullptr;
         }
     };
+
+    std::vector<std::shared_ptr<GoalNode>> body, bodyCont;
 
     switch (m_Lex.peek())
     {
@@ -165,7 +164,7 @@ std::vector<std::shared_ptr<GoalNode>> Parser::Body(void)
             m_Lex.match(TOK_CONST);
             // Replace natural number with its peano counterpart
             std::shared_ptr<TermNode> peanoConst = Desugar::toPeanoNode(m_Lex.numericValue(), true);
-            tok = Operator();
+            Token tok = Operator();
             body.push_back(getGoal(tok, peanoConst, Expr2()));
             break;
         }
@@ -174,7 +173,7 @@ std::vector<std::shared_ptr<GoalNode>> Parser::Body(void)
         {
             std::string varName = generateWildcardName(m_Lex.identifier());
             m_Lex.match(TOK_VAR);
-            tok = Operator();
+            Token tok = Operator();
             body.push_back(getGoal(tok, std::make_shared<VarNode>(varName), Expr2()));
             break;
         }
@@ -182,7 +181,7 @@ std::vector<std::shared_ptr<GoalNode>> Parser::Body(void)
         /* rule 12: Body -> List Operator Expr2 BodyCont */
         {
             std::shared_ptr<TermNode> list = List();
-            tok = Operator();
+            Token tok = Operator();
             body.push_back(getGoal(tok, list, Expr2()));
             break;
         }
