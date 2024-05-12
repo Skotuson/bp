@@ -91,7 +91,6 @@ void WAMCode::dumpInstruction(size_t pc, std::ostream &os) const
     {
         os << it->second << ": ";
     }
-    // TODO: adjust for the label length
     os << "\t";
     os << *getInstruction(pc);
     os << std::endl;
