@@ -14,6 +14,7 @@ Interpreter::Interpreter(const WAMCode &wamCode, const Renderer &renderer)
 
 bool Interpreter::run(void)
 {
+    // Only dump the code and then quit
     if (m_DumpOnly)
     {
         m_Program.dump(std::cout);
@@ -21,15 +22,16 @@ bool Interpreter::run(void)
     }
 
     std::cout << "?> ";
-
     std::string query;
     std::getline(std::cin >> std::ws, query);
 
+    // Correct query if trailing period is missing
     if (query.back() != '.')
     {
         query += ".";
     }
 
+    // Set compiled query as current query
     setQuery(compileQuery(query));
 
     if (m_State.halt())
@@ -44,6 +46,7 @@ bool Interpreter::run(void)
 
     while (42)
     {
+        // Get results of query evaluation
         auto [success, vars] = evaluateQuery();
 
         if (m_Renderer.step())
