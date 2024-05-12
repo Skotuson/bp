@@ -4,8 +4,8 @@
 #include "VarNode.hpp"
 
 IsNode::IsNode(std::shared_ptr<TermNode> x, std::shared_ptr<TermNode> y)
-    : m_X(x),
-      m_Y(y)
+    : m_LHS(x),
+      m_RHS(y)
 {
 }
 
