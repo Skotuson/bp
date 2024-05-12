@@ -34,7 +34,9 @@ ListNode::ListNode(const std::vector<std::shared_ptr<TermNode>> &head, std::shar
 
     else
     {
+        // Take the first element of the whole list
         m_Head = {head.front()};
+        // Recursively generate the tail as a new list node with the remaining elements
         std::vector<std::shared_ptr<TermNode>> tail = {head.begin() + 1, head.end()};
         if (tail.empty())
         {
@@ -46,9 +48,9 @@ ListNode::ListNode(const std::vector<std::shared_ptr<TermNode>> &head, std::shar
         }
     }
 
+    // Loop over the whole list and pre-calculate depth of nested complex terms
     m_List = m_Head;
     m_List.push_back(m_Tail);
-
     for (const auto &arg : m_List)
     {
         if (arg->type() == STRUCT || arg->type() == LIST)

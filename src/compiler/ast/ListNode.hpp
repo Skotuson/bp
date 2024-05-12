@@ -13,13 +13,14 @@ struct ListNode : public ComplexNode
 
     size_t arity(void) override;
 
+protected:
     void unifyHead(CompilationContext &cctx);
     void unifyRHS(CompilationContext &cctx);
     void unifyArguments(CompilationContext &cctx, ProcessedComplex &processedComplex);
 
+private:
     std::vector<std::shared_ptr<TermNode>> m_Head;
     std::shared_ptr<TermNode> m_Tail = nullptr;
-
     // Whole list, used for RHS unification
     std::vector<std::shared_ptr<TermNode>> m_List;
 };
