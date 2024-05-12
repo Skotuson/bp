@@ -45,6 +45,8 @@ void Parser::Start(void)
 std::shared_ptr<ClauseNode> Parser::Predicates(void)
 {
     std::string head = m_Lex.identifier();
+    std::vector<std::shared_ptr<TermNode>> args;
+    std::vector<std::shared_ptr<GoalNode>> body;
     switch (m_Lex.peek())
     {
     case TOK_PERIOD:
@@ -52,30 +54,12 @@ std::shared_ptr<ClauseNode> Parser::Predicates(void)
         return std::make_shared<ClauseNode>(head, std::vector<std::shared_ptr<TermNode>>(), Predicate());
     case TOK_LPAR:
         m_Lex.match(TOK_LPAR);
-        return Pred(head);
-    default:
-        throw std::runtime_error("Predicates Parsing error");
-    }
-}
-
-std::shared_ptr<ClauseNode> Parser::Pred(const std::string &head)
-{
-    std::vector<std::shared_ptr<TermNode>> args;
-    std::vector<std::shared_ptr<GoalNode>> body;
-
-    switch (m_Lex.peek())
-    {
-    case TOK_ATOM_LOWER:
-    case TOK_CONST:
-    case TOK_LSPAR:
-    case TOK_VAR:
-    case TOK_LPAR:
         args = Terms();
         m_Lex.match(TOK_RPAR);
         body = Predicate();
         return std::make_shared<ClauseNode>(head, args, body);
     default:
-        throw std::runtime_error("Pred Parsing error");
+        throw std::runtime_error("Predicates Parsing error");
     }
 }
 
