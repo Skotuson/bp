@@ -10,11 +10,11 @@ void Mark::execute(WAMState &state)
     // Build a new choice point up to the enviornment
     auto ncp = std::make_shared<ChoicePoint>(state.getArgumentRegisters(),
                                              state.EReg(),
-                                             state.CP(),
+                                             state.CPReg(),
                                              state.BReg(),
                                              state.TRReg(),
                                              state.HReg(),
-                                             state.PC());
+                                             state.PCReg());
     state.stackPush(ncp);
     // Make it a current one (Set B register)
     state.setBReg(state.SReg() - 1);

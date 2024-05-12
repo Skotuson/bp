@@ -111,7 +111,7 @@ Result Interpreter::evaluateQuery(void)
         if (m_Renderer.step())
         {
             m_Renderer.clearScreen(std::cout);
-            m_Renderer.renderCode(std::cout, m_Program, m_State.PC() - 1);
+            m_Renderer.renderCode(std::cout, m_Program, m_State.PCReg() - 1);
             std::cout << m_State << std::endl;
             std::cout << ANSI_RETURN_CURSOR;
             std::string com = "";
@@ -182,12 +182,12 @@ void Interpreter::clearQuery(void)
 
 std::shared_ptr<Instruction> Interpreter::fetch(void)
 {
-    if (m_State.PC() == BAD_ADDRESS)
+    if (m_State.PCReg() == BAD_ADDRESS)
     {
         m_State.setFailFlag(true);
     }
-    size_t pc = m_State.PC();
-    m_State.setPCReg(m_State.PC() + 1);
+    size_t pc = m_State.PCReg();
+    m_State.setPCReg(m_State.PCReg() + 1);
     return m_Program.getInstruction(pc);
 }
 

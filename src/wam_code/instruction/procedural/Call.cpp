@@ -13,7 +13,7 @@ std::shared_ptr<Instruction> Call::clone(void)
 void Call::execute(WAMState &state)
 {
     // Program counter already points to another instruction
-    state.setCPReg(state.PC());
+    state.setCPReg(state.PCReg());
     // Branch to L (m_Address), with return address in CP.
     state.setPCReg(m_Address);
 }

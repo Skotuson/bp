@@ -30,8 +30,8 @@ struct WAMState
     size_t PDLReg(void) const;
     size_t SPReg(void) const;
     size_t HReg(void) const;
-    size_t CP(void) const;
-    size_t PC(void) const;
+    size_t CPReg(void) const;
+    size_t PCReg(void) const;
 
     void setEReg(size_t ereg);
     void setBReg(size_t breg);
