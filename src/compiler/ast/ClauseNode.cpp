@@ -61,7 +61,7 @@ void ClauseNode::codegen(CompilationContext &cctx)
         m_Body[i]->codegen(cctx);
     }
     // Assign the N to generated allocate instruction
-    alloc->m_N = cctx.allocate();
+    alloc->m_N = cctx.allocated();
     // Generate a return instruction
     cctx.addInstruction(std::make_shared<Return>());
 }

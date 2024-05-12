@@ -36,14 +36,23 @@ public:
     size_t getLabelAddress(const Label &label);
 
     WAMCode code(void);
-    
+
     /**
-     * @brief Update jump instructions in WAMCode 
+     * @brief Update jump instructions in WAMCode
      */
     void updateJumpInstructions(void);
 
+    /**
+     * @brief Generates a temporary variable used in unification of complex objects
+     * @return String in form of __Tn, where n is the number of currently allocated variables for the clause.
+     */
     std::string generateTempVar(void);
-    size_t allocate(void);
+
+    /**
+     * @return Number of allocated variables
+     */
+    size_t allocated(void);
+
     void addVariable(const std::string &variable);
     void noteVariable(const std::string &variable);
     size_t getVarOffset(const std::string &variable);
