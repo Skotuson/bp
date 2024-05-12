@@ -11,6 +11,7 @@ VarNode::VarNode(const std::string &name, bool isWildcard)
 
 void VarNode::codegen(CompilationContext &cctx)
 {
+    // Note the variable
     cctx.noteVariable(m_Name);
     if (cctx.mode() == CodeGenerationMode::HEAD)
     {
@@ -19,6 +20,7 @@ void VarNode::codegen(CompilationContext &cctx)
     }
     else
     {
+        // If the variable is a wildcard, do not add it as a user inputted variable.
         if (!m_IsWildcard)
         {
             cctx.addVariable(m_Name);

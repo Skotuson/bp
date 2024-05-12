@@ -10,5 +10,6 @@ struct VarNode : public TermNode
     TermType type() override;
     void print(const std::string &indent = "") override;
 
+private:
     bool m_IsWildcard;
 };
