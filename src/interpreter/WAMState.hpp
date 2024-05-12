@@ -76,13 +76,17 @@ struct WAMState
     void setArgumentRegisters(const ArgumentRegisters &argumentRegisters);
     std::shared_ptr<Word> dereferenceArgumentRegister(size_t argReg);
 
+    void setQueryVariables(const std::map<size_t, std::string> &queryVariables);
+    std::string getQueryVariableName(size_t offset);
+    bool isQueryVariable(size_t offset);
+
+    void addQueryWord(size_t offset, std::shared_ptr<VariableWord> queryWord);
+
     friend std::ostream &operator<<(std::ostream &os, const WAMState &state);
 
     size_t m_StructurePointer = 0;
-
     size_t m_ProgramCounter = UNSET_REG;
     size_t m_ContinuationPointer = UNSET_REG;
-
     size_t m_BacktrackRegister = UNSET_REG;
     size_t m_EnvironmentRegister = UNSET_REG;
 
@@ -91,9 +95,6 @@ struct WAMState
     std::vector<std::shared_ptr<ChoicePoint>> m_Stack; // Represented as a vector because I need to have a random access available
     std::vector<PDLTriple> m_PushDownList;
 
-    std::map<size_t, std::string> m_QueryVariables;
-    std::map<size_t, std::shared_ptr<VariableWord>> m_QueryWords;
-
 private:
     ArgumentRegisters m_ArgumentRegisters;
     bool m_ReadMode = false;
@@ -101,4 +102,6 @@ private:
     bool m_HaltFlag = false;
 
     size_t m_AllocatedVariables = 0;
+    std::map<size_t, std::string> m_QueryVariables;
+    std::map<size_t, std::shared_ptr<VariableWord>> m_QueryWords;
 };

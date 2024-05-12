@@ -166,7 +166,7 @@ bool Interpreter::nextAnswer(std::istream &is)
 void Interpreter::setQuery(const WAMCode &query)
 {
     m_CurrentQuery = query;
-    m_State.m_QueryVariables = m_CurrentQuery.getVariables();
+    m_State.setQueryVariables(m_CurrentQuery.getVariables());
     m_Program.addLabel(m_QueryLabel);
     // Add the query instructions to the other code
     m_Program.merge(query);

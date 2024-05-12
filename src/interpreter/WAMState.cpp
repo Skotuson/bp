@@ -225,6 +225,26 @@ std::shared_ptr<Word> WAMState::dereferenceArgumentRegister(size_t argReg)
     return m_ArgumentRegisters.dereferenceRegister(argReg);
 }
 
+void WAMState::setQueryVariables(const std::map<size_t, std::string> &queryVariables)
+{
+    m_QueryVariables = queryVariables;
+}
+
+std::string WAMState::getQueryVariableName(size_t offset)
+{
+    return m_QueryVariables[offset];
+}
+
+bool WAMState::isQueryVariable(size_t offset)
+{
+    return m_QueryVariables.count(offset);
+}
+
+void WAMState::addQueryWord(size_t offset, std::shared_ptr<VariableWord> queryWord)
+{
+    m_QueryWords.insert({offset, queryWord});
+}
+
 std::ostream &operator<<(std::ostream &os, const WAMState &state)
 {
     auto format = [](size_t n)
