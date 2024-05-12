@@ -29,7 +29,7 @@ void Fail::execute(WAMState &state)
         // Branch to next rule
         state.m_ProgramCounter = cp->m_FA;
     }
-    // TODO: Experimental (check when choice point stack is empty)
+    // Backtracking to an empty stack -> fail.
     else if (state.m_BacktrackRegister == UNSET_REG)
         state.m_FailFlag = true;
 }
