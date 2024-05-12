@@ -31,7 +31,7 @@ void CompilationContext::addLabel(const Label &label)
 
 size_t CompilationContext::getLabelAddress(const Label &label)
 {
-    return m_GeneratedCode.m_LabelToAddress[label];
+    return m_GeneratedCode.getLabelAddress(label);
 }
 
 WAMCode CompilationContext::code()
