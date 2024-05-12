@@ -2,6 +2,9 @@
 
 #include "TermNode.hpp"
 
+/**
+ * @brief Represents a node that will be treated as an constant in the bytecode generation, either a lowercase atom or an empty list
+ */
 struct ConstNode : public TermNode
 {
     ConstNode(const std::string &name);

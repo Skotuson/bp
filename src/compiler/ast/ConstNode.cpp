@@ -12,20 +12,25 @@ ConstNode::ConstNode(const std::string &name)
 
 void ConstNode::codegen(CompilationContext &cctx)
 {
+    // Generating get instructions
     if (cctx.mode() == CodeGenerationMode::HEAD)
     {
         cctx.addInstruction(std::make_shared<GetConstant>(m_Name, cctx.availableReg()));
     }
+
+    // Generating put instructions
     else
     {
         cctx.addInstruction(std::make_shared<PutConstant>(m_Name, cctx.availableReg()));
     }
 
+    // TODO: see if can be moved elsewhere
     cctx.setAvailableReg(cctx.availableReg() + 1);
 }
 
 std::string ConstNode::codegen_arithmetic(CompilationContext &cctx)
 {
+    // Get next free arithmetic variable
     std::string varName = cctx.getAvailableArithmeticVariable();
     std::shared_ptr<TermNode> constant = std::make_shared<ConstNode>(m_Name);
 
@@ -41,14 +46,17 @@ std::string ConstNode::codegen_arithmetic(CompilationContext &cctx)
         return true;
     };
 
+    // If the constan is a number, replace it with the peano sucessor representation
     if (isNumber(m_Name))
     {
         constant = Desugar::toPeanoNode(std::stoi(m_Name), true);
     }
 
+    // Generate an unification instruction to bind the constant with the arithmetic variable
     auto unif = std::make_shared<UnificationNode>(std::make_shared<VarNode>(varName, true), constant);
     cctx.incrementAvailableArithmeticVariable();
     unif->codegen(cctx);
+    // Return the node's arithmetic variable
     return varName;
 }
 
