@@ -2,6 +2,9 @@
 
 #include "TermNode.hpp"
 
+/**
+ * @brief Represents either a list or a structure node
+ */
 struct ComplexNode;
 using NestedPairing = std::map<ComplexNode *, size_t>;
 using ProcessedComplex = std::map<Node *, std::string>;
