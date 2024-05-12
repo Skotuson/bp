@@ -59,7 +59,7 @@ void WAMCode::updateJumpInstructions(void)
         BranchInstruction *jump = dynamic_cast<BranchInstruction *>(instr.get());
         if (jump)
         {
-            jump->setAddress(getLabelAddress(jump->m_Label));
+            jump->setAddress(getLabelAddress(jump->label()));
         }
     }
 }

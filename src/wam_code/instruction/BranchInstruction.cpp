@@ -10,3 +10,8 @@ void BranchInstruction::setAddress(size_t address)
 {
     m_Address = address;
 }
+
+std::string BranchInstruction::label(void)
+{
+    return m_Label;
+}
