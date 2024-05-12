@@ -19,7 +19,7 @@ void GetList::execute(WAMState &state)
     {
         std::shared_ptr<VariableWord> vw = std::static_pointer_cast<VariableWord>(w);
         state.trailPush(vw);
-        vw->bind(std::make_shared<ListWord>(state.HReg(), state.m_Heap));
+        vw->bind(std::make_shared<ListWord>(state.HReg(), state.heapRef()));
         state.setWriteMode();
     }
     else if (w->tag() == LIST)

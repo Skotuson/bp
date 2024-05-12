@@ -4,6 +4,7 @@
 
 #include <ostream>
 #include <string>
+#include <vector>
 
 struct Instruction
 {

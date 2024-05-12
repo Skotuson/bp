@@ -47,6 +47,8 @@ struct WAMState
     void heapPop(void);
     std::shared_ptr<Word> heapTop(void);
     std::shared_ptr<Word> heapAt(size_t offset);
+    // Used for printing
+    const std::vector<std::shared_ptr<Word>> &heapRef(void);
 
     // Choice Point Stack operations
     void stackPush(std::shared_ptr<ChoicePoint> cp);
@@ -90,18 +92,21 @@ struct WAMState
     size_t m_BacktrackRegister = UNSET_REG;
     size_t m_EnvironmentRegister = UNSET_REG;
 
-    std::vector<std::shared_ptr<Word>> m_Heap;
-    std::vector<std::shared_ptr<VariableWord>> m_Trail;
-    std::vector<std::shared_ptr<ChoicePoint>> m_Stack; // Represented as a vector because I need to have a random access available
-    std::vector<PDLTriple> m_PushDownList;
-
 private:
-    ArgumentRegisters m_ArgumentRegisters;
     bool m_ReadMode = false;
     bool m_FailFlag = false;
     bool m_HaltFlag = false;
 
+    //-------------VARIABLES HANDLING-------------//
     size_t m_AllocatedVariables = 0;
     std::map<size_t, std::string> m_QueryVariables;
     std::map<size_t, std::shared_ptr<VariableWord>> m_QueryWords;
+
+    //-------------MAJOR DATA STRUCTURES-------------//
+    ArgumentRegisters m_ArgumentRegisters;
+    // Represented as a vector because I need to have a random access available
+    std::vector<PDLTriple> m_PushDownList;
+    std::vector<std::shared_ptr<ChoicePoint>> m_Stack;
+    std::vector<std::shared_ptr<VariableWord>> m_Trail;
+    std::vector<std::shared_ptr<Word>> m_Heap;
 };

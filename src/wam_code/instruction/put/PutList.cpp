@@ -14,7 +14,7 @@ std::shared_ptr<Instruction> PutList::clone(void)
 
 void PutList::execute(WAMState &state)
 {
-    state.fillRegister(std::make_shared<ListWord>(state.HReg(), state.m_Heap), m_ArgumentRegister);
+    state.fillRegister(std::make_shared<ListWord>(state.HReg(), state.heapRef()), m_ArgumentRegister);
     state.setWriteMode();
 }
 

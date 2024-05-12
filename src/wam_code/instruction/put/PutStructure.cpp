@@ -14,8 +14,8 @@ std::shared_ptr<Instruction> PutStructure::clone(void)
 
 void PutStructure::execute(WAMState &state)
 {
-    state.fillRegister(std::make_shared<StructurePointerWord>(state.HReg(), state.m_Heap), m_ArgumentRegister);
-    state.heapPush(std::make_shared<StructureWord>(m_Name, m_Arity, state.m_Heap, state.HReg()));
+    state.fillRegister(std::make_shared<StructurePointerWord>(state.HReg(), state.heapRef()), m_ArgumentRegister);
+    state.heapPush(std::make_shared<StructureWord>(m_Name, m_Arity, state.heapRef(), state.HReg()));
     state.setWriteMode();
 }
 

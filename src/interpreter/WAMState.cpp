@@ -109,6 +109,11 @@ std::shared_ptr<Word> WAMState::heapAt(size_t offset)
     return m_Heap[offset];
 }
 
+const std::vector<std::shared_ptr<Word>> &WAMState::heapRef(void)
+{
+    return m_Heap;
+}
+
 void WAMState::stackPush(std::shared_ptr<ChoicePoint> cp)
 {
     m_Stack.push_back(cp);
