@@ -2,9 +2,7 @@ Start ->
 Start -> lower Predicates Start
 
 Predicates -> Predicate
-Predicates -> ( Pred
-
-Pred -> Terms ) Predicate
+Predicates -> ( Terms ) Predicate
 
 # Facts and rules
 Predicate -> .
