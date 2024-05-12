@@ -157,11 +157,7 @@ std::vector<std::shared_ptr<GoalNode>> Parser::Body(void)
             {
                 body.push_back(expr);
             }
-            // Get the rest of the body
-            bodyCont = BodyCont();
-            // Insert it into the body parsed so far.
-            body.insert(body.end(), bodyCont.begin(), bodyCont.end());
-            return body;
+            break;
         }
     case TOK_CONST:
         /* rule 10: Body -> const Operator Expr2 BodyCont */
@@ -171,9 +167,7 @@ std::vector<std::shared_ptr<GoalNode>> Parser::Body(void)
             std::shared_ptr<TermNode> peanoConst = Desugar::toPeanoNode(m_Lex.numericValue(), true);
             tok = Operator();
             body.push_back(getGoal(tok, peanoConst, Expr2()));
-            bodyCont = BodyCont();
-            body.insert(body.end(), bodyCont.begin(), bodyCont.end());
-            return body;
+            break;
         }
     case TOK_VAR:
         /* rule 11: Body -> var Operator Expr2 BodyCont */
@@ -182,9 +176,7 @@ std::vector<std::shared_ptr<GoalNode>> Parser::Body(void)
             m_Lex.match(TOK_VAR);
             tok = Operator();
             body.push_back(getGoal(tok, std::make_shared<VarNode>(varName), Expr2()));
-            bodyCont = BodyCont();
-            body.insert(body.end(), bodyCont.begin(), bodyCont.end());
-            return body;
+            break;
         }
     case TOK_LSPAR:
         /* rule 12: Body -> List Operator Expr2 BodyCont */
@@ -192,20 +184,22 @@ std::vector<std::shared_ptr<GoalNode>> Parser::Body(void)
             std::shared_ptr<TermNode> list = List();
             tok = Operator();
             body.push_back(getGoal(tok, list, Expr2()));
-            bodyCont = BodyCont();
-            body.insert(body.end(), bodyCont.begin(), bodyCont.end());
-            return body;
+            break;
         }
         /* rule 13: Body -> ! BodyCont */
     case TOK_CUT:
         m_Lex.match(TOK_CUT);
         body.push_back(std::make_shared<CutNode>());
-        bodyCont = BodyCont();
-        body.insert(body.end(), bodyCont.begin(), bodyCont.end());
-        return body;
+        break;
     default:
         throw std::runtime_error("Body Parsing error");
     }
+
+    // Get the rest of the body
+    bodyCont = BodyCont();
+    // Insert it into the body parsed so far.
+    body.insert(body.end(), bodyCont.begin(), bodyCont.end());
+    return body;
 }
 
 std::vector<std::shared_ptr<GoalNode>> Parser::BodyCont(void)
