@@ -814,7 +814,7 @@ TEST_CASE("Interpreter test suite")
         }
     }
 
-    SUBCASE("IS operator tests")
+    SUBCASE("IS operator tests (REPL)")
     {
         std::istringstream iss(
             "__id(A, A).\n"
@@ -875,7 +875,7 @@ TEST_CASE("Interpreter test suite")
             testQuery(i, {true, {{"X", "6"}, {"Y", "12"}}});
         }
 
-        SUBCASE("Variable assignment III")
+        SUBCASE("Variable assignment IV")
         {
             Interpreter i(c.dump());
             i.setQuery(i.compileQuery(
@@ -883,7 +883,7 @@ TEST_CASE("Interpreter test suite")
             testQuery(i, {true, {{"X", "2"}, {"Y", "4"}}});
         }
 
-        SUBCASE("Variable assignment III")
+        SUBCASE("Variable assignment V")
         {
             Interpreter i(c.dump());
             i.setQuery(i.compileQuery(
@@ -891,12 +891,47 @@ TEST_CASE("Interpreter test suite")
             testQuery(i, {true, {{"X", "2"}, {"Y", "4"}, {"Z", "6"}}});
         }
 
-        SUBCASE("Variable assignment III")
+        SUBCASE("Variable assignment VI")
         {
             Interpreter i(c.dump());
             i.setQuery(i.compileQuery(
                 "X is 2-2/2."));
             testQuery(i, {true, {{"X", "1"}}});
+        }
+
+        SUBCASE("Variable assignment VII")
+        {
+            Interpreter i(c.dump());
+            i.setQuery(i.compileQuery(
+                "List = [1 + 1,2 * 2, 3 / 3]."));
+            testQuery(i, {true, {{"List", "[+(1,1)|[*(2,2)|[/(3,3)|[]]]]"}}});
+        }
+    }
+
+    SUBCASE("IS operator tests (Program)")
+    {
+        std::istringstream iss(
+            "__id(A, A).\n"
+
+            "__add(0,Y,Y)."
+            "__add(__s(0),Y,__s(Y))."
+            "__add(__s(X),Y,__s(Z)):- __add(X,Y,Z)."
+            // x - y = z is the same as y + z = x
+            "__sub(X, Y, Z) :- __add(Y, Z, X)."
+            "__mul(0,_,0)."
+            "__mul(__s(A),B,C) :-"
+            "__mul(A,B,D),"
+            "__add(D,B,C)."
+            // x / y = z is the same as y * z = x
+            "__div(X, Y, Z) :- __mul(Y, Z, X)."
+            "decompose([H|T], H, T).");
+        c.compile(iss);
+        SUBCASE("Variable assignment")
+        {
+            Interpreter i(c.dump());
+            i.setQuery(i.compileQuery(
+                "List = [1 + 1,2 * 2, 3 / 3], decompose(List, H, T), X is H."));
+            testQuery(i, {true, {{"List", "[+(1,1)|[*(2,2)|[/(3,3)|[]]]]"}, {"H", "+(1,1)"}, {"T", "[*(2,2)|[/(3,3)|[]]]"}, {"X", "+(1,1)"}}});
         }
     }
 }
