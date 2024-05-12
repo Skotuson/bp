@@ -8,7 +8,7 @@ std::shared_ptr<Instruction> Mark::clone(void)
 void Mark::execute(WAMState &state)
 {
     // Build a new choice point up to the enviornment
-    auto ncp = std::make_shared<ChoicePoint>(state.m_ArgumentRegisters,
+    auto ncp = std::make_shared<ChoicePoint>(state.getArgumentRegisters(),
                                              state.EReg(),
                                              state.m_ContinuationPointer,
                                              state.BReg(),

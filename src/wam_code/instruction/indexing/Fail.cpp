@@ -11,7 +11,7 @@ void Fail::execute(WAMState &state)
     if (cp)
     {
         // Reload argument registers
-        state.m_ArgumentRegisters = cp->m_ArgumentRegisters;
+        state.setArgumentRegisters(cp->m_ArgumentRegisters);
 
         // Reset heap
         while (state.HReg() != cp->m_BH)
@@ -23,7 +23,7 @@ void Fail::execute(WAMState &state)
         while (state.TRReg() != cp->m_BTR)
         {
             std::shared_ptr<VariableWord> popped = state.trailTop();
-            popped->bind(popped); 
+            popped->bind(popped);
             state.trailPop();
         }
         // Branch to next rule

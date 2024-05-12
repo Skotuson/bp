@@ -14,7 +14,7 @@ std::shared_ptr<Instruction> GetStructure::clone(void)
 
 void GetStructure::execute(WAMState &state)
 {
-    std::shared_ptr<Word> w = state.m_ArgumentRegisters.dereferenceRegister(m_ArgumentRegister);
+    std::shared_ptr<Word> w = state.dereferenceArgumentRegister(m_ArgumentRegister);
     if (w->tag() == VARIABLE)
     {
         std::shared_ptr<VariableWord> vw = std::static_pointer_cast<VariableWord>(w);

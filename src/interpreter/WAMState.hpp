@@ -72,6 +72,10 @@ struct WAMState
     size_t getAllocatedVariables(void);
     void setAllocatedVariables(size_t allocatedVariables);
 
+    const ArgumentRegisters &getArgumentRegisters(void);
+    void setArgumentRegisters(const ArgumentRegisters &argumentRegisters);
+    std::shared_ptr<Word> dereferenceArgumentRegister(size_t argReg);
+
     friend std::ostream &operator<<(std::ostream &os, const WAMState &state);
 
     size_t m_StructurePointer = 0;
@@ -86,12 +90,12 @@ struct WAMState
     std::vector<std::shared_ptr<VariableWord>> m_Trail;
     std::vector<std::shared_ptr<ChoicePoint>> m_Stack; // Represented as a vector because I need to have a random access available
     std::vector<PDLTriple> m_PushDownList;
-    ArgumentRegisters m_ArgumentRegisters;
 
     std::map<size_t, std::string> m_QueryVariables;
     std::map<size_t, std::shared_ptr<VariableWord>> m_QueryWords;
 
 private:
+    ArgumentRegisters m_ArgumentRegisters;
     bool m_ReadMode = false;
     bool m_FailFlag = false;
     bool m_HaltFlag = false;

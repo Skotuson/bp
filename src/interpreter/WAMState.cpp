@@ -210,6 +210,21 @@ void WAMState::setAllocatedVariables(size_t allocatedVariables)
     m_AllocatedVariables = allocatedVariables;
 }
 
+const ArgumentRegisters &WAMState::getArgumentRegisters(void)
+{
+    return m_ArgumentRegisters;
+}
+
+void WAMState::setArgumentRegisters(const ArgumentRegisters &argumentRegisters)
+{
+    m_ArgumentRegisters = argumentRegisters;
+}
+
+std::shared_ptr<Word> WAMState::dereferenceArgumentRegister(size_t argReg)
+{
+    return m_ArgumentRegisters.dereferenceRegister(argReg);
+}
+
 std::ostream &operator<<(std::ostream &os, const WAMState &state)
 {
     auto format = [](size_t n)
