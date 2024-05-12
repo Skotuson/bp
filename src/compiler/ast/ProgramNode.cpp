@@ -11,7 +11,7 @@ void ProgramNode::codegen(CompilationContext &cctx)
         auto entry = cctx.get(clause->head());
         if (!entry)
         {
-            cctx.add(clause->head(), std::make_shared<TableEntry>(clause->head()));
+            cctx.add(clause->head(), std::make_shared<TableEntry>());
         }
         else
         {

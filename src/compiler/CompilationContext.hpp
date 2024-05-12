@@ -6,24 +6,12 @@
 #include <unordered_map>
 
 #include "../wam_code/instruction/Instructions.hpp"
-
 #include "../wam_code/WAMCode.hpp"
 
 using Label = std::string;
 
 struct TableEntry
 {
-    TableEntry(const std::string &name)
-        : m_Name(name)
-    {
-    }
-
-    std::string m_Name;
-
-    std::shared_ptr<Mark> m_InitialMark = nullptr;
-    std::shared_ptr<RetryMeElse> m_LastRetryMeElse = nullptr;
-    std::vector<std::shared_ptr<Call>> m_CallReferences;
-
     size_t m_Generated = 0;
     size_t m_Clauses = 1;
 };
