@@ -13,9 +13,9 @@ std::shared_ptr<Instruction> Call::clone(void)
 void Call::execute(WAMState &state)
 {
     // Program counter already points to another instruction
-    state.m_ContinuationPointer = state.m_ProgramCounter;
+    state.setCPReg(state.PC());
     // Branch to L (m_Address), with return address in CP.
-    state.m_ProgramCounter = m_Address;
+    state.setPCReg(m_Address);
 }
 
 void Call::print(std::ostream &os) const

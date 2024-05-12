@@ -31,7 +31,7 @@ void GetStructure::execute(WAMState &state)
         if (sw->m_Functor == m_Name && sw->m_Arity == m_Arity)
         {
             state.setReadMode();
-            state.m_StructurePointer = spw->m_HeapAddress + 1;
+            state.setSPReg(spw->m_HeapAddress + 1);
             return;
         }
         fail(state);

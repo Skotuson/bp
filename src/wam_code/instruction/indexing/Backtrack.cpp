@@ -7,10 +7,10 @@ std::shared_ptr<Instruction> Backtrack::clone(void)
 
 void Backtrack::execute(WAMState &state)
 {
-    std::shared_ptr<ChoicePoint> cp = state.stackAt(state.m_BacktrackRegister);
+    std::shared_ptr<ChoicePoint> cp = state.stackAt(state.BReg());
     if (cp)
     {
-        state.m_BacktrackRegister = cp->m_BB;
+        state.setBReg(cp->m_BB);
     }
 
     fail(state);

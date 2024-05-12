@@ -54,6 +54,27 @@ size_t WAMState::PC(void) const
     return m_ProgramCounter;
 }
 
+void WAMState::setEReg(size_t ereg)
+{
+    m_EnvironmentRegister = ereg;
+}
+void WAMState::setBReg(size_t breg)
+{
+    m_BacktrackRegister = breg;
+}
+void WAMState::setSPReg(size_t spreg)
+{
+    m_StructurePointer = spreg;
+}
+void WAMState::setCPReg(size_t cpreg)
+{
+    m_ContinuationPointer = cpreg;
+}
+void WAMState::setPCReg(size_t pcreg)
+{
+    m_ProgramCounter = pcreg;
+}
+
 void WAMState::setWriteMode(void)
 {
     m_ReadMode = false;

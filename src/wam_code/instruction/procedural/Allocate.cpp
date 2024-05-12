@@ -22,7 +22,7 @@ void Allocate::execute(WAMState &state)
         {
             auto vw = std::make_shared<VariableWord>(&cp->m_Variables[i], state.getQueryVariableName(i));
             cp->m_Variables[i] = vw;
-            state.addQueryWord(i,vw);
+            state.addQueryWord(i, vw);
         }
         else
         {
@@ -31,7 +31,7 @@ void Allocate::execute(WAMState &state)
         }
     }
     // Set E to this choice point
-    state.m_EnvironmentRegister = state.BReg();
+    state.setEReg(state.BReg());
 }
 
 void Allocate::print(std::ostream &os) const

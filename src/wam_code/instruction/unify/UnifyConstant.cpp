@@ -19,7 +19,7 @@ void UnifyConstant::execute(WAMState &state)
     }
 
     std::shared_ptr<Word> w = state.heapAt(state.SPReg())->dereference();
-    state.m_StructurePointer++;
+    state.setSPReg(state.SPReg() + 1);
 
     if (w->tag() == VARIABLE)
     {

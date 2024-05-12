@@ -111,7 +111,7 @@ Result Interpreter::evaluateQuery(void)
         if (m_Renderer.step())
         {
             m_Renderer.clearScreen(std::cout);
-            m_Renderer.renderCode(std::cout, m_Program, m_State.m_ProgramCounter - 1);
+            m_Renderer.renderCode(std::cout, m_Program, m_State.PC() - 1);
             std::cout << m_State << std::endl;
             std::cout << ANSI_RETURN_CURSOR;
             std::string com = "";
@@ -170,7 +170,7 @@ void Interpreter::setQuery(const WAMCode &query)
     m_Program.addLabel(m_QueryLabel);
     // Add the query instructions to the other code
     m_Program.merge(query);
-    m_State.m_ProgramCounter = m_Program.getLabelAddress(m_QueryLabel);
+    m_State.setPCReg(m_Program.getLabelAddress(m_QueryLabel));
 }
 
 void Interpreter::clearQuery(void)
@@ -186,7 +186,9 @@ std::shared_ptr<Instruction> Interpreter::fetch(void)
     {
         m_State.setFailFlag(true);
     }
-    return m_Program.getInstruction(m_State.m_ProgramCounter++);
+    size_t pc = m_State.PC();
+    m_State.setPCReg(m_State.PC() + 1);
+    return m_Program.getInstruction(pc);
 }
 
 void Interpreter::execute(std::shared_ptr<Instruction> instr)

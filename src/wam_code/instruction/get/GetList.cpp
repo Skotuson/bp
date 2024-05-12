@@ -25,7 +25,7 @@ void GetList::execute(WAMState &state)
     else if (w->tag() == LIST)
     {
         std::shared_ptr<ListWord> lw = std::static_pointer_cast<ListWord>(w);
-        state.m_StructurePointer = lw->m_HeapAddress;
+        state.setSPReg(lw->m_HeapAddress);
         state.setReadMode();
     }
     else

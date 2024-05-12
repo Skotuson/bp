@@ -33,6 +33,12 @@ struct WAMState
     size_t CP(void) const;
     size_t PC(void) const;
 
+    void setEReg(size_t ereg);
+    void setBReg(size_t breg);
+    void setSPReg(size_t spreg);
+    void setCPReg(size_t cpreg);
+    void setPCReg(size_t pcreg);
+
     void setWriteMode(void);
     void setReadMode(void);
     bool readMode(void) const;
@@ -86,16 +92,18 @@ struct WAMState
 
     friend std::ostream &operator<<(std::ostream &os, const WAMState &state);
 
+private:
+    //-------------STATUS FLAGS-------------//
+    bool m_ReadMode = false;
+    bool m_FailFlag = false;
+    bool m_HaltFlag = false;
+
+    //-------------MACHINE REGISTERS-------------//
     size_t m_StructurePointer = 0;
     size_t m_ProgramCounter = UNSET_REG;
     size_t m_ContinuationPointer = UNSET_REG;
     size_t m_BacktrackRegister = UNSET_REG;
     size_t m_EnvironmentRegister = UNSET_REG;
-
-private:
-    bool m_ReadMode = false;
-    bool m_FailFlag = false;
-    bool m_HaltFlag = false;
 
     //-------------VARIABLES HANDLING-------------//
     size_t m_AllocatedVariables = 0;

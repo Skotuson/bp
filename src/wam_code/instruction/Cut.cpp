@@ -7,7 +7,7 @@ std::shared_ptr<Instruction> Cut::clone(void)
 
 void Cut::execute(WAMState &state)
 {
-    state.m_BacktrackRegister = state.stackAt(state.EReg())->m_BB;
+    state.setBReg(state.stackAt(state.EReg())->m_BB);
 }
 
 void Cut::print(std::ostream &os) const

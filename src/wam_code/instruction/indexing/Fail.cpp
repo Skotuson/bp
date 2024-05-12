@@ -7,7 +7,7 @@ std::shared_ptr<Instruction> Fail::clone(void)
 
 void Fail::execute(WAMState &state)
 {
-    std::shared_ptr<ChoicePoint> cp = state.stackAt(state.m_BacktrackRegister);
+    std::shared_ptr<ChoicePoint> cp = state.stackAt(state.BReg());
     if (cp)
     {
         // Reload argument registers
@@ -27,10 +27,10 @@ void Fail::execute(WAMState &state)
             state.trailPop();
         }
         // Branch to next rule
-        state.m_ProgramCounter = cp->m_FA;
+        state.setPCReg(cp->m_FA);
     }
     // Backtracking to an empty stack -> fail.
-    else if (state.m_BacktrackRegister == UNSET_REG)
+    else if (state.BReg() == UNSET_REG)
     {
         state.setFailFlag(true);
     }
