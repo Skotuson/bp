@@ -8,10 +8,10 @@ void ProgramNode::codegen(CompilationContext &cctx)
     for (const auto &clause : m_Clauses)
     {
         // Encode arity into the name to handle arity mismatch
-        auto entry = cctx.get(clause->m_Head);
+        auto entry = cctx.get(clause->head());
         if (!entry)
         {
-            cctx.add(clause->m_Head, std::make_shared<TableEntry>(clause->m_Head));
+            cctx.add(clause->head(), std::make_shared<TableEntry>(clause->head()));
         }
         else
         {
@@ -25,9 +25,10 @@ void ProgramNode::codegen(CompilationContext &cctx)
     }
 
     // Generate the "quit" label
-    cctx.addLabel("quit");
+    cctx.addLabel("__quit");
     cctx.addInstruction(std::make_shared<Backtrack>());
 
+    // Update the addresses of branch instructions
     cctx.getCode().updateJumpInstructions();
 }
 
@@ -38,4 +39,9 @@ void ProgramNode::print(const std::string &indent)
     for (const auto &clause : m_Clauses)
         clause->print(indent + " ");
     std::cout << indent << "=======[End ProgramNode]======" << std::endl;
+}
+
+void ProgramNode::addClause(std::shared_ptr<ClauseNode> clause)
+{
+    m_Clauses.push_back(clause);
 }

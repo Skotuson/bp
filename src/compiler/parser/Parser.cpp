@@ -37,7 +37,7 @@ void Parser::Start(void)
         /* rule 2: Start -> lower Predicates Start */
         m_Lex.match(TOK_ATOM_LOWER);
         // Push parsed clause to ProgramNode's clauses
-        m_ASTRoot->m_Clauses.push_back(Predicates());
+        m_ASTRoot->addClause(Predicates());
         // Start the process again (parse next clause)
         Start();
         break;
