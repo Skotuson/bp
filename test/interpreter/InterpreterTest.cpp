@@ -128,6 +128,28 @@ TEST_CASE("Interpreter test suite")
         {
             Interpreter i(c.dump());
             i.setQuery(i.compileQuery(
+                "add(X,s(0),s(s(s(0))))."));
+            auto [success, vars] = i.evaluateQuery();
+            CHECK(success);
+            CHECK(vars.size() == 1);
+            CHECK(vars["X"] == Desugar::toPeano(2));
+            i.clearQuery();
+        }
+
+        {
+            Interpreter i(c.dump());
+            i.setQuery(i.compileQuery(
+                "add(X," + Desugar::toPeano(120) + "," + Desugar::toPeano(500) + ")."));
+            auto [success, vars] = i.evaluateQuery();
+            CHECK(success);
+            CHECK(vars.size() == 1);
+            CHECK(vars["X"] == Desugar::toPeano(380));
+            i.clearQuery();
+        }
+
+        {
+            Interpreter i(c.dump());
+            i.setQuery(i.compileQuery(
                 "fact(s(s(s(s(s(0))))),X)."));
             auto [success, vars] = i.evaluateQuery();
             CHECK(success);
@@ -845,7 +867,7 @@ TEST_CASE("Interpreter test suite")
             "__div(X, Y, Z) :- __mul(Y, Z, X).");
         c.compile(iss);
 
-        SUBCASE("Simple case")
+        SUBCASE("Simple case I")
         {
             Interpreter i(c.dump());
             i.setQuery(i.compileQuery(
@@ -853,11 +875,27 @@ TEST_CASE("Interpreter test suite")
             testQuery(i, {true, {}});
         }
 
-        SUBCASE("Simple failing case")
+        SUBCASE("Simple case II")
+        {
+            Interpreter i(c.dump());
+            i.setQuery(i.compileQuery(
+                "1 + (1 - 1) + 1 is 1 + 1."));
+            testQuery(i, {true, {}});
+        }
+
+        SUBCASE("Simple failing case I")
         {
             Interpreter i(c.dump());
             i.setQuery(i.compileQuery(
                 "2 is 1."));
+            testQuery(i, {false, {}});
+        }
+
+        SUBCASE("Simple failing case II")
+        {
+            Interpreter i(c.dump());
+            i.setQuery(i.compileQuery(
+                "1 + 1 - 1 + 1 is 1 + 1 + 1."));
             testQuery(i, {false, {}});
         }
 
