@@ -168,6 +168,16 @@ TEST_CASE("Interpreter test suite")
             CHECK(vars["X"] == Desugar::toPeano(5));
             i.clearQuery();
         }
+
+        {
+            Interpreter i(c.dump());
+            std::string q = "mul(s(s(0)),X,s(0)).";
+            i.setQuery(i.compileQuery(q));
+            auto [success, vars] = i.evaluateQuery();
+            CHECK(!success);
+            CHECK(!vars.size());
+            i.clearQuery();
+        }
     }
 
     SUBCASE("Run queries with recursion II: ")
