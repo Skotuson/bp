@@ -33,25 +33,6 @@ std::string ConstNode::codegen_arithmetic(CompilationContext &cctx)
     // Get next free arithmetic variable
     std::string varName = cctx.getAvailableArithmeticVariable();
     std::shared_ptr<TermNode> constant = std::make_shared<ConstNode>(m_Name);
-
-    auto isNumber = [](const std::string &str)
-    {
-        for (const auto &c : str)
-        {
-            if (!isdigit(c))
-            {
-                return false;
-            }
-        }
-        return true;
-    };
-
-    // If the constan is a number, replace it with the peano sucessor representation
-    if (isNumber(m_Name))
-    {
-        constant = Desugar::toPeanoNode(std::stoi(m_Name), true);
-    }
-
     // Generate an unification instruction to bind the constant with the arithmetic variable
     auto unif = std::make_shared<UnificationNode>(std::make_shared<VarNode>(varName, true), constant);
     cctx.incrementAvailableArithmeticVariable();
