@@ -899,6 +899,16 @@ TEST_CASE("Interpreter test suite")
             testQuery(i, {false, {}});
         }
 
+        // Reason this fails is that the operators are left associative
+        // => the result would be -1, which is not a natural number (the sub predicate fails if the result is negative number)
+        SUBCASE("Simple failing case III")
+        {
+            Interpreter i(c.dump());
+            i.setQuery(i.compileQuery(
+                "1 + 1 - 1 + 1 is 1 + 1."));
+            testQuery(i, {false, {}});
+        }
+
         SUBCASE("Variable assignment I")
         {
             Interpreter i(c.dump());
