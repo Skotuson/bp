@@ -128,6 +128,28 @@ TEST_CASE("Interpreter test suite")
         {
             Interpreter i(c.dump());
             i.setQuery(i.compileQuery(
+                "add(X,s(0),s(s(s(0))))."));
+            auto [success, vars] = i.evaluateQuery();
+            CHECK(success);
+            CHECK(vars.size() == 1);
+            CHECK(vars["X"] == Desugar::toPeano(2));
+            i.clearQuery();
+        }
+
+        {
+            Interpreter i(c.dump());
+            i.setQuery(i.compileQuery(
+                "add(X," + Desugar::toPeano(120) + "," + Desugar::toPeano(500) + ")."));
+            auto [success, vars] = i.evaluateQuery();
+            CHECK(success);
+            CHECK(vars.size() == 1);
+            CHECK(vars["X"] == Desugar::toPeano(380));
+            i.clearQuery();
+        }
+
+        {
+            Interpreter i(c.dump());
+            i.setQuery(i.compileQuery(
                 "fact(s(s(s(s(s(0))))),X)."));
             auto [success, vars] = i.evaluateQuery();
             CHECK(success);
@@ -166,6 +188,16 @@ TEST_CASE("Interpreter test suite")
             CHECK(success);
             CHECK(vars.size() == 1);
             CHECK(vars["X"] == Desugar::toPeano(5));
+            i.clearQuery();
+        }
+
+        {
+            Interpreter i(c.dump());
+            std::string q = "mul(s(s(0)),X,s(0)).";
+            i.setQuery(i.compileQuery(q));
+            auto [success, vars] = i.evaluateQuery();
+            CHECK(!success);
+            CHECK(!vars.size());
             i.clearQuery();
         }
     }
@@ -811,6 +843,153 @@ TEST_CASE("Interpreter test suite")
             i.setQuery(i.compileQuery(
                 "Y=X,X=foo(Y)."));
             testQuery(i, {true, {{"X", "foo(X)"}, {"Y", "foo(X)"}}});
+        }
+    }
+
+    SUBCASE("IS operator tests (REPL)")
+    {
+        std::istringstream iss(
+            "__id(A, A).\n"
+
+            "__add(0,Y,Y)."
+            "__add(__s(0),Y,__s(Y))."
+            "__add(__s(X),Y,__s(Z)):- __add(X,Y,Z)."
+
+            // x - y = z is the same as y + z = x
+            "__sub(X, Y, Z) :- __add(Y, Z, X)."
+
+            "__mul(0,_,0)."
+            "__mul(__s(A),B,C) :-"
+            "__mul(A,B,D),"
+            "__add(D,B,C)."
+
+            // x / y = z is the same as y * z = x
+            "__div(X, Y, Z) :- __mul(Y, Z, X).");
+        c.compile(iss);
+
+        SUBCASE("Simple case I")
+        {
+            Interpreter i(c.dump());
+            i.setQuery(i.compileQuery(
+                "1 is 1."));
+            testQuery(i, {true, {}});
+        }
+
+        SUBCASE("Simple case II")
+        {
+            Interpreter i(c.dump());
+            i.setQuery(i.compileQuery(
+                "1 + (1 - 1) + 1 is 1 + 1."));
+            testQuery(i, {true, {}});
+        }
+
+        SUBCASE("Simple failing case I")
+        {
+            Interpreter i(c.dump());
+            i.setQuery(i.compileQuery(
+                "2 is 1."));
+            testQuery(i, {false, {}});
+        }
+
+        SUBCASE("Simple failing case II")
+        {
+            Interpreter i(c.dump());
+            i.setQuery(i.compileQuery(
+                "1 + 1 - 1 + 1 is 1 + 1 + 1."));
+            testQuery(i, {false, {}});
+        }
+
+        // Reason this fails is that the operators are left associative
+        // => the result would be -1, which is not a natural number (the sub predicate fails if the result is negative number)
+        SUBCASE("Simple failing case III")
+        {
+            Interpreter i(c.dump());
+            i.setQuery(i.compileQuery(
+                "1 + 1 - 1 + 1 is 1 + 1."));
+            testQuery(i, {false, {}});
+        }
+
+        SUBCASE("Variable assignment I")
+        {
+            Interpreter i(c.dump());
+            i.setQuery(i.compileQuery(
+                "X is 1."));
+            testQuery(i, {true, {{"X", "1"}}});
+        }
+
+        SUBCASE("Variable assignment II")
+        {
+            Interpreter i(c.dump());
+            i.setQuery(i.compileQuery(
+                "X is (1 - 1) * 2."));
+            testQuery(i, {true, {{"X", "0"}}});
+        }
+
+        SUBCASE("Variable assignment III")
+        {
+            Interpreter i(c.dump());
+            i.setQuery(i.compileQuery(
+                "X is 2*3, Y is X * 2."));
+            testQuery(i, {true, {{"X", "6"}, {"Y", "12"}}});
+        }
+
+        SUBCASE("Variable assignment IV")
+        {
+            Interpreter i(c.dump());
+            i.setQuery(i.compileQuery(
+                "X = 2, Y is X * 2."));
+            testQuery(i, {true, {{"X", "2"}, {"Y", "4"}}});
+        }
+
+        SUBCASE("Variable assignment V")
+        {
+            Interpreter i(c.dump());
+            i.setQuery(i.compileQuery(
+                "X = 2, Y is X * 2, Z is X + Y."));
+            testQuery(i, {true, {{"X", "2"}, {"Y", "4"}, {"Z", "6"}}});
+        }
+
+        SUBCASE("Variable assignment VI")
+        {
+            Interpreter i(c.dump());
+            i.setQuery(i.compileQuery(
+                "X is 2-2/2."));
+            testQuery(i, {true, {{"X", "1"}}});
+        }
+
+        SUBCASE("Variable assignment VII")
+        {
+            Interpreter i(c.dump());
+            i.setQuery(i.compileQuery(
+                "List = [1 + 1,2 * 2, 3 / 3]."));
+            testQuery(i, {true, {{"List", "[+(1,1)|[*(2,2)|[/(3,3)|[]]]]"}}});
+        }
+    }
+
+    SUBCASE("IS operator tests (Program)")
+    {
+        std::istringstream iss(
+            "__id(A, A).\n"
+
+            "__add(0,Y,Y)."
+            "__add(__s(0),Y,__s(Y))."
+            "__add(__s(X),Y,__s(Z)):- __add(X,Y,Z)."
+            // x - y = z is the same as y + z = x
+            "__sub(X, Y, Z) :- __add(Y, Z, X)."
+            "__mul(0,_,0)."
+            "__mul(__s(A),B,C) :-"
+            "__mul(A,B,D),"
+            "__add(D,B,C)."
+            // x / y = z is the same as y * z = x
+            "__div(X, Y, Z) :- __mul(Y, Z, X)."
+            "decompose([H|T], H, T).");
+        c.compile(iss);
+        SUBCASE("Variable assignment")
+        {
+            Interpreter i(c.dump());
+            i.setQuery(i.compileQuery(
+                "List = [1 + 1,2 * 2, 3 / 3], decompose(List, H, T), X is H."));
+            testQuery(i, {true, {{"List", "[+(1,1)|[*(2,2)|[/(3,3)|[]]]]"}, {"H", "+(1,1)"}, {"T", "[*(2,2)|[/(3,3)|[]]]"}, {"X", "+(1,1)"}}});
         }
     }
 }

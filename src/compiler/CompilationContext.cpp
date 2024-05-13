@@ -31,7 +31,7 @@ void CompilationContext::addLabel(const Label &label)
 
 size_t CompilationContext::getLabelAddress(const Label &label)
 {
-    return m_GeneratedCode.m_LabelToAddress[label];
+    return m_GeneratedCode.getLabelAddress(label);
 }
 
 WAMCode CompilationContext::code()
@@ -39,14 +39,14 @@ WAMCode CompilationContext::code()
     return m_GeneratedCode;
 }
 
-WAMCode &CompilationContext::getCode()
+void CompilationContext::updateJumpInstructions(void)
 {
-    return m_GeneratedCode;
+    m_GeneratedCode.updateJumpInstructions();
 }
 
 std::string CompilationContext::generateTempVar(void)
 {
-    return "__T" + std::to_string(allocate());
+    return "__T" + std::to_string(allocated());
 }
 
 void CompilationContext::addVariable(const std::string &variable)
@@ -54,7 +54,7 @@ void CompilationContext::addVariable(const std::string &variable)
     m_GeneratedCode.addVariable({getVarOffset(variable), variable});
 }
 
-size_t CompilationContext::allocate(void)
+size_t CompilationContext::allocated(void)
 {
     return m_Variables.size();
 }
@@ -84,6 +84,20 @@ size_t CompilationContext::availableReg(void)
 void CompilationContext::setAvailableReg(size_t reg)
 {
     m_AvailableRegister = reg;
+}
+
+std::string CompilationContext::getAvailableArithmeticVariable(void)
+{
+    return "__arithmetic" + std::to_string(m_AvailableArithmeticVariable);
+}
+
+void CompilationContext::resetAvailableArithmeticVariable(void)
+{
+    m_AvailableArithmeticVariable = 0;
+}
+void CompilationContext::incrementAvailableArithmeticVariable(void)
+{
+    m_AvailableArithmeticVariable++;
 }
 
 CodeGenerationMode CompilationContext::mode(void)

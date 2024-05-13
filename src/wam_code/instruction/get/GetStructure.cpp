@@ -14,14 +14,13 @@ std::shared_ptr<Instruction> GetStructure::clone(void)
 
 void GetStructure::execute(WAMState &state)
 {
-    std::shared_ptr<Word> w = state.m_ArgumentRegisters.dereferenceRegister(m_ArgumentRegister);
+    std::shared_ptr<Word> w = state.dereferenceArgumentRegister(m_ArgumentRegister);
     if (w->tag() == VARIABLE)
     {
         std::shared_ptr<VariableWord> vw = std::static_pointer_cast<VariableWord>(w);
         state.trailPush(vw);
-        //*vw->ref() = new StructurePointerWord(state.HReg(), state.m_Heap);
-        vw->bind(std::make_shared<StructurePointerWord>(state.HReg(), state.m_Heap));
-        state.heapPush(std::make_shared<StructureWord>(m_Name, m_Arity, state.m_Heap, state.HReg()));
+        vw->bind(std::make_shared<StructurePointerWord>(state.HReg(), state.heapRef()));
+        state.heapPush(std::make_shared<StructureWord>(m_Name, m_Arity, state.heapRef(), state.HReg()));
         state.setWriteMode();
     }
 
@@ -32,7 +31,7 @@ void GetStructure::execute(WAMState &state)
         if (sw->m_Functor == m_Name && sw->m_Arity == m_Arity)
         {
             state.setReadMode();
-            state.m_StructurePointer = spw->m_HeapAddress + 1;
+            state.setSPReg(spw->m_HeapAddress + 1);
             return;
         }
         fail(state);

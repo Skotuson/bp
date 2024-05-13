@@ -1,34 +1,26 @@
 Start ->
 Start -> lower Predicates Start
 
-Predicates -> Predicate
-Predicates -> ( Pred
-
-Pred -> Terms ) Predicate
-
 # Facts and rules
 Predicate -> .
 Predicate -> :- Body .
 
+Predicates -> Predicate
+Predicates -> ( Terms ) Predicate
+
+Operator -> =
+Operator -> is
+
 # Body of an rule
-Body -> lower TermLower BodyTerm BodyCont
-Body -> const = Term BodyCont
-Body -> var = Term BodyCont
-Body -> List = Term BodyCont
+Body -> Expr2 BodyOperator BodyCont
 Body -> ! BodyCont
+
+BodyOperator -> 
+BodyOperator -> Operator Expr2
 
 # Allows chaining of goals in a rule
 BodyCont -> 
 BodyCont -> , Body
-
-# Allows unifying two compounds or using one compound as a goal
-BodyTerm ->
-BodyTerm -> = Term 
-
-Term -> lower TermLower
-Term -> const
-Term -> List
-Term -> var
 
 List -> [ ListInner ]
 
@@ -37,9 +29,9 @@ ListInner -> Terms ListCons
 
 # Allows for splitting array, e.g. [Head | Tail], [H1, H2 | Tail] etc.
 ListCons ->
-ListCons -> | Term
+ListCons -> | Expr2
 
-Terms -> Term TermsCont
+Terms -> Expr2 TermsCont
 
 TermsCont ->
 TermsCont -> , Terms
@@ -48,13 +40,6 @@ TermLower ->
 TermLower -> ( Terms )
 
 # Expressions for the is operator
-Expr3 -> Expr2 Expr3R
-Expr3R -> < Expr2 Expr3R 
-Expr3R -> > Expr2 Expr3R
-Expr3R -> <= Expr2 Expr3R
-Expr3R -> >= Expr2 Expr3R
-Expr3R ->
-
 Expr2 -> Expr1 Expr2R
 Expr2R -> + Expr1 Expr2R
 Expr2R -> - Expr1 Expr2R
@@ -65,6 +50,8 @@ Expr1R -> * Expr Expr1R
 Expr1R -> / Expr Expr1R
 Expr1R ->
 
-Expr -> number
-Expr -> ( Expr3 )
-Expr -> identifier
+Expr -> lower TermLower
+Expr -> const
+Expr -> List
+Expr -> var
+Expr -> ( Expr2 )

@@ -11,13 +11,12 @@ void Return::execute(WAMState &state)
     if (cp)
     {
         // Caller's return address
-        state.m_ProgramCounter = cp->m_BCP;
+        state.setPCReg(cp->m_BCP);
         // Caller's environment
-        state.m_EnvironmentRegister = cp->m_BCE;
+        state.setEReg(cp->m_BCE);
     }
     else
     {
-        // TODO: mainly debug
         throw std::runtime_error("Invalid stack access");
     }
 }

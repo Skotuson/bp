@@ -170,4 +170,43 @@ TEST_CASE("Lexer test suite")
         CHECK(lex.get() == TOK_RPAR);
         CHECK(lex.get() == TOK_PERIOD);
     }
+
+    SUBCASE("Lex Expression: 1 + 1")
+    {
+        std::istringstream iss("1 + 1");
+        Lexer lex(iss);
+        CHECK(lex.get() == TOK_CONST);
+        CHECK(lex.numericValue() == 1);
+        CHECK(lex.get() == TOK_PLUS);
+        CHECK(lex.get() == TOK_CONST);
+        CHECK(lex.numericValue() == 1);
+    }
+
+    SUBCASE("Lex Expression: 1 <= 1 < 2")
+    {
+        std::istringstream iss("1 <= 1 < 2");
+        Lexer lex(iss);
+        CHECK(lex.get() == TOK_CONST);
+        CHECK(lex.numericValue() == 1);
+        CHECK(lex.get() == TOK_LESSEQ);
+        CHECK(lex.get() == TOK_CONST);
+        CHECK(lex.numericValue() == 1);
+        CHECK(lex.get() == TOK_LESS);
+        CHECK(lex.get() == TOK_CONST);
+        CHECK(lex.numericValue() == 2);
+    }
+
+    SUBCASE("Lex Expression: X is 1 < 2")
+    {
+        std::istringstream iss("X is 1 < 2");
+        Lexer lex(iss);
+        CHECK(lex.get() == TOK_VAR);
+        CHECK(lex.identifier() == "X");
+        CHECK(lex.get() == TOK_IS);
+        CHECK(lex.get() == TOK_CONST);
+        CHECK(lex.numericValue() == 1);
+        CHECK(lex.get() == TOK_LESS);
+        CHECK(lex.get() == TOK_CONST);
+        CHECK(lex.numericValue() == 2);
+    }
 }

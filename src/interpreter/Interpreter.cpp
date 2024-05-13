@@ -1,7 +1,9 @@
 #include "Interpreter.hpp"
 
 #include <sstream>
+#include <stdexcept>
 
+#include "../desugar/Desugar.hpp"
 #include "../compiler/Compiler.hpp"
 
 Interpreter::Interpreter(const WAMCode &wamCode, const Renderer &renderer)
@@ -12,6 +14,7 @@ Interpreter::Interpreter(const WAMCode &wamCode, const Renderer &renderer)
 
 bool Interpreter::run(void)
 {
+    // Only dump the code and then quit
     if (m_DumpOnly)
     {
         m_Program.dump(std::cout);
@@ -19,10 +22,16 @@ bool Interpreter::run(void)
     }
 
     std::cout << "?> ";
-
     std::string query;
     std::getline(std::cin >> std::ws, query);
 
+    // Correct query if trailing period is missing
+    if (query.back() != '.')
+    {
+        query += ".";
+    }
+
+    // Set compiled query as current query
     setQuery(compileQuery(query));
 
     if (m_State.halt())
@@ -37,6 +46,7 @@ bool Interpreter::run(void)
 
     while (42)
     {
+        // Get results of query evaluation
         auto [success, vars] = evaluateQuery();
 
         if (m_Renderer.step())
@@ -44,7 +54,7 @@ bool Interpreter::run(void)
             m_Renderer.clearScreen(std::cout);
         }
 
-        std::cout << m_State << std::endl;
+        // std::cout << m_State << std::endl;
 
         if (!success)
         {
@@ -78,7 +88,7 @@ WAMCode Interpreter::compileQuery(const std::string &query)
     // TODO: will add as an instruction
     if (query == "halt.")
     {
-        m_State.m_HaltFlag = true;
+        m_State.setHaltFlag(true);
         return WAMCode();
     }
 
@@ -101,7 +111,7 @@ Result Interpreter::evaluateQuery(void)
         if (m_Renderer.step())
         {
             m_Renderer.clearScreen(std::cout);
-            m_Renderer.renderCode(std::cout, m_Program, m_State.m_ProgramCounter - 1);
+            m_Renderer.renderCode(std::cout, m_Program, m_State.PCReg() - 1);
             std::cout << m_State << std::endl;
             std::cout << ANSI_RETURN_CURSOR;
             std::string com = "";
@@ -121,6 +131,15 @@ Result Interpreter::evaluateQuery(void)
         for (const auto &v : m_CurrentQuery.getVariables())
         {
             std::string value = m_State.variableToString(v.first);
+            try
+            {
+                std::string desugared = Desugar::replacePeano(value);
+                value = desugared;
+            }
+            catch (const std::runtime_error &e)
+            {
+            }
+
             if (v.second != value)
             {
                 vars.insert({v.second, value});
@@ -147,11 +166,11 @@ bool Interpreter::nextAnswer(std::istream &is)
 void Interpreter::setQuery(const WAMCode &query)
 {
     m_CurrentQuery = query;
-    m_State.m_QueryVariables = m_CurrentQuery.getVariables();
+    m_State.setQueryVariables(m_CurrentQuery.getVariables());
     m_Program.addLabel(m_QueryLabel);
     // Add the query instructions to the other code
     m_Program.merge(query);
-    m_State.m_ProgramCounter = m_Program.getLabelAddress(m_QueryLabel);
+    m_State.setPCReg(m_Program.getLabelAddress(m_QueryLabel));
 }
 
 void Interpreter::clearQuery(void)
@@ -163,11 +182,13 @@ void Interpreter::clearQuery(void)
 
 std::shared_ptr<Instruction> Interpreter::fetch(void)
 {
-    if (m_State.PC() == BAD_ADDRESS)
+    if (m_State.PCReg() == BAD_ADDRESS)
     {
-        m_State.m_FailFlag = true;
+        m_State.setFailFlag(true);
     }
-    return m_Program.getInstruction(m_State.m_ProgramCounter++);
+    size_t pc = m_State.PCReg();
+    m_State.setPCReg(m_State.PCReg() + 1);
+    return m_Program.getInstruction(pc);
 }
 
 void Interpreter::execute(std::shared_ptr<Instruction> instr)

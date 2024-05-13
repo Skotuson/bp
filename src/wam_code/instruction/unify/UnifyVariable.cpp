@@ -23,7 +23,7 @@ void UnifyVariable::execute(WAMState &state)
     std::shared_ptr<Word> sp = state.heapAt(state.SPReg())->dereference();
     // unify (similiar to getv)
     clearPDL(state, w, sp);
-    state.m_StructurePointer++;
+    state.setSPReg(state.SPReg() + 1);
 }
 
 void UnifyVariable::print(std::ostream &os) const

@@ -21,7 +21,7 @@ int main(int argc, const char **argv)
         {
             if (i >= argc - 1)
             {
-                std::cout << "Missing mandatory --file parameter" << std::endl;
+                std::cout << "Missing --file parameter" << std::endl;
                 return 1;
             }
 
@@ -37,17 +37,8 @@ int main(int argc, const char **argv)
         }
     }
 
-    if (sourceCodePath.empty())
-    {
-        std::cout << "Missing mandatory --file parameter" << std::endl;
-        return 1;
-    }
-
     Preprocessor preprocessor;
-    std::istringstream iss(
-        "__id(A, A).\n"
-        "__zero(0).");
-    Filepath fp = preprocessor.linkLibrary(sourceCodePath, iss);
+    Filepath fp = preprocessor.linkStandard(sourceCodePath);
 
     std::ifstream ifs(fp);
 

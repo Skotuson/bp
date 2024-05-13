@@ -19,17 +19,28 @@ int Lexer::numericValue(void)
 
 Token Lexer::lexIdentifier(void)
 {
+    // If a character is a digit, letter or underscore, add it to the m_Identifier
     for (char c = m_Source.get(); isalnum(c) || c == '_'; c = m_Source.get())
     {
         m_Identifier += c;
     }
 
+    // Return the last lexed character
     m_Source.unget();
 
+    // is keyword
+    if (m_Identifier == "is")
+    {
+        return TOK_IS;
+    }
+
+    // If the first letter is lowercase or it is a string starting with _, return it as an lowercase atom
     if (islower(m_Identifier.front()) || (m_Identifier.front() == '_' && m_Identifier.length() > 1))
     {
         return TOK_ATOM_LOWER;
     }
+
+    // The m_Identifier eithers starts with uppercase letter (variable) or is a standalone _ (wildcard variable)
     return TOK_VAR;
 }
 
@@ -92,7 +103,7 @@ Token Lexer::lexSymbol(void)
     case '+':
         return TOK_PLUS;
     case '-':
-        return TOK_PLUS;
+        return TOK_MINUS;
     case '*':
         return TOK_MUL;
     case '/':
@@ -129,25 +140,32 @@ void Lexer::match(Token tok)
 Token Lexer::get(void)
 {
     char c = m_Source.peek();
+    
+    // Skip whitespace
     while (isspace(c))
     {
         m_Source.get();
         c = m_Source.peek();
     }
 
+    // Digit encountered, start lexing number
     if (isdigit(c))
     {
         return lastToken = lexNumber();
     }
 
+    // A letter or an underscore encountered, lex identifier
     if (isalpha(c) || c == '_')
     {
         m_Identifier = "";
         return lastToken = lexIdentifier();
     }
 
+    // Not whitespace, digit, underscore or an letter, try lexing symbol
     if (c != EOF)
+    {
         return lastToken = lexSymbol();
+    }
 
     return lastToken = TOK_EOF;
 }

@@ -4,6 +4,8 @@
 
 struct TermNode : public Node
 {
+    virtual std::string codegen_arithmetic(CompilationContext &cctx) = 0;
+
 protected:
     TermNode(const std::string &name);
     std::string m_Name;

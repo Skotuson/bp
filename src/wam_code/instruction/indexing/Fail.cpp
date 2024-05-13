@@ -7,11 +7,11 @@ std::shared_ptr<Instruction> Fail::clone(void)
 
 void Fail::execute(WAMState &state)
 {
-    std::shared_ptr<ChoicePoint> cp = state.stackAt(state.m_BacktrackRegister);
+    std::shared_ptr<ChoicePoint> cp = state.stackAt(state.BReg());
     if (cp)
     {
         // Reload argument registers
-        state.m_ArgumentRegisters = cp->m_ArgumentRegisters;
+        state.setArgumentRegisters(cp->m_ArgumentRegisters);
 
         // Reset heap
         while (state.HReg() != cp->m_BH)
@@ -23,15 +23,17 @@ void Fail::execute(WAMState &state)
         while (state.TRReg() != cp->m_BTR)
         {
             std::shared_ptr<VariableWord> popped = state.trailTop();
-            popped->bind(popped); 
+            popped->bind(popped);
             state.trailPop();
         }
         // Branch to next rule
-        state.m_ProgramCounter = cp->m_FA;
+        state.setPCReg(cp->m_FA);
     }
-    // TODO: Experimental (check when choice point stack is empty)
-    else if (state.m_BacktrackRegister == UNSET_REG)
-        state.m_FailFlag = true;
+    // Backtracking to an empty stack -> fail.
+    else if (state.BReg() == UNSET_REG)
+    {
+        state.setFailFlag(true);
+    }
 }
 
 void Fail::print(std::ostream &os) const

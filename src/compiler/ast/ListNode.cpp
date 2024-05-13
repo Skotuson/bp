@@ -1,7 +1,9 @@
 #include "ListNode.hpp"
 
+#include "UnificationNode.hpp"
 #include "StructNode.hpp"
 #include "ConstNode.hpp"
+#include "VarNode.hpp"
 
 #include "../../wam_code/instruction/Instructions.hpp"
 
@@ -32,7 +34,9 @@ ListNode::ListNode(const std::vector<std::shared_ptr<TermNode>> &head, std::shar
 
     else
     {
+        // Take the first element of the whole list
         m_Head = {head.front()};
+        // Recursively generate the tail as a new list node with the remaining elements
         std::vector<std::shared_ptr<TermNode>> tail = {head.begin() + 1, head.end()};
         if (tail.empty())
         {
@@ -44,9 +48,9 @@ ListNode::ListNode(const std::vector<std::shared_ptr<TermNode>> &head, std::shar
         }
     }
 
+    // Loop over the whole list and pre-calculate depth of nested complex terms
     m_List = m_Head;
     m_List.push_back(m_Tail);
-
     for (const auto &arg : m_List)
     {
         if (arg->type() == STRUCT || arg->type() == LIST)
@@ -75,6 +79,15 @@ void ListNode::codegen(CompilationContext &cctx)
     cctx.addInstruction(std::make_shared<GetList>(cctx.availableReg()));
     unifyHead(cctx);
     cctx.setAvailableReg(cctx.availableReg() + 1);
+}
+
+std::string ListNode::codegen_arithmetic(CompilationContext &cctx)
+{
+    std::string varName = cctx.getAvailableArithmeticVariable();
+    auto unif = std::make_shared<UnificationNode>(std::make_shared<VarNode>(varName, true), std::make_shared<ListNode>(m_Head, m_Tail));
+    cctx.incrementAvailableArithmeticVariable();
+    unif->codegen(cctx);
+    return varName;
 }
 
 TermNode::TermType ListNode::type()

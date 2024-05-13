@@ -14,8 +14,6 @@ const std::vector<std::vector<size_t>> Instruction::m_ClearPDLTable = {
     {2, 4, 0, 7, 0},
     {2, 4, 0, 0, 8}};
 
-
-
 void Instruction::fail(WAMState &state)
 {
     std::shared_ptr<Fail> fail = std::make_shared<Fail>();

@@ -44,14 +44,35 @@ size_t WAMState::HReg(void) const
     return m_Heap.size();
 }
 
-size_t WAMState::CP(void) const
+size_t WAMState::CPReg(void) const
 {
     return m_ContinuationPointer;
 }
 
-size_t WAMState::PC(void) const
+size_t WAMState::PCReg(void) const
 {
     return m_ProgramCounter;
+}
+
+void WAMState::setEReg(size_t ereg)
+{
+    m_EnvironmentRegister = ereg;
+}
+void WAMState::setBReg(size_t breg)
+{
+    m_BacktrackRegister = breg;
+}
+void WAMState::setSPReg(size_t spreg)
+{
+    m_StructurePointer = spreg;
+}
+void WAMState::setCPReg(size_t cpreg)
+{
+    m_ContinuationPointer = cpreg;
+}
+void WAMState::setPCReg(size_t pcreg)
+{
+    m_ProgramCounter = pcreg;
 }
 
 void WAMState::setWriteMode(void)
@@ -74,9 +95,19 @@ bool WAMState::fail(void) const
     return m_FailFlag;
 }
 
+void WAMState::setFailFlag(bool failFlag)
+{
+    m_FailFlag = failFlag;
+}
+
 bool WAMState::halt(void) const
 {
     return m_HaltFlag;
+}
+
+void WAMState::setHaltFlag(bool haltFlag)
+{
+    m_HaltFlag = haltFlag;
 }
 
 void WAMState::heapPush(std::shared_ptr<Word> word)
@@ -97,6 +128,11 @@ std::shared_ptr<Word> WAMState::heapTop(void)
 std::shared_ptr<Word> WAMState::heapAt(size_t offset)
 {
     return m_Heap[offset];
+}
+
+const std::vector<std::shared_ptr<Word>> &WAMState::heapRef(void)
+{
+    return m_Heap;
 }
 
 void WAMState::stackPush(std::shared_ptr<ChoicePoint> cp)
@@ -191,6 +227,50 @@ std::string WAMState::variableToString(size_t offset, size_t choicePoint)
     return result;
 }
 
+size_t WAMState::getAllocatedVariables(void)
+{
+    return m_AllocatedVariables;
+}
+void WAMState::setAllocatedVariables(size_t allocatedVariables)
+{
+    m_AllocatedVariables = allocatedVariables;
+}
+
+const ArgumentRegisters &WAMState::getArgumentRegisters(void)
+{
+    return m_ArgumentRegisters;
+}
+
+void WAMState::setArgumentRegisters(const ArgumentRegisters &argumentRegisters)
+{
+    m_ArgumentRegisters = argumentRegisters;
+}
+
+std::shared_ptr<Word> WAMState::dereferenceArgumentRegister(size_t argReg)
+{
+    return m_ArgumentRegisters.dereferenceRegister(argReg);
+}
+
+void WAMState::setQueryVariables(const std::map<size_t, std::string> &queryVariables)
+{
+    m_QueryVariables = queryVariables;
+}
+
+std::string WAMState::getQueryVariableName(size_t offset)
+{
+    return m_QueryVariables[offset];
+}
+
+bool WAMState::isQueryVariable(size_t offset)
+{
+    return m_QueryVariables.count(offset);
+}
+
+void WAMState::addQueryWord(size_t offset, std::shared_ptr<VariableWord> queryWord)
+{
+    m_QueryWords.insert({offset, queryWord});
+}
+
 std::ostream &operator<<(std::ostream &os, const WAMState &state)
 {
     auto format = [](size_t n)
@@ -205,9 +285,9 @@ std::ostream &operator<<(std::ostream &os, const WAMState &state)
     os << " TR:" << format(state.TRReg());
     os << " PDL:" << format(state.PDLReg());
     os << " H:" << format(state.HReg());
-    os << " CP:" << format(state.CP());
+    os << " CP:" << format(state.CPReg());
     os << " SP:" << state.SPReg();
-    os << " PC:" << format(state.PC()) << std::endl;
+    os << " PC:" << format(state.PCReg()) << std::endl;
     os << ANSI_COLOR_B_YELLOW << state.m_ArgumentRegisters << ANSI_COLOR_DEFAULT << std::endl;
 
     // Print heap

@@ -15,6 +15,7 @@ src/compiler/ast/StructNode.cpp
 src/compiler/ast/TermNode.cpp
 src/compiler/ast/UnificationNode.cpp
 src/compiler/ast/VarNode.cpp
+src/compiler/ast/IsNode.cpp
 src/compiler/CompilationContext.cpp
 src/compiler/Compiler.cpp
 src/compiler/lexer/Lexer.cpp
@@ -61,6 +62,7 @@ add_executable(wam_test
 test/main.cpp
 test/compiler/lexer/LexerTest.cpp
 test/compiler/parser/ParserTest.cpp
+test/compiler/parser/ParserErrorTest.cpp
 test/desugar/DesugarTest.cpp
 test/interpreter/InterpreterTest.cpp
 test/preprocessor/PreprocessorTest.cpp)

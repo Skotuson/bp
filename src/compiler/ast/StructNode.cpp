@@ -1,4 +1,9 @@
 #include "StructNode.hpp"
+
+#include "VarNode.hpp"
+#include "CallNode.hpp"
+#include "UnificationNode.hpp"
+#include "../../desugar/Desugar.hpp"
 #include "../../wam_code/instruction/Instructions.hpp"
 
 #include <queue>
@@ -36,6 +41,56 @@ void StructNode::codegen(CompilationContext &cctx)
     cctx.addInstruction(std::make_shared<GetStructure>(m_Name, cctx.availableReg(), m_Args.size()));
     unifyHead(cctx);
     cctx.setAvailableReg(cctx.availableReg() + 1);
+}
+
+std::string StructNode::codegen_arithmetic(CompilationContext &cctx)
+{
+    if (isBinaryOperator())
+    {
+        // Generate arithmetic operations for LHS and RHS
+        std::string varLHS = m_Args[0]->codegen_arithmetic(cctx);
+        std::string varRHS = m_Args[1]->codegen_arithmetic(cctx);
+
+        // Get next available arithmetic variable
+        std::string resultVar = cctx.getAvailableArithmeticVariable();
+        cctx.incrementAvailableArithmeticVariable();
+
+        // Create arguments for arithmetic operation call
+        std::vector<std::shared_ptr<TermNode>> callArgs = {
+            std::make_shared<VarNode>(varLHS, true),
+            std::make_shared<VarNode>(varRHS, true),
+            std::make_shared<VarNode>(resultVar, true)};
+
+        std::shared_ptr<CallNode> call;
+
+        // Depending on the operator, create a call to an respective operation
+        switch (m_Name.front())
+        {
+        case '+':
+            call = std::make_shared<CallNode>("__add", callArgs);
+            break;
+        case '-':
+            call = std::make_shared<CallNode>("__sub", callArgs);
+            break;
+        case '*':
+            call = std::make_shared<CallNode>("__mul", callArgs);
+            break;
+        case '/':
+            call = std::make_shared<CallNode>("__div", callArgs);
+            break;
+        default:
+            break;
+        }
+        call->codegen(cctx);
+        return resultVar;
+    }
+
+    // Struct doesn't represent an binary operation, generate an = operator instruction
+    std::string varName = cctx.getAvailableArithmeticVariable();
+    auto unif = std::make_shared<UnificationNode>(std::make_shared<VarNode>(varName, true), std::make_shared<StructNode>(m_Name, m_Args));
+    cctx.incrementAvailableArithmeticVariable();
+    unif->codegen(cctx);
+    return varName;
 }
 
 TermNode::TermType StructNode::type()
@@ -172,4 +227,9 @@ void StructNode::unifyArguments(CompilationContext &cctx, ProcessedComplex &proc
             cctx.addInstruction(std::make_shared<UnifyVariable>(var, cctx.getVarOffset(var)));
         }
     }
+}
+
+bool StructNode::isBinaryOperator(void)
+{
+    return m_Name == "+" || m_Name == "*" || m_Name == "-" || m_Name == "/";
 }

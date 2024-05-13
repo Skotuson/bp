@@ -13,7 +13,7 @@ std::shared_ptr<Instruction> GetConstant::clone(void)
 
 void GetConstant::execute(WAMState &state)
 {
-    std::shared_ptr<Word> reg = state.m_ArgumentRegisters.dereferenceRegister(m_ArgumentRegister);
+    std::shared_ptr<Word> reg = state.dereferenceArgumentRegister(m_ArgumentRegister);
     std::shared_ptr<ConstantWord> cword = std::make_shared<ConstantWord>(m_Name);
     if (reg && reg->tag() == TAG::VARIABLE)
     {
