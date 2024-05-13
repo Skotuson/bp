@@ -29,6 +29,11 @@ public:
     void printAST(void);
 
 private:
+    //--------HELPER METHODS--------//
+    /**
+     * @return Returns either a unification or is node for the lhs and rhs, depending on the operator type
+     */
+    std::shared_ptr<GoalNode> getGoal(Token tok, std::shared_ptr<TermNode> lhs, std::shared_ptr<TermNode> rhs);
     //--------RECURSIVE DESCENT METHODS--------//
 
     /**
@@ -42,7 +47,7 @@ private:
     std::shared_ptr<ClauseNode> Predicates(void);
 
     /**
-     * @return Body of a rule represented as vector of GoalNodes, 
+     * @return Body of a rule represented as vector of GoalNodes,
      * or an empty vector in case of a fact.
      */
     std::vector<std::shared_ptr<GoalNode>> Predicate(void);
@@ -57,6 +62,12 @@ private:
      * @return Vector of GoalNodes
      */
     std::vector<std::shared_ptr<GoalNode>> Body(void);
+
+    /**
+     * @brief 
+     * @return GoalNode representing either a call node, is node or a unification node
+     */
+    std::shared_ptr<GoalNode> BodyOperator(std::shared_ptr<TermNode> lhs);
 
     /**
      * @brief Used to parse the rest of the body and its goals

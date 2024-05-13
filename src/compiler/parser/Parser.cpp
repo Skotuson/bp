@@ -26,6 +26,20 @@ void Parser::printAST(void)
     m_ASTRoot->print();
 }
 
+std::shared_ptr<GoalNode> Parser::getGoal(Token tok, std::shared_ptr<TermNode> lhs, std::shared_ptr<TermNode> rhs)
+{
+    switch (tok)
+    {
+    case TOK_EQUAL:
+        return std::make_shared<UnificationNode>(lhs, rhs);
+    case TOK_IS:
+        return std::make_shared<IsNode>(lhs, rhs);
+    default:
+        return nullptr;
+    }
+    return nullptr;
+}
+
 void Parser::Start(void)
 {
     switch (m_Lex.peek())
@@ -112,20 +126,6 @@ Token Parser::Operator(void)
 
 std::vector<std::shared_ptr<GoalNode>> Parser::Body(void)
 {
-    // Returns either a unification or is node for the lhs and rhs, depending on the operator type
-    auto getGoal = [](Token tok, std::shared_ptr<TermNode> lhs, std::shared_ptr<TermNode> rhs) -> std::shared_ptr<GoalNode>
-    {
-        switch (tok)
-        {
-        case TOK_EQUAL:
-            return std::make_shared<UnificationNode>(lhs, rhs);
-        case TOK_IS:
-            return std::make_shared<IsNode>(lhs, rhs);
-        default:
-            return nullptr;
-        }
-    };
-
     std::vector<std::shared_ptr<GoalNode>> body, bodyCont;
 
     switch (m_Lex.peek())
@@ -201,6 +201,41 @@ std::vector<std::shared_ptr<GoalNode>> Parser::Body(void)
     return body;
 }
 
+std::shared_ptr<GoalNode> Parser::BodyOperator(std::shared_ptr<TermNode> lhs)
+{
+    switch (m_Lex.peek())
+    {
+    case TOK_COMMA:
+    case TOK_PERIOD:
+    {
+        // Semantic check whether it is a valid call
+        if (lhs->type() == TermNode::TermType::LIST || lhs->type() == TermNode::TermType::VAR)
+        {
+            std::string err = lhs->name() + " is not a callable object";
+            throw std::runtime_error(err);
+        }
+
+        else if (lhs->type() == TermNode::TermType::CONST)
+        {
+            return std::make_shared<CallNode>(lhs->name());
+        }
+        else
+        {
+            auto snode = std::static_pointer_cast<StructNode>(lhs);
+            return std::make_shared<CallNode>(snode->name(), snode->args());
+        }
+    }
+    case TOK_EQUAL:
+    case TOK_IS:
+    {
+        Token tok = Operator();
+        return getGoal(tok, lhs, Expr2());
+    }
+    default:
+        throw std::runtime_error("BodyOperator Parsing error");
+    }
+}
+
 std::vector<std::shared_ptr<GoalNode>> Parser::BodyCont(void)
 {
     switch (m_Lex.peek())
@@ -233,14 +268,7 @@ std::shared_ptr<GoalNode> Parser::BodyTerm(std::shared_ptr<TermNode> lhs)
     case TOK_IS:
         /* rule 17: BodyTerm -> Operator Expr2 */
         tok = Operator();
-        if (tok == TOK_EQUAL)
-        {
-            return std::make_shared<UnificationNode>(lhs, Expr2());
-        }
-        else if (tok == TOK_IS)
-        {
-            return std::make_shared<IsNode>(lhs, Expr2());
-        }
+        return getGoal(tok, lhs, Expr2());
     default:
         throw std::runtime_error("BodyTerm Parsing error");
     }
