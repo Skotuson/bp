@@ -62,6 +62,7 @@ add_executable(wam_test
 test/main.cpp
 test/compiler/lexer/LexerTest.cpp
 test/compiler/parser/ParserTest.cpp
+test/compiler/parser/ParserErrorTest.cpp
 test/desugar/DesugarTest.cpp
 test/interpreter/InterpreterTest.cpp
 test/preprocessor/PreprocessorTest.cpp)
