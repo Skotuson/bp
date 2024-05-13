@@ -42,15 +42,15 @@ private:
     void Start(void);
 
     /**
-     * @return A parsed clause represented as a ClauseNode
-     */
-    std::shared_ptr<ClauseNode> Predicates(void);
-
-    /**
      * @return Body of a rule represented as vector of GoalNodes,
      * or an empty vector in case of a fact.
      */
     std::vector<std::shared_ptr<GoalNode>> Predicate(void);
+
+    /**
+     * @return A parsed clause represented as a ClauseNode
+     */
+    std::shared_ptr<ClauseNode> Predicates(void);
 
     /**
      * @return Returns a operator of encountered token
@@ -64,7 +64,8 @@ private:
     std::vector<std::shared_ptr<GoalNode>> Body(void);
 
     /**
-     * @brief 
+     * @brief Parses a goal. If goals is not an unification or is operator, creates a call
+     * and provides semantic check whether it is valid.
      * @return GoalNode representing either a call node, is node or a unification node
      */
     std::shared_ptr<GoalNode> BodyOperator(std::shared_ptr<TermNode> lhs);
@@ -74,14 +75,6 @@ private:
      * @return Vector of GoalNodes
      */
     std::vector<std::shared_ptr<GoalNode>> BodyCont(void);
-
-    /**
-     * @brief Returns either a
-     * @param lhs Left-hand side of a operator
-     * @return Returns a GoalNode in case the parser finds an operator,
-     * nullptr if no operator is found.
-     */
-    std::shared_ptr<GoalNode> BodyTerm(std::shared_ptr<TermNode> lhs);
 
     /**
      * @brief Used for parsing a list

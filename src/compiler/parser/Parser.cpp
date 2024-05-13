@@ -60,6 +60,27 @@ void Parser::Start(void)
     }
 }
 
+std::vector<std::shared_ptr<GoalNode>> Parser::Predicate(void)
+{
+    std::vector<std::shared_ptr<GoalNode>> body;
+    switch (m_Lex.peek())
+    {
+    case TOK_PERIOD:
+        /* rule 5: Predicate -> . */
+        m_Lex.match(TOK_PERIOD);
+        // Clause with no body.
+        return std::vector<std::shared_ptr<GoalNode>>();
+    case TOK_IF:
+        /* rule 6: Predicate -> :- Body . */
+        m_Lex.match(TOK_IF);
+        body = Body();
+        m_Lex.match(TOK_PERIOD);
+        return body;
+    default:
+        throw std::runtime_error("Predicate Parsing error");
+    }
+}
+
 std::shared_ptr<ClauseNode> Parser::Predicates(void)
 {
     std::string head = m_Lex.identifier();
@@ -83,27 +104,6 @@ std::shared_ptr<ClauseNode> Parser::Predicates(void)
         return std::make_shared<ClauseNode>(head, args, body);
     default:
         throw std::runtime_error("Predicates Parsing error");
-    }
-}
-
-std::vector<std::shared_ptr<GoalNode>> Parser::Predicate(void)
-{
-    std::vector<std::shared_ptr<GoalNode>> body;
-    switch (m_Lex.peek())
-    {
-    case TOK_PERIOD:
-        /* rule 5: Predicate -> . */
-        m_Lex.match(TOK_PERIOD);
-        // Clause with no body.
-        return std::vector<std::shared_ptr<GoalNode>>();
-    case TOK_IF:
-        /* rule 6: Predicate -> :- Body . */
-        m_Lex.match(TOK_IF);
-        body = Body();
-        m_Lex.match(TOK_PERIOD);
-        return body;
-    default:
-        throw std::runtime_error("Predicate Parsing error");
     }
 }
 
@@ -131,62 +131,18 @@ std::vector<std::shared_ptr<GoalNode>> Parser::Body(void)
     switch (m_Lex.peek())
     {
     case TOK_ATOM_LOWER:
-        /* rule 9: Body -> lower TermLower BodyTerm BodyCont */
-        {
-            std::string identifier = m_Lex.identifier();
-            m_Lex.match(TOK_ATOM_LOWER);
-            // Get either a constant or a struct, depending whether it has any arguments
-            std::shared_ptr<TermNode> compound = TermLower(identifier);
-            std::shared_ptr<GoalNode> expr;
-            // Not a unification or is, so it is a call
-            if (!(expr = BodyTerm(compound)))
-            {
-                if (compound->type() == TermNode::TermType::CONST)
-                {
-                    body.push_back(std::make_shared<CallNode>(compound->name()));
-                }
-                else
-                {
-                    auto snode = std::static_pointer_cast<StructNode>(compound);
-                    body.push_back(std::make_shared<CallNode>(snode->name(), snode->args()));
-                }
-            }
-
-            else
-            {
-                body.push_back(expr);
-            }
-            break;
-        }
     case TOK_CONST:
-        /* rule 10: Body -> const Operator Expr2 BodyCont */
-        {
-            m_Lex.match(TOK_CONST);
-            // Replace natural number with its peano counterpart
-            std::shared_ptr<TermNode> peanoConst = Desugar::toPeanoNode(m_Lex.numericValue(), true);
-            Token tok = Operator();
-            body.push_back(getGoal(tok, peanoConst, Expr2()));
-            break;
-        }
-    case TOK_VAR:
-        /* rule 11: Body -> var Operator Expr2 BodyCont */
-        {
-            std::string varName = generateWildcardName(m_Lex.identifier());
-            m_Lex.match(TOK_VAR);
-            Token tok = Operator();
-            body.push_back(getGoal(tok, std::make_shared<VarNode>(varName), Expr2()));
-            break;
-        }
     case TOK_LSPAR:
-        /* rule 12: Body -> List Operator Expr2 BodyCont */
+    case TOK_VAR:
+    case TOK_LPAR:
+        /* rule 9: Body -> Expr2 BodyOperator BodyCont */
         {
-            std::shared_ptr<TermNode> list = List();
-            Token tok = Operator();
-            body.push_back(getGoal(tok, list, Expr2()));
+            std::shared_ptr<TermNode> lhs = Expr2();
+            body.push_back(BodyOperator(lhs));
             break;
         }
-        /* rule 13: Body -> ! BodyCont */
     case TOK_CUT:
+        /* rule 13: Body -> ! BodyCont */
         m_Lex.match(TOK_CUT);
         body.push_back(std::make_shared<CutNode>());
         break;
@@ -251,26 +207,6 @@ std::vector<std::shared_ptr<GoalNode>> Parser::BodyCont(void)
         return Body();
     default:
         throw std::runtime_error("BodyCont Parsing error");
-    }
-}
-
-std::shared_ptr<GoalNode> Parser::BodyTerm(std::shared_ptr<TermNode> lhs)
-{
-    Token tok;
-    switch (m_Lex.peek())
-    {
-    case TOK_COMMA:
-    case TOK_PERIOD:
-        /* rule 16: BodyTerm ->  */
-        // No operator found, return nullptr to signal that
-        return nullptr;
-    case TOK_EQUAL:
-    case TOK_IS:
-        /* rule 17: BodyTerm -> Operator Expr2 */
-        tok = Operator();
-        return getGoal(tok, lhs, Expr2());
-    default:
-        throw std::runtime_error("BodyTerm Parsing error");
     }
 }
 
@@ -375,14 +311,14 @@ std::shared_ptr<TermNode> Parser::TermLower(const std::string &name)
     std::vector<std::shared_ptr<TermNode>> terms;
     switch (m_Lex.peek())
     {
-    case TOK_EQUAL:
-    case TOK_IS:
-    case TOK_COMMA:
-    case TOK_PERIOD:
     case TOK_MUL:
     case TOK_DIV:
     case TOK_PLUS:
     case TOK_MINUS:
+    case TOK_EQUAL:
+    case TOK_IS:
+    case TOK_COMMA:
+    case TOK_PERIOD:
     case TOK_RSPAR:
     case TOK_RPAR:
     case TOK_PIPE:
@@ -430,6 +366,8 @@ std::shared_ptr<TermNode> Parser::Expr2R(std::shared_ptr<TermNode> lhs)
         m_Lex.match(TOK_MINUS);
         args.push_back(Expr2R(Expr1()));
         return std::make_shared<StructNode>("-", args);
+    case TOK_EQUAL:
+    case TOK_IS:
     case TOK_COMMA:
     case TOK_PERIOD:
     case TOK_RSPAR:
@@ -475,6 +413,8 @@ std::shared_ptr<TermNode> Parser::Expr1R(std::shared_ptr<TermNode> lhs)
         return std::make_shared<StructNode>("/", args);
     case TOK_PLUS:
     case TOK_MINUS:
+    case TOK_EQUAL:
+    case TOK_IS:
     case TOK_COMMA:
     case TOK_PERIOD:
     case TOK_RSPAR:
@@ -489,15 +429,16 @@ std::shared_ptr<TermNode> Parser::Expr1R(std::shared_ptr<TermNode> lhs)
 
 std::shared_ptr<TermNode> Parser::Expr(void)
 {
-    std::string number;
     std::shared_ptr<TermNode> expr;
     switch (m_Lex.peek())
     {
     case TOK_ATOM_LOWER:
+    {
         /* rule 36: Expr -> lower TermLower */
-        number = m_Lex.identifier();
+        std::string identifier = m_Lex.identifier();
         m_Lex.match(TOK_ATOM_LOWER);
-        return TermLower(number);
+        return TermLower(identifier);
+    }
     case TOK_CONST:
         /* rule 37: Expr -> const */
         {
@@ -508,9 +449,12 @@ std::shared_ptr<TermNode> Parser::Expr(void)
         /* rule 38: Expr -> List */
         return List();
     case TOK_VAR:
+    {
         /* rule 39: Expr -> var */
+        std::string identifier = m_Lex.identifier();
         m_Lex.match(TOK_VAR);
-        return std::make_shared<VarNode>(generateWildcardName(m_Lex.identifier()));
+        return std::make_shared<VarNode>(generateWildcardName(identifier));
+    }
     case TOK_LPAR:
         /* rule 40: Expr -> ( Expr2 ) */
         m_Lex.match(TOK_LPAR);
