@@ -16,7 +16,7 @@ std::shared_ptr<Instruction> PutVariable::clone(void)
 void PutVariable::execute(WAMState &state)
 {
     std::shared_ptr<ChoicePoint> cp = state.stackAt(state.EReg());
-    std::shared_ptr<Word> word = cp->m_Variables[m_Offset]->dereference();
+    std::shared_ptr<Word> word = cp->localVariables()[m_Offset]->dereference();
     state.fillRegister(word, m_ArgumentRegister);
 }
 

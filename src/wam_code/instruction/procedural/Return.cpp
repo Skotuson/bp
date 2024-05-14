@@ -11,9 +11,9 @@ void Return::execute(WAMState &state)
     if (cp)
     {
         // Caller's return address
-        state.setPCReg(cp->m_BCP);
+        state.setPCReg(cp->BCPField());
         // Caller's environment
-        state.setEReg(cp->m_BCE);
+        state.setEReg(cp->BCEField());
     }
     else
     {

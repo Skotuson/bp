@@ -10,7 +10,7 @@ void Backtrack::execute(WAMState &state)
     std::shared_ptr<ChoicePoint> cp = state.stackAt(state.BReg());
     if (cp)
     {
-        state.setBReg(cp->m_BB);
+        state.setBReg(cp->BBField());
     }
 
     fail(state);

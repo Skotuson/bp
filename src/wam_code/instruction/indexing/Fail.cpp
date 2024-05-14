@@ -11,23 +11,23 @@ void Fail::execute(WAMState &state)
     if (cp)
     {
         // Reload argument registers
-        state.setArgumentRegisters(cp->m_ArgumentRegisters);
+        state.setArgumentRegisters(cp->argumentRegisters());
 
         // Reset heap
-        while (state.HReg() != cp->m_BH)
+        while (state.HReg() != cp->BHField())
         {
             state.heapPop();
         }
 
         // Reset all variables instantiated since choice point was built
-        while (state.TRReg() != cp->m_BTR)
+        while (state.TRReg() != cp->BTRField())
         {
             std::shared_ptr<VariableWord> popped = state.trailTop();
             popped->bind(popped);
             state.trailPop();
         }
         // Branch to next rule
-        state.setPCReg(cp->m_FA);
+        state.setPCReg(cp->FAField());
     }
     // Backtracking to an empty stack -> fail.
     else if (state.BReg() == UNSET_REG)

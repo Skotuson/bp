@@ -217,7 +217,7 @@ std::string WAMState::variableToString(size_t offset, size_t choicePoint)
 {
     auto cp = stackAt(choicePoint);
     m_QueryWords[offset]->setVisited(true);
-    std::string result = cp->m_Variables[offset]->toString();
+    std::string result = cp->localVariables()[offset]->toString();
 
     for (size_t i = 0; i < TRReg(); i++)
     {

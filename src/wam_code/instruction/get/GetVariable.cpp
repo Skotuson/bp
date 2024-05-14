@@ -1,7 +1,7 @@
 #include "GetVariable.hpp"
 
 GetVariable::GetVariable(const std::string &name,
-                                               size_t argumentRegister, size_t offset)
+                         size_t argumentRegister, size_t offset)
     : m_Name(name),
       m_ArgumentRegister(argumentRegister),
       m_Offset(offset)
@@ -16,7 +16,7 @@ std::shared_ptr<Instruction> GetVariable::clone(void)
 void GetVariable::execute(WAMState &state)
 {
     std::shared_ptr<Word> X = state.dereferenceArgumentRegister(m_ArgumentRegister),
-                          Y = state.stackAt(state.EReg())->m_Variables[m_Offset];
+                          Y = state.stackAt(state.EReg())->localVariables()[m_Offset];
     clearPDL(state, X, Y);
 }
 

@@ -13,7 +13,7 @@ std::shared_ptr<Instruction> UnifyVariable::clone(void)
 
 void UnifyVariable::execute(WAMState &state)
 {
-    std::shared_ptr<Word> w = state.stackAt(state.EReg())->m_Variables[m_Offset]->dereference();
+    std::shared_ptr<Word> w = state.stackAt(state.EReg())->localVariables()[m_Offset]->dereference();
     if (!state.readMode())
     {
         state.heapPush(w);

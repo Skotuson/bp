@@ -16,7 +16,7 @@ void RetryMeElse::execute(WAMState &state)
     std::shared_ptr<ChoicePoint> cp = state.stackAt(state.BReg());
     if (cp)
     {
-        cp->m_FA = m_Address;
+        cp->setFAField(m_Address);
     }
 }
 
