@@ -98,7 +98,7 @@ TEST_CASE("Interpreter test suite")
         }
     }
 
-    SUBCASE("Run queries with recursion: ")
+    SUBCASE("Run queries with recursion (arithmetic): ")
     {
         std::istringstream iss(
             "add(0,Y,Y)."
@@ -202,7 +202,7 @@ TEST_CASE("Interpreter test suite")
         }
     }
 
-    SUBCASE("Run queries with recursion II: ")
+    SUBCASE("Run queries with recursion (is_bigger): ")
     {
         std::istringstream iss(
             "bigger(dog, mouse)."
