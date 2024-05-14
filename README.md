@@ -25,3 +25,63 @@ Executing the `wam_test` like so `./wam_test` will run the unit tests present. F
 
 ## Running the program
 Along with the `wam_test`, the `wam` binary will also be generated after building. This is the binary used to run the interpreter.  
+Running the binary without any flags like this:
+```
+./wam
+```
+will start the REPL. In this state, queries containing the unification and is operator can be evaluated, e.g. `X=Y,Y=elephant` or `X is 1 + 2`.
+After evaluation, the result will be displayed:
+```pl
+?> X = Y, Y = elephant
+true.
+X = elephant
+Y = elephant
+
+?> X is 1 + 2
+true.
+X = 3
+
+?> 1 + 1 is 1 + 2
+false.
+```
+Of course, standard Prolog queries like `bigger(mouse,bug)` can also be entered, but will always fail.
+### Loading a file
+A source code file can be loaded into the REPL by running the binary with a `--file <filepath>` flag, like this for example 
+```
+./wam --file file.pl
+```
+Assume the `file.pl` looks like this:
+```pl
+bigger(elephant,mouse).
+bigger(mouse,bug).
+same(bug,bug).
+```
+Now, a query in the form of `bigger(mouse,bug)` can be run and succeed:
+```
+?> bigger(mouse,bug).
+true.
+```
+### More answers
+Assume the aforementioned source code and a query `bigger(X,Y)`.
+The machine will answer the first possible proof sequence.
+For our case, the answer would look like this:
+```pl
+?> bigger(X,Y).
+true.
+X = elephant
+Y = mouse
+```
+The REPL then prompts the user. If a semicolon is entered ;, the process is restarted to look for another proof sequence. In case of any other input, the evaluation of the query is done and REPL prompts the user to enter a new query.  
+In our example:
+```
+?> bigger(X,Y).
+true.
+X = elephant
+Y = mouse
+;
+true.
+X = mouse
+Y = bug
+;
+false.
+```
