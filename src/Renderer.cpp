@@ -4,7 +4,7 @@ void Renderer::renderCode(std::ostream &os, const WAMCode &code, size_t pc)
 {
     for (size_t i = 0; i < code.size(); i++)
     {
-        if(i == pc)
+        if (i == pc)
         {
             os << ANSI_COLOR_B_CYAN;
         }
@@ -18,6 +18,11 @@ void Renderer::renderCode(std::ostream &os, const WAMCode &code, size_t pc)
 void Renderer::clearScreen(std::ostream &os)
 {
     os << ANSI_CLEAR_SCREEN << ANSI_CLEAR_SCREEN_BUFFER << ANSI_RETURN_CURSOR;
+}
+
+std::string Renderer::printInColor(const std::string &str, const std::string &ansi_color)
+{
+    return ansi_color + str + ANSI_COLOR_DEFAULT;
 }
 
 bool Renderer::step(void)

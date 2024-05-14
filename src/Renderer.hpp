@@ -31,6 +31,8 @@ public:
     void renderCode(std::ostream &os, const WAMCode &code, size_t pc);
     void clearScreen(std::ostream &os);
 
+    std::string printInColor(const std::string &str, const std::string &ansi_color);
+
     bool step(void);
     void setStepper(bool step);
 private:
