@@ -18,12 +18,14 @@ public:
     std::shared_ptr<Word> dereference(void) const override;
     void bind(std::shared_ptr<Word> w);
     std::shared_ptr<Word> *ref(void) const;
-    bool bound(void) const;
 
     void setVisited(bool visited);
 
 private:
+    bool bound(void) const;
+
     std::shared_ptr<Word> *m_Ref;
     std::string m_Name;
+    // Used to handle infinite terms
     bool m_Visited = false;
 };
