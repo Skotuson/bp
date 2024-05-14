@@ -19,6 +19,7 @@ std::shared_ptr<Word> ListWord::clone(void) const
 
 std::string ListWord::toString(void)
 {
+    // Print the head | tail, where tail is printed recursively
     std::string str = "[" + m_HeapRef[m_HeapAddress]->toString() + "|";
     str += m_HeapRef[m_HeapAddress + 1]->toString() + "]";
     return str;

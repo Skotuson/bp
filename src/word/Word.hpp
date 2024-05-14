@@ -4,9 +4,6 @@
 #include <memory>
 #include <iostream>
 
-// #include "ConstantWord.hpp"
-// #include "StructureWord.hpp"
-
 enum TAG
 {
     REFERENCE = 0,
