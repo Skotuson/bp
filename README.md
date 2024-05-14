@@ -113,3 +113,47 @@ same/2:         mark
 __quit:         backtrack
 ```
 In practice, the `--dump` flag will display some bytecode generated even when no source file is specified, as there are some predicates being linked to the source file prior to the actual compilation. These are represented in the output by the three dots.
+
+## Arithmetic limitations
+The **is** operator implemented generates the arithmetic instructions completely in compile time, using only **WAM** instructions. That works for queries like
+```pl
+?> X is 1 + 2
+true.
+X = 3
+```
+or
+```pl
+?> X is Y + 1, Y is 1
+X = 2
+Y = 1
+```
+However, assume a program which contains a following rule `addOne(X,Y):- Y is X + 1`.
+When a query `addOne(1+1,Y)` is called, the code has already been generated, and at compile time, the `addOne` predicate had no way of knowing that the X might be an expression.  
+Hence it tries to compute `Y is +(1,1) + 1`, which **fails**.
+  
+Even with these limitations, the **is** operator can be used to simplify writing programs, like this factorial example:
+```pl
+fact(0, 1).
+fact(N, Res) :-
+    N1 is N - 1,
+    fact(N1, Tmp), 
+    Res is Tmp * N.
+```
+Which yields the expected results
+```pl
+?> fact(0,X).
+true.
+X = 1
+
+?> fact(4,X).
+true.
+X = 24
+
+?> fact(5,X).
+true.
+X = 120
+
+?> fact(6,X).
+true.
+X = 720
+```
