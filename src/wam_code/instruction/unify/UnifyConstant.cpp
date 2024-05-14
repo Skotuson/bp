@@ -30,9 +30,8 @@ void UnifyConstant::execute(WAMState &state)
 
     else if (w->tag() == CONSTANT)
     {
-        std::shared_ptr<ConstantWord> cw = std::static_pointer_cast<ConstantWord>(w);
         std::shared_ptr<ConstantWord> c = std::make_shared<ConstantWord>(m_Name);
-        if (!cw->compareToConst(c))
+        if (!w->compareToConst(c))
         {
             fail(state);
         }
