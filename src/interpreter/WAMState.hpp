@@ -21,8 +21,14 @@ const size_t UNSET_REG = -2;
 
 struct WAMState
 {
+    /**
+     * @brief Loads a argument register
+     * @param word Word to load into argument register
+     * @param reg Register to load
+     */
     void fillRegister(std::shared_ptr<Word> word, size_t reg);
 
+    // Methods for obtaining values from individual machine registers
     size_t SReg(void) const;
     size_t EReg(void) const;
     size_t BReg(void) const;
@@ -33,20 +39,37 @@ struct WAMState
     size_t CPReg(void) const;
     size_t PCReg(void) const;
 
+    // Methods for setting values to individual machine registers
     void setEReg(size_t ereg);
     void setBReg(size_t breg);
     void setSPReg(size_t spreg);
     void setCPReg(size_t cpreg);
     void setPCReg(size_t pcreg);
 
+    // Methods for setting a retrieving values from the mode flag
     void setWriteMode(void);
     void setReadMode(void);
     bool readMode(void) const;
 
+    /**
+     * @return True if fail flag is set
+     */
     bool fail(void) const;
+    /**
+     * @brief Sets the fail flag
+     * @param failFlag boolean value to set the fail flag to
+     */
     void setFailFlag(bool failFlag);
+
+    /**
+     * @return True if halt flag is set
+     */
     bool halt(void) const;
-    void setHaltFlag(bool failFlag);
+    /**
+     * @brief Sets the halt flag
+     * @param haltFlag boolean value to set the halt flag to
+     */
+    void setHaltFlag(bool haltFlag);
 
     // Heap operations
     void heapPush(std::shared_ptr<Word> word);
@@ -75,6 +98,12 @@ struct WAMState
     bool pdlEmpty(void);
     PDLTriple pdlTop(void);
 
+    /**
+     * @brief Gets a string representation of the value of a specific variable
+     * @param offset Offset of the variable in the environment
+     * @param choicePoint The environment, 0 by default
+     * @return String representation of the variable
+    */
     std::string variableToString(size_t offset, size_t choicePoint = 0);
 
     size_t getAllocatedVariables(void);
@@ -106,8 +135,11 @@ private:
     size_t m_EnvironmentRegister = UNSET_REG;
 
     //-------------VARIABLES HANDLING-------------//
+    // Used for naming non-query variables
     size_t m_AllocatedVariables = 0;
+    // Query variables, used when printing
     std::map<size_t, std::string> m_QueryVariables;
+    // Used when printing, mainly for infinite terms
     std::map<size_t, std::shared_ptr<VariableWord>> m_QueryWords;
 
     //-------------MAJOR DATA STRUCTURES-------------//
