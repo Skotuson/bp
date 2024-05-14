@@ -32,6 +32,8 @@ TAG Word::tag(void)
 
 std::shared_ptr<Word> Word::dereference(void) const
 {
+    // As a shared_ptr is used, I can't return "this" pointer without enabling it.
+    // The cloning however doesn't have any problems
     return clone();
 }
 
