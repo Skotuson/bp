@@ -11,7 +11,6 @@ Filepath Preprocessor::linkStandard(const Filepath &filepath)
         "__id(A, A).\n"
 
         "__add(0,Y,Y)."
-        "__add(__s(0),Y,__s(Y))."
         "__add(__s(X),Y,__s(Z)):- __add(X,Y,Z)."
         
         // x - y = z is the same as y + z = x
