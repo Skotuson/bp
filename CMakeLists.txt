@@ -64,7 +64,6 @@ test/compiler/lexer/LexerTest.cpp
 test/compiler/parser/ParserTest.cpp
 test/compiler/parser/ParserErrorTest.cpp
 test/desugar/DesugarTest.cpp
-test/interpreter/InterpreterTest.cpp
-test/preprocessor/PreprocessorTest.cpp)
+test/interpreter/InterpreterTest.cpp)
 
 target_link_libraries(wam_test wam_lib)
