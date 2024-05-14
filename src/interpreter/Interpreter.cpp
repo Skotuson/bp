@@ -85,7 +85,6 @@ bool Interpreter::run(void)
 
 WAMCode Interpreter::compileQuery(const std::string &query)
 {
-    // TODO: will add as an instruction
     if (query == "halt.")
     {
         m_State.setHaltFlag(true);
