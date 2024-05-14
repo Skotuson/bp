@@ -40,3 +40,8 @@ void Allocate::print(std::ostream &os) const
 {
     os << "allocate " << m_N;
 }
+
+void Allocate::setN(size_t n)
+{
+    m_N = n;
+}

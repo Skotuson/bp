@@ -22,7 +22,7 @@ void ClauseNode::codegen(CompilationContext &cctx)
         cctx.addLabel(m_Head);
         cctx.addInstruction(std::make_shared<Mark>());
     }
-    
+
     else
     {
         // Note the label for an alternative clause with the same predicate name
@@ -32,18 +32,18 @@ void ClauseNode::codegen(CompilationContext &cctx)
 
     // Increment the number of generated clauses for this head symbol so far
     ++entry->m_Generated;
-    // Generate retryLabel name for the next clause. 
+    // Generate retryLabel name for the next clause.
     // If the number of generated clauses equals that of total number of clauses, generate __quit label instead.
     std::string retryLabel = entry->m_Generated == entry->m_Clauses ? "__quit" : m_Head + std::to_string(entry->m_Generated);
     cctx.addInstruction(std::make_shared<RetryMeElse>(retryLabel));
-    
+
     // Reset the variables for current clause
     cctx.resetVariables();
     // Generate an allocate instruction and count the number of local variables needed during codegen.
     // Keep the pointer so the N can be changed after variables were counted.
     std::shared_ptr<Allocate> alloc = std::make_shared<Allocate>(0);
     cctx.addInstruction(alloc);
-    
+
     cctx.setAvailableReg(1);
     cctx.resetAvailableArithmeticVariable();
     cctx.setHeadGenerationMode();
@@ -61,7 +61,7 @@ void ClauseNode::codegen(CompilationContext &cctx)
         m_Body[i]->codegen(cctx);
     }
     // Assign the N to generated allocate instruction
-    alloc->m_N = cctx.allocated();
+    alloc->setN(cctx.allocated());
     // Generate a return instruction
     cctx.addInstruction(std::make_shared<Return>());
 }
