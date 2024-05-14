@@ -21,6 +21,7 @@ bool Interpreter::run(void)
         return false;
     }
 
+    // Read the query
     std::cout << "?> ";
     std::string query;
     std::getline(std::cin >> std::ws, query);
@@ -34,6 +35,7 @@ bool Interpreter::run(void)
     // Set compiled query as current query
     setQuery(compileQuery(query));
 
+    // If a query was in the form of "halt.", the execution is ended.
     if (m_State.halt())
     {
         return false;
@@ -58,17 +60,19 @@ bool Interpreter::run(void)
 
         if (!success)
         {
-            std::cout << ANSI_COLOR_RED << "false." << ANSI_COLOR_DEFAULT << std::endl;
+            std::cout << m_Renderer.printInColor("false.", ANSI_COLOR_RED) << std::endl;
             break;
         }
         else
         {
-            std::cout << ANSI_COLOR_GREEN << "true." << ANSI_COLOR_DEFAULT << std::endl;
+            std::cout << m_Renderer.printInColor("true.", ANSI_COLOR_GREEN) << std::endl;
+            // Print the query variable values
             for (const auto &[var, value] : vars)
             {
                 std::cout << var << " = " << value << std::endl;
             }
 
+            // Look if more answers should be attempted
             if (!nextAnswer(std::cin))
             {
                 break;
@@ -76,6 +80,7 @@ bool Interpreter::run(void)
         }
     }
 
+    // If no more answers were prompted/can't be found, clear the query
     clearQuery();
 
     // Reset the WAM
@@ -132,6 +137,7 @@ Result Interpreter::evaluateQuery(void)
             std::string value = m_State.variableToString(v.first);
             try
             {
+                // Replace the peano number representation by its natural number counterparts
                 std::string desugared = Desugar::replacePeano(value);
                 value = desugared;
             }
