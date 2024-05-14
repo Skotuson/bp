@@ -103,10 +103,18 @@ struct WAMState
      * @param offset Offset of the variable in the environment
      * @param choicePoint The environment, 0 by default
      * @return String representation of the variable
-    */
+     */
     std::string variableToString(size_t offset, size_t choicePoint = 0);
 
+    /**
+     * @return Number of the non-query variables allocated so far, used to avoid naming collisions
+     */
     size_t getAllocatedVariables(void);
+
+    /**
+     * @brief Sets the m_AllocatedVariables to a specific value
+     * @param allocatedVariables Number to set the number of the next available variable to be used for non-query variables
+     */
     void setAllocatedVariables(size_t allocatedVariables);
 
     const ArgumentRegisters &getArgumentRegisters(void);
