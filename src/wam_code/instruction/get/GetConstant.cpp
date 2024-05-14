@@ -14,7 +14,10 @@ std::shared_ptr<Instruction> GetConstant::clone(void)
 void GetConstant::execute(WAMState &state)
 {
     std::shared_ptr<Word> reg = state.dereferenceArgumentRegister(m_ArgumentRegister);
+    // Used to execute the compareToConst method
     std::shared_ptr<ConstantWord> cword = std::make_shared<ConstantWord>(m_Name);
+
+    // Dereference result is a variable, trail
     if (reg && reg->tag() == TAG::VARIABLE)
     {
         std::shared_ptr<VariableWord> vw = std::static_pointer_cast<VariableWord>(reg);
