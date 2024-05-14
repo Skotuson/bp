@@ -28,9 +28,12 @@ void Instruction::clearPDL(WAMState &state, std::shared_ptr<Word> X, std::shared
         state.pdlPop();
     }
 
+    // Loop
     while (42)
     {
+        // Select case from the table
         size_t branch = m_ClearPDLTable[X->tag()][Y->tag()];
+        
         // X is a ref, dereference:
         if (branch == 1)
         {
