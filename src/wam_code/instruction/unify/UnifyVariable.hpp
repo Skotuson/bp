@@ -9,6 +9,7 @@ struct UnifyVariable : public Instruction
     void execute(WAMState &state) override;
     void print(std::ostream &os) const override;
 
+private:
     std::string m_Name;
     size_t m_Offset;
 };
