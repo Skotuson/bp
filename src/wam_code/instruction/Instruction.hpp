@@ -15,6 +15,10 @@ struct Instruction
      * @param state Reference to WAMState class
      */
     virtual void execute(WAMState &state) = 0;
+
+    /**
+     * @brief Prints the bytecode representation of the instruction
+     */
     virtual void print(std::ostream &os) const = 0;
 
     /**
@@ -30,6 +34,8 @@ struct Instruction
      * @param Y Memory Word
      */
     static void clearPDL(WAMState &state, std::shared_ptr<Word> X, std::shared_ptr<Word> Y);
+
+    // Table used in the Clear PDL operation to select individual cases.
     static const std::vector<std::vector<size_t>> m_ClearPDLTable;
 
     friend std::ostream &operator<<(std::ostream &os, const Instruction &instr);
