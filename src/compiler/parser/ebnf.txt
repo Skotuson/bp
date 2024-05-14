@@ -13,9 +13,9 @@ TermsCont = [ "," , Terms ];
 TermLower = [ "(" , Terms , ")" ] ;
 Expr2 = Expr1 , Expr2R
 Expr2R = [ "+" , Expr1, Expr2R ] | [ "-" , Expr1, Expr2R ] ;
-Expr1 = Expr , Expr1R
+Expr1 = Expr , Expr1R ;
 Expr1R = [ "*" , Expr, Expr1R ] | [ "/" , Expr, Expr1R ] ;
-Expr = lower , TermLower | number | List | variable | "(" , Expr2 ")" ;
+Expr = lower , TermLower | number | List | variable | "(" , Expr2 , ")" ;
 
 digit = "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" ;
 number = digit , { digit } ;
