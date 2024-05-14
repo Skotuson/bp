@@ -115,14 +115,13 @@ std::shared_ptr<TermNode> Desugar::toPeanoNode(size_t num, bool underscores)
         if (!peano)
         {
             args = {std::make_shared<ConstNode>("0")};
-            peano = std::make_shared<StructNode>("__s", args);
         }
 
         else
         {
             args = {peano};
-            peano = std::make_shared<StructNode>("__s", args);
         }
+        peano = std::make_shared<StructNode>("__s", args);
     }
     return peano;
 }
