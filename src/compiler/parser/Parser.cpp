@@ -56,7 +56,7 @@ void Parser::Start(void)
         Start();
         break;
     default:
-        throw std::runtime_error("Start Parsing error");
+        throw std::runtime_error("Expected a lowercase predicate name.");
     }
 }
 
@@ -77,7 +77,7 @@ std::vector<std::shared_ptr<GoalNode>> Parser::Predicate(void)
         m_Lex.match(TOK_PERIOD);
         return body;
     default:
-        throw std::runtime_error("Predicate Parsing error");
+        throw std::runtime_error("Period or body expected.");
     }
 }
 
@@ -103,7 +103,7 @@ std::shared_ptr<ClauseNode> Parser::Predicates(void)
         body = Predicate();
         return std::make_shared<ClauseNode>(head, args, body);
     default:
-        throw std::runtime_error("Predicates Parsing error");
+        throw std::runtime_error("Clause argument parsing error.");
     }
 }
 
@@ -120,7 +120,7 @@ Token Parser::Operator(void)
         m_Lex.match(TOK_IS);
         return TOK_IS;
     default:
-        throw std::runtime_error("Operator Parsing error");
+        throw std::runtime_error("Invalid operator, is or = expected.");
     }
 }
 
@@ -147,7 +147,7 @@ std::vector<std::shared_ptr<GoalNode>> Parser::Body(void)
         body.push_back(std::make_shared<CutNode>());
         break;
     default:
-        throw std::runtime_error("Body Parsing error");
+        throw std::runtime_error("Invalid goal.");
     }
 
     // Get the rest of the body
@@ -164,6 +164,7 @@ std::shared_ptr<GoalNode> Parser::BodyOperator(std::shared_ptr<TermNode> lhs)
     case TOK_COMMA:
     case TOK_PERIOD:
     {
+        /* rule 11: BodyOperator ->  */
         // Semantic check whether it is a valid call
         if (lhs->type() == TermNode::TermType::LIST || lhs->type() == TermNode::TermType::VAR)
         {
@@ -181,6 +182,7 @@ std::shared_ptr<GoalNode> Parser::BodyOperator(std::shared_ptr<TermNode> lhs)
             return std::make_shared<CallNode>(snode->name(), snode->args());
         }
     }
+    /* rule 12: BodyOperator -> Operator Expr2 */
     case TOK_EQUAL:
     case TOK_IS:
     {
