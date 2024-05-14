@@ -9,5 +9,7 @@ struct GetList : public Instruction
     void execute(WAMState &state) override;
     void print(std::ostream &os) const override;
 
+private:
+    // Argument register to dereference
     size_t m_ArgumentRegister;
 };
