@@ -119,8 +119,13 @@ struct WAMState
 
     const ArgumentRegisters &getArgumentRegisters(void);
     void setArgumentRegisters(const ArgumentRegisters &argumentRegisters);
+    
+    /**
+     * @brief Dereferences a specific register. If a reference is encountered, it is chased until something other than a reference is encountered.
+     * @param argReg Number of register to dereference. As the registers are labeled from 1, this method accounts for it
+     */
     std::shared_ptr<Word> dereferenceArgumentRegister(size_t argReg);
-
+    
     void setQueryVariables(const std::map<size_t, std::string> &queryVariables);
     std::string getQueryVariableName(size_t offset);
     bool isQueryVariable(size_t offset);
