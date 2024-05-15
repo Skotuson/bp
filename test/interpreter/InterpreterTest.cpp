@@ -17,7 +17,6 @@ TEST_CASE("Interpreter test suite")
         CHECK(r.second.size() == ref.second.size());
         for (const auto &res : ref.second)
         {
-            // std::cout << r.second[res.first] << " =?= " << res.second << std::endl;
             CHECK(r.second[res.first] == res.second);
         }
     };
@@ -728,6 +727,22 @@ TEST_CASE("Interpreter test suite")
             testQuery(i, {true, {}});
         }
 
+        SUBCASE("Delete only element")
+        {
+            Interpreter i(c.dump());
+            i.setQuery(i.compileQuery(
+                "delete([1], 1, [])."));
+            testQuery(i, {true, {}});
+        }
+
+        SUBCASE("Delete only element (variable)")
+        {
+            Interpreter i(c.dump());
+            i.setQuery(i.compileQuery(
+                "delete([1], X, [])."));
+            testQuery(i, {true, {{"X", "1"}}});
+        }
+
         SUBCASE("Delete first element")
         {
             Interpreter i(c.dump());
@@ -966,7 +981,7 @@ TEST_CASE("Interpreter test suite")
         }
     }
 
-    SUBCASE("IS operator tests (Program)")
+    SUBCASE("IS operator tests (decompose)")
     {
         std::istringstream iss(
             "__id(A, A).\n"
@@ -991,5 +1006,37 @@ TEST_CASE("Interpreter test suite")
                 "List = [1 + 1,2 * 2, 3 / 3], decompose(List, H, T), X is H."));
             testQuery(i, {true, {{"List", "[+(1,1)|[*(2,2)|[/(3,3)|[]]]]"}, {"H", "+(1,1)"}, {"T", "[*(2,2)|[/(3,3)|[]]]"}, {"X", "+(1,1)"}}});
         }
+    }
+
+    SUBCASE("IS operator tests (length)")
+    {
+        std::istringstream iss(
+            "len([], 0)."
+            "len([_|T], L) :- len(T, PL), L is 1 + PL.");
+        c.compile(iss);
+
+        SUBCASE("Empty list length")
+        {
+            Interpreter i(c.dump());
+            i.setQuery(i.compileQuery(
+                "len([], 0)."));
+            testQuery(i, {true, {}});
+        }
+
+        SUBCASE("Empty list length (variable)")
+        {
+            Interpreter i(c.dump());
+            i.setQuery(i.compileQuery(
+                "len([], L)."));
+            testQuery(i, {true, {{"L", "0"}}});
+        }
+
+        //SUBCASE("List of length 1 (variable)")
+        //{
+        //    Interpreter i(c.dump());
+        //    i.setQuery(i.compileQuery(
+        //        "len([1], L)."));
+        //    testQuery(i, {true, {{"L", "1"}}});
+        //}
     }
 }
