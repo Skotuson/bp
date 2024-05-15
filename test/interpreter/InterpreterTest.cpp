@@ -1008,9 +1008,22 @@ TEST_CASE("Interpreter test suite")
         }
     }
 
-    SUBCASE("IS operator tests (length)")
+    SUBCASE("IS operator tests (list length)")
     {
         std::istringstream iss(
+            "__id(A, A).\n"
+
+            "__add(0,Y,Y)."
+            "__add(__s(0),Y,__s(Y))."
+            "__add(__s(X),Y,__s(Z)):- __add(X,Y,Z)."
+            // x - y = z is the same as y + z = x
+            "__sub(X, Y, Z) :- __add(Y, Z, X)."
+            "__mul(0,_,0)."
+            "__mul(__s(A),B,C) :-"
+            "__mul(A,B,D),"
+            "__add(D,B,C)."
+            // x / y = z is the same as y * z = x
+            "__div(X, Y, Z) :- __mul(Y, Z, X)."
             "len([], 0)."
             "len([_|T], L) :- len(T, PL), L is 1 + PL.");
         c.compile(iss);
@@ -1031,12 +1044,38 @@ TEST_CASE("Interpreter test suite")
             testQuery(i, {true, {{"L", "0"}}});
         }
 
-        //SUBCASE("List of length 1 (variable)")
-        //{
-        //    Interpreter i(c.dump());
-        //    i.setQuery(i.compileQuery(
-        //        "len([1], L)."));
-        //    testQuery(i, {true, {{"L", "1"}}});
-        //}
+        SUBCASE("List of length 1 (variable)")
+        {
+            Interpreter i(c.dump());
+            i.setQuery(i.compileQuery(
+                "len([1], L)."));
+            testQuery(i, {true, {{"L", "1"}}});
+        }
+
+        SUBCASE("List of length 8 (variable)")
+        {
+            Interpreter i(c.dump());
+            i.setQuery(i.compileQuery(
+                "len([1,2,3,4,s(x),[1],7,8], L)."));
+            testQuery(i, {true, {{"L", "8"}}});
+        }
+
+        SUBCASE("List of length 8 (variable)")
+        {
+            Interpreter i(c.dump());
+            i.setQuery(i.compileQuery(
+                "len([1,2,3,4,s(x),[1],7,8], 7)."));
+            testQuery(i, {false, {}});
+        }
+
+        SUBCASE("More answers")
+        {
+            Interpreter i(c.dump());
+            i.setQuery(i.compileQuery(
+                "len(X,Y)."));
+            testQuery(i, {true, {{"X", "[]"}, {"Y", "0"}}});
+            nextQuery(i);
+            testQuery(i, {true, {{"X", "[__0|[]]"}, {"Y", "1"}}});
+        }
     }
 }
