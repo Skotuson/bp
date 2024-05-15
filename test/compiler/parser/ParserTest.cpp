@@ -170,7 +170,7 @@ TEST_CASE("Parse Expression: Many Lists")
   CHECK(parser.parse());
 }
 
-TEST_CASE("Parse Expression: Quicksort")
+TEST_CASE("Parse Expression: Botched quicksort")
 {
   std::istringstream iss(
       "qsort([], Right, Right).\n"
