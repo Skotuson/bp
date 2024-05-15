@@ -44,6 +44,8 @@ X = 3
 false.
 ```
 Of course, standard Prolog queries like `bigger(mouse,bug)` can also be entered, but will always fail.
+  
+REPL can be terminated by entering `halt`.
 ## Loading a file
 A source code file can be loaded into the REPL by running the binary with a `--file <filepath>` flag, like this for example 
 ```
