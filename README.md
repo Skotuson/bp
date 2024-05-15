@@ -43,7 +43,7 @@ X = 3
 ?> 1 + 1 is 1 + 2
 false.
 ```
-Of course, standard Prolog queries like `bigger(mouse,bug)` can also be entered, but will always fail.
+Of course, standard Prolog queries like `bigger(mouse,bug)` can also be entered, but will always fail without a loaded file.
   
 REPL can be terminated by entering `halt`.
 ## Loading a file
