@@ -159,3 +159,8 @@ X = 120
 true.
 X = 720
 ```
+## Stepper
+**Disclaimer**: The stepper in its current state is highly experimental and unfinished.
+By running `./wam --step`, after entering a query, the machine won't execute the whole program, but will display the bytecode (currently executed instruction is highlighted) and the machine's state.
+
+By pressing enter, the code can be stepped through, seeing how the state changes. Currently, the stepper is very rough around the edges, without a proper UI and is mainly meant as a developer tool. It may, however, be used to debug programs or to gain an understanding of how the program is executed.
