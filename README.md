@@ -21,7 +21,6 @@ And then build the project with `make`
 # Running the tests
 After the project has been built, a binary `wam_test` will be created.  
 Executing the `wam_test` like so `./wam_test` will run the unit tests present. Framework used for testing is [doctest](https://github.com/doctest/doctest/tree/master).
-
 # Running the program
 Along with the `wam_test`, the `wam` binary will also be generated after building. This is the binary used to run the interpreter.  
 Running the binary without any flags like this:
@@ -62,6 +61,8 @@ Now, a query in the form of `bigger(mouse,bug)` can be run and succeed:
 ?> bigger(mouse,bug).
 true.
 ```
+### Example files
+Example files can be found in the `examples/` directory. 
 ## More answers
 Assume the aforementioned source code and a query `bigger(X,Y)`.
 The machine will answer the first possible proof sequence.
