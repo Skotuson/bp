@@ -7,26 +7,25 @@
 #include <sstream>
 #include <iostream>
 
+void testQuery(Interpreter &i, Result ref)
+{
+    auto r = i.evaluateQuery();
+    CHECK(r.first == ref.first);
+    CHECK(r.second.size() == ref.second.size());
+    for (const auto &res : ref.second)
+    {
+        CHECK(r.second[res.first] == res.second);
+    }
+}
+
+void nextQuery(Interpreter &i)
+{
+    std::istringstream iss = std::istringstream(";");
+    i.nextAnswer(iss);
+}
+
 TEST_CASE("Interpreter test suite")
 {
-
-    auto testQuery = [&](Interpreter &i, Result ref)
-    {
-        auto r = i.evaluateQuery();
-        CHECK(r.first == ref.first);
-        CHECK(r.second.size() == ref.second.size());
-        for (const auto &res : ref.second)
-        {
-            CHECK(r.second[res.first] == res.second);
-        }
-    };
-
-    auto nextQuery = [&](Interpreter &i)
-    {
-        std::istringstream iss = std::istringstream(";");
-        i.nextAnswer(iss);
-    };
-
     Compiler c;
     SUBCASE("Run simple queries: ")
     {
