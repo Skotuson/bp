@@ -21,7 +21,7 @@ TEST_CASE("Parsing Error Test Suite")
         }
         catch (const std::exception &e)
         {
-            CHECK(std::string(e.what()) == "[] is not a callable object");
+            CHECK(std::string(e.what()) == "[] is not a callable object.");
         }
     }
 
@@ -36,7 +36,7 @@ TEST_CASE("Parsing Error Test Suite")
         }
         catch (const std::exception &e)
         {
-            CHECK(std::string(e.what()) == "X is not a callable object");
+            CHECK(std::string(e.what()) == "X is not a callable object.");
         }
     }
 }
