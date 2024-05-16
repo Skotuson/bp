@@ -100,7 +100,6 @@ TEST_CASE("Program with facts and recursive rules (add,mul,fact)")
     Compiler c;
     std::istringstream iss(
         "add(0,Y,Y)."
-        "add(s(0),Y,s(Y))."
         "add(s(X),Y,s(Z)):- add(X,Y,Z)."
 
         "mul(0,X,0)."
@@ -863,7 +862,6 @@ TEST_CASE("Is operator (REPL)")
         "__id(A, A).\n"
 
         "__add(0,Y,Y)."
-        "__add(__s(0),Y,__s(Y))."
         "__add(__s(X),Y,__s(Z)):- __add(X,Y,Z)."
 
         // x - y = z is the same as y + z = x
@@ -984,7 +982,6 @@ TEST_CASE("Is operator, situation when the evaluation doesn't work")
         "__id(A, A).\n"
 
         "__add(0,Y,Y)."
-        "__add(__s(0),Y,__s(Y))."
         "__add(__s(X),Y,__s(Z)):- __add(X,Y,Z)."
         // x - y = z is the same as y + z = x
         "__sub(X, Y, Z) :- __add(Y, Z, X)."
@@ -1012,7 +1009,6 @@ TEST_CASE("Is operator (list length)")
         "__id(A, A).\n"
 
         "__add(0,Y,Y)."
-        "__add(__s(0),Y,__s(Y))."
         "__add(__s(X),Y,__s(Z)):- __add(X,Y,Z)."
         // x - y = z is the same as y + z = x
         "__sub(X, Y, Z) :- __add(Y, Z, X)."
@@ -1074,5 +1070,77 @@ TEST_CASE("Is operator (list length)")
         testQuery(i, {true, {{"X", "[]"}, {"Y", "0"}}});
         nextQuery(i);
         testQuery(i, {true, {{"X", "[__0|[]]"}, {"Y", "1"}}});
+    }
+}
+
+TEST_CASE("Is operator (factorial)")
+{
+    Compiler c;
+    std::istringstream iss(
+        "__id(A, A).\n"
+
+        "__add(0,Y,Y)."
+        "__add(__s(X),Y,__s(Z)):- __add(X,Y,Z)."
+        // x - y = z is the same as y + z = x
+        "__sub(X, Y, Z) :- __add(Y, Z, X)."
+        "__mul(0,_,0)."
+        "__mul(__s(A),B,C) :-"
+        "__mul(A,B,D),"
+        "__add(D,B,C)."
+        "fact(0, 1)."
+        "fact(N, Res) :-"
+        "   N1 is N - 1,"
+        "   fact(N1, Tmp), "
+        "   Res is Tmp * N.");
+    c.compile(iss);
+
+    SUBCASE("Trivial factorial (0)")
+    {
+        Interpreter i(c.dump());
+        i.setQuery(i.compileQuery(
+            "fact(0,F)."));
+        testQuery(i, {true, {{"F", "1"}}});
+        nextQuery(i);
+        testQuery(i, {false, {}});
+    }
+
+    SUBCASE("2! test")
+    {
+        Interpreter i(c.dump());
+        i.setQuery(i.compileQuery(
+            "fact(2,F)."));
+        testQuery(i, {true, {{"F", "2"}}});
+        nextQuery(i);
+        testQuery(i, {false, {}});
+    }
+
+    SUBCASE("4! test")
+    {
+        Interpreter i(c.dump());
+        i.setQuery(i.compileQuery(
+            "fact(4,F)."));
+        testQuery(i, {true, {{"F", "24"}}});
+        nextQuery(i);
+        testQuery(i, {false, {}});
+    }
+
+    SUBCASE("5! test")
+    {
+        Interpreter i(c.dump());
+        i.setQuery(i.compileQuery(
+            "fact(5,F)."));
+        testQuery(i, {true, {{"F", "120"}}});
+        nextQuery(i);
+        testQuery(i, {false, {}});
+    }
+
+    SUBCASE("6! test")
+    {
+        Interpreter i(c.dump());
+        i.setQuery(i.compileQuery(
+            "fact(6,F)."));
+        testQuery(i, {true, {{"F", "720"}}});
+        nextQuery(i);
+        testQuery(i, {false, {}});
     }
 }
