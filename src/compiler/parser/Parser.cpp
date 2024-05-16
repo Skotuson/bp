@@ -168,7 +168,7 @@ std::shared_ptr<GoalNode> Parser::BodyOperator(std::shared_ptr<TermNode> lhs)
         // Semantic check whether it is a valid call
         if (lhs->type() == TermNode::TermType::LIST || lhs->type() == TermNode::TermType::VAR)
         {
-            std::string err = lhs->name() + " is not a callable object";
+            std::string err = lhs->name() + " is not a callable object.";
             throw std::runtime_error(err);
         }
 
@@ -208,7 +208,7 @@ std::vector<std::shared_ptr<GoalNode>> Parser::BodyCont(void)
         // Parse the rest of the body
         return Body();
     default:
-        throw std::runtime_error("BodyCont Parsing error");
+        throw std::runtime_error("Unexpected token in clause's body.");
     }
 }
 
